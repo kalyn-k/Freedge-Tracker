@@ -11,6 +11,7 @@ import sqlite3
 from sqlite3 import Error
 from freedge_internal_database.database_constants import *
 from caretaker_info_parser import *
+from freedge_data_entry import *
 
 # https://www.sqlitetutorial.net/sqlite-python/creating-database/
 # https://www.sqlitetutorial.net/sqlite-python/create-tables/
@@ -37,7 +38,7 @@ class FreedgeDatabase:
 				date_installed varchar(10),
 				contact_name varchar(255),
 				active_status varchar(50),
-				last_status_update varchar(10),
+				last_status_update varchar(10) DEFAULT 'dd-mm-yyyy',
 				phone_number varchar(50),
 				email_address varchar(50),
 				permission_to_contact int,
@@ -100,10 +101,9 @@ class FreedgeDatabase:
 		return cur.lastrowid
 	
 	def new_freedge(self, conn, freedge_data):
-		sql = '''INSERT INTO freedges(project_name, network_name,
-					contact_name, active_status, last_status_update,
-					phone_number, email_address, permission_to_contact,
-					preferred_contact_method)
+		sql = '''INSERT INTO freedges(project_name, network_name, date_installed,
+					contact_name, active_status, phone_number, email_address,
+					permission_to_contact, preferred_contact_method)
 					VALUES(?,?,?,?,?,?,?,?,?)'''
 		cur = conn.cursor()
 		cur.execute(sql, freedge_data)
@@ -116,10 +116,19 @@ class FreedgeDatabase:
 		if conn is None:
 			ConnectionError("Error: Could not create the database connection.")
 		cur = conn.cursor()
-		cur.execute("SELECT * FROM freedges")
+		cur.execute("SELECT project_name, network_name, contact_name, "
+					"active_status, last_status_update, phone_number, "
+					"email_address, permission_to_contact, "
+					"preferred_contact_method, street_address, city, "
+					"state_province, zip_code, country, date_installed "
+					"FROM freedges JOIN addresses USING(freedge_id)")
 		rows = cur.fetchall()
+		freedges = []
 		for row in rows:
-			print(row)
+			freedge_address = FreedgeAddress(row[9], row[10], row[11], row[12], row[13])
+			freedge_obj = Freedge(row[0], row[1], row[2], freedge_address, row[8], row[5], row[6], row[14])
+			freedges.append(freedge_obj)
+		return freedges
 		
 	# def compare_databases()
 	# def update_database_from_csv()
