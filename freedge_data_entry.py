@@ -9,6 +9,9 @@ Last Edit By:	Madison Werries
 """
 from enum import Enum
 from datetime import date
+
+from numpy.core.defchararray import upper
+
 from freedge_internal_database import database_constants as dbc
 
 class Status(Enum):
@@ -35,27 +38,33 @@ class FreedgeAddress:
 class Freedge:
 	""" A class for data entries in the Freedge Database. """
 	def __init__(self, fid, pname, nname, cname, loc, c_method, phone, email,
-				 installed_date, permission=False, sensor_exists=False):
+				 installed_date, permission="No", has_sensor="No"):
 		self.freedge_id = fid
 		self.project_name = pname
 		self.network_name = nname
 		self.caretaker_name = cname
 		self.fridge_location = loc
-		self._permission_to_notify = permission
+		if (permission.upper().strip() == "YES"):
+			self.permission_to_notify = True
+		else:
+			self.permission_to_notify = False
 		self.preferred_contact_method = c_method
 		self.phone_number = phone
 		self.email_address = email
 		self.freedge_status = Status.Active
 		self.last_status_update = installed_date
-		self.has_fridge_sensor = sensor_exists
+		if (has_sensor.upper().strip() == "YES"):
+			self.has_fridge_sensor = True
+		else:
+			self.has_fridge_sensor = False
 	
 	def can_notify(self):
 		""" Returns whether the freedge's owner has agreed to receive notifications. """
-		return self._permission_to_notify
+		return self.permission_to_notify
 		
 	def set_permission_to_notify(self, can_notify: bool):
 		""" Change a freedge caretaker's notification permission status. """
-		self._permission_to_notify = can_notify
+		self.permission_to_notify = can_notify
 		
 	def set_preferred_contact_method(self, t: ContactMethod):
 		""" Change a freedge caretaker's preferred contact method. """
