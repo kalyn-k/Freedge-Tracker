@@ -11,7 +11,6 @@ from enum import Enum
 from datetime import date
 from freedge_internal_database import database_constants as dbc
 
-
 class Status(Enum):
 	""" An Enum class to encapsulate the potential status of a freedge. """
 	Active = "active"
@@ -36,7 +35,7 @@ class FreedgeAddress:
 class Freedge:
 	""" A class for data entries in the Freedge Database. """
 	def __init__(self, pname, cname, loc, c_method, phone, email,
-				 installed_date, permission=False):
+				 installed_date, permission=False, sensor_exists=False):
 		self.project_name = pname
 		self.caretaker_name = cname
 		self.fridge_location = loc
@@ -46,6 +45,7 @@ class Freedge:
 		self.email_address = email
 		self.freedge_status = Status.Active
 		self.last_status_update = installed_date
+		self.has_fridge_sensor = sensor_exists
 	
 	def can_notify(self):
 		""" Returns whether the freedge's owner has agreed to receive notifications. """
