@@ -9,6 +9,8 @@ Last Edit By:	Madison Werries
 """
 from enum import Enum
 from datetime import date
+from freedge_internal_database import database_constants as dbc
+
 
 class Status(Enum):
 	""" An Enum class to encapsulate the potential status of a freedge. """
@@ -18,8 +20,8 @@ class Status(Enum):
 	
 class ContactMethod(Enum):
 	""" Options for a caretaker's preferred contact method (email/SMS). """
-	SMS = 0
-	Email = 1
+	SMS = dbc.SMS_METHOD_STRING
+	Email = dbc.EMAIL_METHOD_STRING
 	
 class FreedgeAddress:
 	def __init__(self, street, city, state_prov, zcode, country, loc_type=""):
