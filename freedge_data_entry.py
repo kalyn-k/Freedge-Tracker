@@ -34,8 +34,9 @@ class FreedgeAddress:
 
 class Freedge:
 	""" A class for data entries in the Freedge Database. """
-	def __init__(self, pname, nname, cname, loc, c_method, phone, email,
+	def __init__(self, fid, pname, nname, cname, loc, c_method, phone, email,
 				 installed_date, permission=False, sensor_exists=False):
+		self.freedge_id = fid
 		self.project_name = pname
 		self.network_name = nname
 		self.caretaker_name = cname

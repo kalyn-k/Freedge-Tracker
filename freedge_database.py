@@ -116,7 +116,7 @@ class FreedgeDatabase:
 		if conn is None:
 			ConnectionError("Error: Could not create the database connection.")
 		cur = conn.cursor()
-		cur.execute("SELECT project_name, network_name, contact_name, "
+		cur.execute("SELECT freedge_id, project_name, network_name, contact_name, "
 					"active_status, last_status_update, phone_number, "
 					"email_address, permission_to_contact, "
 					"preferred_contact_method, street_address, city, "
@@ -125,8 +125,8 @@ class FreedgeDatabase:
 		rows = cur.fetchall()
 		freedges = []
 		for row in rows:
-			freedge_address = FreedgeAddress(row[9], row[10], row[11], row[12], row[13])
-			freedge_obj = Freedge(row[0], row[1], row[2], freedge_address, row[8], row[5], row[6], row[14])
+			freedge_address = FreedgeAddress(row[10], row[11], row[12], row[13], row[14])
+			freedge_obj = Freedge(row[0], row[1], row[2], row[3], freedge_address, row[9], row[6], row[7], row[15])
 			freedges.append(freedge_obj)
 		return freedges
 		
