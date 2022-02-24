@@ -51,12 +51,23 @@ class admin_interface:
         # Set menu background color
         menu.configure(bg='black')
 
+        # Button to Create new database (db)
+        create_db_button = Button(menu, text="Create new Database", font=("TkDefaultFont", 20),
+                             bg="white", width=20)  # initiate the button
+        create_db_button.pack(padx=10, pady=10)
+
+        # Button to update database
+        update_db_button = Button(menu, text="Update Database", font=("TkDefaultFont", 20),
+                             bg="white", width=20)  # initiate the button
+        update_db_button.pack(padx=10, pady=10)
+
         # Button to exit session
         exit_button = Button(menu, text="            Exit           ", font=("TkDefaultFont", 20), command=self.exit_,
-                             bg="white", width=15)  # initiate the button
+                             bg="white", width=20)  # initiate the button
         exit_button.pack(padx=10, pady=10)
 
-        # TODO: the buttons to be added: Create New Database, Update Database, Create Graph (?), ...
+
+        # TODO: the buttons to be added: Create Graph (?), ...
 
         menu.mainloop()
 
