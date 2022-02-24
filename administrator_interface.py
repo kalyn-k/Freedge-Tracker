@@ -26,6 +26,10 @@ class admin_interface:
         # TODO how can i get the db_path?
         pass
 
+    def CreateGraph(self):
+        # call build_freedge_graph.py here
+        pass
+
     def exit_(self):
         """
         Method to exit and end the program. Is called
