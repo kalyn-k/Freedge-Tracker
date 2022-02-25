@@ -59,7 +59,6 @@ PREFERRED_METHOD_KEY = "Preferred Contact Method"
 ACTIVE_STATUS_KEY = "Active?"
 #==============================================================================
 
-
 # The form response string for caretakers who want to notified via text
 SMS_METHOD_STRING = "text"
 
