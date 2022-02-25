@@ -10,21 +10,27 @@ Last Edit By:   Kalyn Koyanagi
 import sys
 from tkinter import *
 from tkinter import filedialog
+from freedge_internal_database import database_constants
+from freedge_database import *
 
 
 class admin_interface:
     def __init__(self):
-        pass
+        """
+        TODO
+        """
+        # Define user windows for later use
+        self.menu = None
 
     def NewDatabase(self, event=None):
-        filename = filedialog.askopenfilename()
-        # TODO how can i get the db_path?
-        pass
+        file_path = filedialog.askopenfilename()
+        database_path = database_constants.DATABASE_PATH
+        new_database_from_csv(database_path, file_path)
 
     def UpdateDatabase(self, event=None):
-        filename = filedialog.askopenfilename()
-        # TODO how can i get the db_path?
-        pass
+        file_path = filedialog.askopenfilename()
+        database_path = database_constants.DATABASE_PATH
+        new_database_from_csv(database_path, file_path)
 
     def CreateGraph(self):
         # call build_freedge_graph.py here
@@ -57,19 +63,19 @@ class admin_interface:
 
         # Button to Create new database (db)
         create_db_button = Button(menu, text="Create new Database", font=("TkDefaultFont", 20),
-                             bg="white", width=20)  # initiate the button
+                                  command=self.NewDatabase,
+                                  bg="white", width=20)  # initiate the button
         create_db_button.pack(padx=10, pady=10)
 
         # Button to update database
-        update_db_button = Button(menu, text="Update Database", font=("TkDefaultFont", 20),
-                             bg="white", width=20)  # initiate the button
+        update_db_button = Button(menu, text="Update Database", font=("TkDefaultFont", 20), command=self.UpdateDatabase,
+                                  bg="white", width=20)  # initiate the button
         update_db_button.pack(padx=10, pady=10)
 
         # Button to exit session
         exit_button = Button(menu, text="            Exit           ", font=("TkDefaultFont", 20), command=self.exit_,
                              bg="white", width=20)  # initiate the button
         exit_button.pack(padx=10, pady=10)
-
 
         # TODO: the buttons to be added: Create Graph (?), ...
 
