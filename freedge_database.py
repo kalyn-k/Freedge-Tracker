@@ -33,45 +33,79 @@ class FreedgeDatabase:
 		return conn
 	
 	def create_table(self, conn, create_table_sql):
-		""" create a table from the create_table_sql statement
-		:param conn: Connection object
-		:param create_table_sql: a CREATE TABLE statement
-		:return:
-		"""
+		""" create a table from the create_table_sql statement """
 		try:
 			c = conn.cursor()
 			c.execute(create_table_sql)
 		except Error as e:
 			print(e)
 	
-	def new_address(self, conn, address_data):
-		sql = '''INSERT INTO addresses(
-					freedge_id, street_address, city,
-					state_province, zip_code, country
-					)
+	def new_address(self, conn, address_data, temp=False):
+		if (temp):
+			sql = '''INSERT INTO new_addresses(
+						freedge_id, street_address, city,
+						state_province, zip_code, country)
+					VALUES(?,?,?,?,?,?)'''
+		else:
+			sql = '''INSERT INTO addresses(
+						freedge_id, street_address, city,
+						state_province, zip_code, country)
 					VALUES(?,?,?,?,?,?)'''
 		cur = conn.cursor()
 		cur.execute(sql, address_data)
 		conn.commit()
 		return cur.lastrowid
 	
-	def new_freedge(self, conn, freedge_data):
-		sql = '''INSERT INTO freedges(project_name, network_name, date_installed,
-					contact_name, active_status, phone_number, email_address,
-					permission_to_contact, preferred_contact_method)
-					VALUES(?,?,?,?,?,?,?,?,?)'''
+	def new_freedge(self, conn, freedge_data, temp=False):
+		if (temp):
+			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
+						contact_name, active_status, phone_number, email_address,
+						permission_to_contact, preferred_contact_method)
+						VALUES(?,?,?,?,?,?,?,?,?)'''
+		else:
+			sql = '''INSERT INTO freedges(project_name, network_name, date_installed,
+						contact_name, active_status, phone_number, email_address,
+						permission_to_contact, preferred_contact_method)
+						VALUES(?,?,?,?,?,?,?,?,?)'''
 		cur = conn.cursor()
 		cur.execute(sql, freedge_data)
 		conn.commit()
 		return cur.lastrowid
 	
-	def sql_row_to_dict(self, row):
-		""" Converts an SQL row's data into a dictionary. """
+	def row_to_freedge(self, row):
+		""" Converts an SQL row into an instance of the Freedge class. """
+		# Convert yes/no form responses into the proper Status
+		# 		(`Status` class found in freedge_data_entry.py)
+		if (row[5].upper().strip() == "YES"):
+			status = Status.Active
+		elif (row[5].upper().strip() == "NO"):
+			status = Status.ConfirmedInactive
+		else:
+			status = Status.SuspectedInactive
+		
+		# Parse yes/no form responses into booleans
+		permission = (row[8].upper().strip() == "YES")
+		
+		# Create a new instance of a FreedgeAddress
+		address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
+		# Create a new instance of a Freedge:
+		new_freedge = Freedge(row[0], row[1], row[2], row[3], address, row[6], row[10], row[7],
+							  row[8], row[4], permission)
+		# Set the address and the status of the freedge
+		new_freedge.freedge_status = status
+		
+		return new_freedge
+	
+	def query_to_freedgelist(self, rows):
+		""" Converts all rows in an SQL query to Freedge objects. """
+		freedge_list = []
+		for row in rows:
+			new_freedge = self.row_to_freedge(row)
+			freedge_list.append(new_freedge)
+		return freedge_list
 	
 	def get_freedges(self):
 		""" Returns a full list of Freedge Class objects. """
-		freedge_list = []
-		
 		# Connect to the database
 		conn = self.open_connection()
 		# Verify that the connection was successful
@@ -80,42 +114,13 @@ class FreedgeDatabase:
 		
 		# Query the database, retrieving all the freedges and their addresses
 		cur = conn.cursor()
-		# TODO: figure out how to retrieve all the column names
-		#cur.execute("SELECT DISTINCT * FROM PRAGMA_TABLE_INFO('freedges' JOIN 'addresses')")
-		cols = cur.fetchall()
-		for c in cols:
-			print(c[1])
 		cur.execute("SELECT * FROM freedges JOIN addresses USING(freedge_id)")
 		# Get the results of the SQL query
 		rows = cur.fetchall()
 		
-		# Parse the SQL query rows into instances of the class Freedge
+		# Parse the SQL query rows into instances of the Freedge class
 		# This allows for easier access by the other Freedge Tracker modules
-		for row in rows:
-			# Convert yes/no form responses into the proper Status
-			# 		(`Status` class found in freedge_data_entry.py)
-			if (row[5].upper().strip() == "YES"):
-				status = Status.Active
-			elif (row[5].upper().strip() == "NO"):
-				status = Status.ConfirmedInactive
-			else:
-				status = Status.SuspectedInactive
-			
-			# Parse yes/no form responses into booleans
-			permission = (row[8].upper().strip() == "YES")
-			
-			# Create a new instance of a FreedgeAddress
-			address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
-			# Create a new instance of a Freedge:
-			new_freedge = Freedge(row[0], row[1], row[2], row[3], address, row[6], row[10], row[7],
-								  row[8], row[4], permission)
-			# Set the address and the status of the freedge
-			new_freedge.freedge_status = status
-			
-			# Add the new Freedge class instance to the list
-			freedge_list.append(new_freedge)
-			
-		return freedge_list
+		return self.query_to_freedgelist(rows)
 	
 	def get_out_of_date(self):
 		""" Returns a list of freedges whose information is out of date. """
@@ -126,25 +131,22 @@ class FreedgeDatabase:
 				needs_updating.append(freedge)
 		return needs_updating
 	
+	# TODO =======================================
 	def update_freedge(self, freedge_data):
 		""" Update the database data of a specific Freedge. """
-		
-	# def update_database_from_csv()
+	# TODO =======================================
+	
 	def compare_databases(self, new_csv_data):
 		""" Returns a tuple (added, removed, modified) of lists of freedges
 		 	whose data is different than the data in the passed csv file argument. """
-		# Create a temporary database to compare the original one to
+		
+		# Open the connection and verify that it was made successfully
 		conn = self.open_connection()
-		# Verify that the connections were made successfully
 		if conn is None:
 			ConnectionError("Failure to connect to the original database.")
 		cur = conn.cursor()
-		cur.execute("SELECT * FROM freedges")
-		rows = cur.fetchall()
-		freedge_list = []
-		for row in rows:
-			print(row)
-		# This defines the structure of the addresses table
+
+		# Define the structure of the new (temporary) addresses table
 		sql_new_addresses = \
 			""" CREATE TABLE IF NOT EXISTS new_addresses (
 				freedge_id INTEGER PRIMARY KEY,
@@ -155,6 +157,7 @@ class FreedgeDatabase:
 				country varchar(50)
 			);"""
 		
+		# Define the structure of the new (temporary) freedges table
 		sql_new_csv_data = \
 			""" CREATE TABLE IF NOT EXISTS new_freedges (
 				freedge_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -170,28 +173,92 @@ class FreedgeDatabase:
 				preferred_contact_method varchar(10)
 			);"""
 		
+		# Create the new temporary tables to compare the current data to
+		cur.execute("DROP TABLE IF EXISTS new_addresses;")
+		cur.execute("DROP TABLE IF EXISTS new_freedges;")
 		self.create_table(conn, sql_new_csv_data)
 		self.create_table(conn, sql_new_addresses)
+		
+		# Parse the data from the new csv file
 		new_freedge_dataset = parse_freedge_data_file(new_csv_data)
+		# Insert the data into the new temporary tables
 		for freedge_data in new_freedge_dataset:
-			fid = self.new_freedge(conn, freedge_data[0])
+			fid = self.new_freedge(conn, freedge_data[0], True)
 			address_data = [str(fid)] + freedge_data[1]
-			self.new_address(conn, address_data)
+			self.new_address(conn, address_data, True)
 		
-		#cur.execute("SELECT * FROM (SELECT * FROM (freedges f1 JOIN addresses f2 ON(f1.freedge_id = f2.freedge_id))) AS oldfreedges")
-		cur.execute("SELECT * FROM addresses")
-		rows = cur.fetchall()
-		freedge_list = []
-		for row in rows:
-			print(row)
+		# =====================================================================
 		# Get the freedges that would be ADDED to the database
+		# =====================================================================
+		sql = '''SELECT * FROM (new_freedges f2
+					JOIN new_addresses a2
+					USING (freedge_id))
+					AS new
+				WHERE NOT EXISTS(
+					SELECT * FROM (freedges f1
+					JOIN addresses a1
+					USING(freedge_id))
+					AS old
+				WHERE old.project_name = new.project_name)
+				'''
+		cur.execute(sql)
+		rows_to_add = cur.fetchall()
 		
+		# =====================================================================
 		# Get the freedges that would be REMOVED from the database
-		# Get the freedges that would be CHANGED within the database
+		# =====================================================================
+		sql = '''SELECT * FROM (freedges f1
+					JOIN addresses a1
+					USING(freedge_id))
+					AS old
+				WHERE NOT EXISTS(
+					SELECT * FROM (new_freedges f2
+					JOIN new_addresses a2
+					USING (freedge_id))
+					AS new
+				WHERE old.project_name = new.project_name)
+				'''
+		cur.execute(sql)
+		rows_to_remove = cur.fetchall()
 		
-		# Close the connections
+		# =====================================================================
+		# Get the freedges that would be CHANGED within the database
+		# =====================================================================
+		sql = '''SELECT * FROM (freedges f1
+					JOIN addresses a1
+					USING(freedge_id))
+					AS old
+				WHERE EXISTS(
+					SELECT * FROM (new_freedges f2
+					JOIN new_addresses a2
+					USING (freedge_id))
+					AS new
+				WHERE old.project_name = new.project_name
+					AND (old.network_name != new.network_name
+					OR old.contact_name != new.contact_name
+					OR old.date_installed != new.date_installed
+					OR old.active_status != new.active_status
+					OR old.last_status_update != new.last_status_update
+					OR old.phone_number != new.phone_number
+					OR old.email_address != new.email_address
+					OR old.permission_to_contact != new.permission_to_contact
+					OR old.preferred_contact_method != new.preferred_contact_method
+					OR old.street_address != new.street_address
+					OR old.city != new.city
+					OR old.state_province != new.state_province
+					OR old.zip_code != new.zip_code
+					OR old.country != new.country))
+				'''
+		cur.execute(sql)
+		rows_to_modify = cur.fetchall()
+		
+		to_add = self.query_to_freedgelist(rows_to_add)
+		to_remove = self.query_to_freedgelist(rows_to_remove)
+		to_modify = self.query_to_freedgelist(rows_to_modify)
+		
+		# Close the connection
 		conn.close()
-
+		return (to_add, to_remove, to_modify)
 
 def exists_internal_database(db_path):
 	""" Returns whether or not there exists a database at the given path. """
@@ -278,9 +345,20 @@ def new_database_from_csv(db_path, csv_file_path):
 	# Return the FreedgeDatabase class instance
 	return freedgeDB
 
+
 if __name__ == '__main__':
+	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
+	(add, remove, modidfy) = fdb.compare_databases(new_csv)
+	print("============ RESULTS OF DATABASE COMPARISON ============")
+	print("WOULD BE ADDED: ")
+	for a in add:
+		print(a)
+	print("WOULD BE REMOVED: ")
+	for r in remove:
+		print(r)
+	print("WOULD BE MODIFIED: ")
+	for m in modidfy:
+		print(m)
 	#fdb = load_internal_database(DATABASE_PATH)
 	flist = fdb.get_freedges()
-	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
-	fdb.compare_databases(new_csv)
