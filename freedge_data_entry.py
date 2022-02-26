@@ -72,7 +72,7 @@ class FreedgeAddress:
 		""" A class to store the address of a freedge. """
 		self.street_address = loc[0]
 		self.city = loc[1]
-		self.state_or_province = loc[2]
+		self.state_province = loc[2]
 		self.zip_code = loc[3]
 		self.country = loc[4]
 		
@@ -81,7 +81,7 @@ class FreedgeAddress:
 		ret = ""
 		ret += self.street_address + ", "
 		ret += self.city + ", "
-		ret += self.state_or_province + ", "
+		ret += self.state_province + ", "
 		ret += self.zip_code + ", "
 		ret += self.country
 		return ret

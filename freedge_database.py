@@ -131,11 +131,59 @@ class FreedgeDatabase:
 				needs_updating.append(freedge)
 		return needs_updating
 	
-	# TODO =======================================
-	def update_freedge(self, freedge_data):
+	def update_freedge(self, f):
 		""" Update the database data of a specific Freedge. """
-	# TODO =======================================
-	
+		conn = self.open_connection()
+		# Verify that the connection was successful
+		if conn is None:
+			ConnectionError("Error: Could not connect to the database.")
+		cur = conn.cursor()
+		
+		# Update the corresponding entry in the freedges table
+		sql_update_freedges = '''
+			UPDATE freedges
+			SET project_name = ?,
+				network_name = ?,
+				contact_name = ?,
+				date_installed = ?,
+				active_status = ?,
+				last_status_update = ?,
+				phone_number = ?,
+				email_address = ?,
+				permission_to_contact = ?,
+				preferred_contact_method = ?
+			WHERE freedge_id = ?'''
+		
+		# Get the proper values to fill in the ? fields
+		fields = [f.project_name, f.network_name,
+				  f.caretaker_name, f.date_installed.isoformat(),
+				  f.freedge_status.value, f.last_status_update, f.phone_number,
+				  f.email_address, f.permission_to_notify,
+				  f.preferred_contact_method, str(f.freedge_id)]
+		# Execute the update to the table
+		conn.execute(sql_update_freedges, fields)
+		
+		# Update the corresponding entry in the addresses table
+		sql = '''
+			UPDATE addresses
+			SET street_address = ?,
+				city = ?,
+				state_province = ?,
+				zip_code = ?,
+				country = ?
+			WHERE freedge_id = ?'''
+		
+		# FreedgeAddress of the passed-in Freedge f
+		addr = f.fridge_location
+		# Get the proper values to fill in the ? fields
+		fields = [addr.street_address, addr.city, addr.state_province,
+				  addr.zip_code, addr.country, str(f.freedge_id)]
+		# Execute the update to the table
+		conn.execute(sql, fields)
+		# Commit the changes and close the connection
+		conn.commit()
+		conn.close()
+		
 	def compare_databases(self, new_csv_data):
 		""" Returns a tuple (added, removed, modified) of lists of freedges
 		 	whose data is different than the data in the passed csv file argument. """
@@ -256,6 +304,9 @@ class FreedgeDatabase:
 		to_remove = self.query_to_freedgelist(rows_to_remove)
 		to_modify = self.query_to_freedgelist(rows_to_modify)
 		
+		cur.execute("DROP TABLE IF EXISTS new_addresses;")
+		cur.execute("DROP TABLE IF EXISTS new_freedges;")
+		
 		# Close the connection
 		conn.close()
 		return (to_add, to_remove, to_modify)
@@ -300,7 +351,7 @@ def new_database_from_csv(db_path, csv_file_path):
 			network_name varchar(255),
 			contact_name varchar(255),
 			date_installed date,
-			active_status varchar(50),
+			active_status varchar(50) DEFAULT 'active',
 			last_status_update date DEFAULT (DATE('now')),
 			phone_number varchar(50),
 			email_address varchar(50),
@@ -316,7 +367,6 @@ def new_database_from_csv(db_path, csv_file_path):
 	# If the connection was successful, create the tables
 	if conn is not None:
 		cur = conn.cursor()
-		
 		# create projects table
 		sql = "DROP TABLE IF EXISTS addresses;"
 		cur.execute(sql)
@@ -349,16 +399,9 @@ def new_database_from_csv(db_path, csv_file_path):
 if __name__ == '__main__':
 	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
+	freedges = fdb.get_freedges()
+	freedges[0].freedge_status = Status.SuspectedInactive
+	fdb.update_freedge(freedges[0])
 	(add, remove, modidfy) = fdb.compare_databases(new_csv)
-	print("============ RESULTS OF DATABASE COMPARISON ============")
-	print("WOULD BE ADDED: ")
-	for a in add:
-		print(a)
-	print("WOULD BE REMOVED: ")
-	for r in remove:
-		print(r)
-	print("WOULD BE MODIFIED: ")
-	for m in modidfy:
-		print(m)
+	
 	#fdb = load_internal_database(DATABASE_PATH)
-	flist = fdb.get_freedges()
