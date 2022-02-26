@@ -31,7 +31,7 @@ class Freedge:
 		self.project_name = pname
 		self.network_name = nname
 		self.caretaker_name = cname
-		self.fridge_address = FreedgeAddress(loc)
+		self.fridge_location = loc
 		self.date_installed = date.fromisoformat(installed_date)
 		self.permission_to_notify = permission
 		self.preferred_contact_method = c_method

@@ -65,40 +65,66 @@ class FreedgeDatabase:
 		conn.commit()
 		return cur.lastrowid
 	
+	def sql_row_to_dict(self, row):
+		""" Converts an SQL row's data into a dictionary. """
+	
 	def get_freedges(self):
 		""" Returns a full list of Freedge Class objects. """
-		conn = self.open_connection()
-		if conn is None:
-			ConnectionError("Error: Could not create the database connection.")
-		cur = conn.cursor()
-		
-		# Query the database, selecting all the
-		cur.execute("SELECT * FROM freedges JOIN addresses USING(freedge_id)")
-		
-		# Retrieve the results of the SQL query
-		rows = cur.fetchall()
 		freedge_list = []
 		
+		# Connect to the database
+		conn = self.open_connection()
+		# Verify that the connection was successful
+		if conn is None:
+			ConnectionError("Error: Could not connect to the database.")
+		
+		# Query the database, retrieving all the freedges and their addresses
+		cur = conn.cursor()
+		# TODO: figure out how to retrieve all the column names
+		#cur.execute("SELECT DISTINCT * FROM PRAGMA_TABLE_INFO('freedges' JOIN 'addresses')")
+		cols = cur.fetchall()
+		for c in cols:
+			print(c[1])
+		cur.execute("SELECT * FROM freedges JOIN addresses USING(freedge_id)")
+		# Get the results of the SQL query
+		rows = cur.fetchall()
+		
+		# Parse the SQL query rows into instances of the class Freedge
+		# This allows for easier access by the other Freedge Tracker modules
 		for row in rows:
-			print(row)
-			# Parse the permission_to_contact variable into a boolean
-			if (row[8].upper().strip() == "YES"):
-				permission = True
+			# Convert yes/no form responses into the proper Status
+			# 		(`Status` class found in freedge_data_entry.py)
+			if (row[5].upper().strip() == "YES"):
+				status = Status.Active
+			elif (row[5].upper().strip() == "NO"):
+				status = Status.ConfirmedInactive
 			else:
-				permission = False
+				status = Status.SuspectedInactive
+			
+			# Parse yes/no form responses into booleans
+			permission = (row[8].upper().strip() == "YES")
+			
 			# Create a new instance of a FreedgeAddress
-			freedge_address = [row[11], row[12], row[13], row[14], row[15]]
+			address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
 			# Create a new instance of a Freedge:
-			#		Freedge(self, fid, pname, nname, cname, loc, last_update,
-			#				c_method, phone, email, installed_date, permission
-			freedge_obj = Freedge(row[0], row[1], row[2], row[3],
-								  freedge_address, row[6], row[10], row[7],
+			new_freedge = Freedge(row[0], row[1], row[2], row[3], address, row[6], row[10], row[7],
 								  row[8], row[4], permission)
+			# Set the address and the status of the freedge
+			new_freedge.freedge_status = status
+			
 			# Add the new Freedge class instance to the list
-			freedge_list.append(freedge_obj)
+			freedge_list.append(new_freedge)
+			
 		return freedge_list
 	
-	#def get_out_of_date(self):
+	def get_out_of_date(self):
+		""" Returns a list of freedges whose information is out of date. """
+		freedges = self.get_freedges()
+		needs_updating = []
+		for freedge in freedges:
+			if (freedge.time_since_last_update() > FIRST_UPDATE_THRESHOLD):
+				needs_updating.append(freedge)
+		return needs_updating
 	
 	def compare_databases(self, new_csv_data):
 		""" Returns a tuple (added, removed, modified) of lists of freedges
@@ -264,4 +290,6 @@ def new_database_from_csv(db_path, csv_file_path):
 if __name__ == '__main__':
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
 	#fdb = load_internal_database(DATABASE_PATH)
-	freedges = fdb.get_freedges()
+	flist = fdb.get_freedges()
+	for f in flist:
+		print(f)

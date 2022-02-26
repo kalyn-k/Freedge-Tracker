@@ -59,7 +59,7 @@ class admin_interface:
 
         for fridge in range(num_db - 1):
             self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
-                freedges[fridge].project_name, freedges[fridge].fridge_location, freedges[fridge].caretaker_name,
+                freedges[fridge].project_name, freedges[fridge].fridge_location.ToString(), freedges[fridge].caretaker_name,
                 freedges[fridge].freedge_status, freedges[fridge].preferred_contact_method))
 
         self.treev.place(x=340, y=70)

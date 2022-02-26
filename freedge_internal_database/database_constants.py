@@ -7,6 +7,17 @@ Authors: 		TODO
 Last Edited: 	2-22-2022
 Last Edit By:	Madison Werries
 """
+#==============================================================================
+# Constants for how often to check in with Freedge Caretakers
+#==============================================================================
+FIRST_UPDATE_THRESHOLD = 90
+SECOND_UPDATE_THRESHOLD = 14
+THIRD_UPDATE_THRESHOLD = 3
+FOURTH_UPDATE_THRESHOLD = 1
+
+#==============================================================================
+# Paths to the internal database file
+#==============================================================================
 # The path for the location of the internal database file
 # Default = r"..\freedge_internal_database\pythonsqlite.db"
 DATABASE_PATH = r".\freedge_internal_database\freedge_database.db"
