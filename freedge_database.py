@@ -126,6 +126,10 @@ class FreedgeDatabase:
 				needs_updating.append(freedge)
 		return needs_updating
 	
+	def update_freedge(self, freedge_data):
+		""" Update the database data of a specific Freedge. """
+		
+	# def update_database_from_csv()
 	def compare_databases(self, new_csv_data):
 		""" Returns a tuple (added, removed, modified) of lists of freedges
 		 	whose data is different than the data in the passed csv file argument. """
@@ -135,7 +139,11 @@ class FreedgeDatabase:
 		if conn is None:
 			ConnectionError("Failure to connect to the original database.")
 		cur = conn.cursor()
-		
+		cur.execute("SELECT * FROM freedges")
+		rows = cur.fetchall()
+		freedge_list = []
+		for row in rows:
+			print(row)
 		# This defines the structure of the addresses table
 		sql_new_addresses = \
 			""" CREATE TABLE IF NOT EXISTS new_addresses (
@@ -170,24 +178,12 @@ class FreedgeDatabase:
 			address_data = [str(fid)] + freedge_data[1]
 			self.new_address(conn, address_data)
 		
-		cur.execute("SELECT oldf.freedge_id FROM (freedges oldf JOIN addresses olda ON(oldf.freedge_id = olda.freedge_id)) AS old WHERE NOT EXISTS"
-					"(SELECT nf.freedge_id FROM (new_freedges nf JOIN new_addresses na ON (nf.freedge_id = na.freedge_id) ) AS new WHERE old.project_name = new.project_name)")
+		#cur.execute("SELECT * FROM (SELECT * FROM (freedges f1 JOIN addresses f2 ON(f1.freedge_id = f2.freedge_id))) AS oldfreedges")
+		cur.execute("SELECT * FROM addresses")
 		rows = cur.fetchall()
 		freedge_list = []
 		for row in rows:
 			print(row)
-			if (row[8].upper().strip() == "YES"):
-				permission = True
-			else:
-				permission = False
-			freedge_address = [row[11], row[12], row[13], row[14], row[15]]
-			# Create a new instance of a Freedge:
-			#		Freedge(self, fid, pname, nname, cname, loc, last_update,
-			#				c_method, phone, email, installed_date, permission
-			freedge_obj = Freedge(row[0], row[1], row[2], row[3],
-								  freedge_address, row[6], row[10], row[7],
-								  row[8], row[4], permission)
-			freedge_list.append(freedge_obj)
 		# Get the freedges that would be ADDED to the database
 		
 		# Get the freedges that would be REMOVED from the database
@@ -195,11 +191,7 @@ class FreedgeDatabase:
 		
 		# Close the connections
 		conn.close()
-	
-	def update_freedge(self, freedge_data):
-		""" Update the database data of a specific Freedge. """
-		
-	# def update_database_from_csv()
+
 
 def exists_internal_database(db_path):
 	""" Returns whether or not there exists a database at the given path. """
@@ -286,10 +278,9 @@ def new_database_from_csv(db_path, csv_file_path):
 	# Return the FreedgeDatabase class instance
 	return freedgeDB
 
-
 if __name__ == '__main__':
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
 	#fdb = load_internal_database(DATABASE_PATH)
 	flist = fdb.get_freedges()
-	for f in flist:
-		print(f)
+	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
+	fdb.compare_databases(new_csv)

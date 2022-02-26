@@ -57,7 +57,7 @@ class admin_interface:
         freedges = fdb.get_freedges()
         num_db = len(freedges)
 
-        for fridge in range(num_db - 1):
+        for fridge in range(num_db):
             self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
                 freedges[fridge].project_name, freedges[fridge].fridge_location.ToString(), freedges[fridge].caretaker_name,
                 freedges[fridge].freedge_status, freedges[fridge].preferred_contact_method))
