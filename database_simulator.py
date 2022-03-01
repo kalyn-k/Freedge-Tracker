@@ -18,6 +18,7 @@ def main():
 	freedges = tdb.get_freedges()
 	for f in freedges:
 		print(f.freedge_id, " ", f.caretaker_name, " ", f.last_status_update)
+		print(f.time_since_last_update().days)
 
 
 if __name__ == '__main__':

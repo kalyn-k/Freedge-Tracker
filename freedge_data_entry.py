@@ -56,7 +56,7 @@ class Freedge:
 		""" Returns # of days since the last activity status update. """
 		prev = self.date_installed
 		today = date.today()
-		return today - prev
+		return (today - prev).days
 	
 	def update_status(self, s: Status):
 		""" Updates the active status of the freedge based on today's date. """
