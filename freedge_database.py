@@ -399,9 +399,9 @@ def new_database_from_csv(db_path, csv_file_path):
 if __name__ == '__main__':
 	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
-	freedges = fdb.get_freedges()
-	freedges[0].freedge_status = Status.SuspectedInactive
-	fdb.update_freedge(freedges[0])
+	fs = fdb.get_freedges()
+	fs[0].freedge_status = Status.SuspectedInactive
+	fdb.update_freedge(fs[0])
 	(add, remove, modidfy) = fdb.compare_databases(new_csv)
 	
 	#fdb = load_internal_database(DATABASE_PATH)
