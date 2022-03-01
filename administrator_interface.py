@@ -125,12 +125,11 @@ class admin_interface:
                              bg="white", width=20)  # initiate the button
         exit_button.place(x=45, y=170)
 
-        #Button to view only out of date freedges
+        # Button to view only out of date freedges
 
-        out_of_date_button = Button(menu, text="View only out of date freedges",font=("TkDefaultFont", 15),
-                                    command=self.OutOfDateOnly,bg="white", width=20)
+        out_of_date_button = Button(menu, text="View only out of date freedges", font=("TkDefaultFont", 15),
+                                    command=self.OutOfDateOnly, bg="white", width=20)
         out_of_date_button.place(x=45, y=220)
-
 
         self.treev = ttk.Treeview(menu, height=20)
 
@@ -149,6 +148,7 @@ class admin_interface:
         self.treev.heading('Primary Contact', text='Primary Contact', anchor=CENTER)
 
         self.treev.place(x=340, y=70)
+
         menu.mainloop()
 
 
