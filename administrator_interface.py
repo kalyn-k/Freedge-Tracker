@@ -25,15 +25,21 @@ class admin_interface:
         self.menu = None
 
     def NewDatabase(self, event=None):
+        # Get path of CSV file
         file_path = filedialog.askopenfilename()
+        # Get path of database
         database_path = database_constants.DATABASE_PATH
         new_database_from_csv(database_path, file_path)
+        # Update the menu window
         self.UpdateDisplayData()
 
     def UpdateDatabase(self, event=None):
+        # Get path of CSV file
         file_path = filedialog.askopenfilename()
+        # Get path of database
         database_path = database_constants.DATABASE_PATH
         new_database_from_csv(database_path, file_path)
+        # Update the menu window
         self.UpdateDisplayData()
 
     def exit_(self):
@@ -56,11 +62,15 @@ class admin_interface:
         fdb = load_internal_database(db_path)
         freedges = fdb.get_freedges()
         num_db = len(freedges)
+        # clear the treeview
+        for item in self.treev.get_children():
+            self.treev.delete(item)
 
         for fridge in range(num_db):
             self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
-                freedges[fridge].project_name, freedges[fridge].fridge_location.ToString(), freedges[fridge].caretaker_name,
-                freedges[fridge].freedge_status, freedges[fridge].preferred_contact_method))
+                freedges[fridge].project_name, freedges[fridge].fridge_location.ToString(),
+                freedges[fridge].caretaker_name,
+                freedges[fridge].freedge_status.value, freedges[fridge].preferred_contact_method))
 
         self.treev.place(x=340, y=70)
 
@@ -70,7 +80,7 @@ class admin_interface:
         menu = self.menu
         menu.title("Freedge Tracker")  # TODO do we wanna change the title?
         # Sets window size
-        menu.geometry("875x500")
+        menu.geometry("970x500")
         # Prevent the menu window from being resized
         menu.resizable(False, False)
         # Set menu background color
@@ -101,10 +111,10 @@ class admin_interface:
 
         self.treev['columns'] = ('Project Name', 'Location', 'Owner', 'Status', 'Primary Contact')
         self.treev.column('#0', width=0, stretch=NO)
-        self.treev.column('Project Name', anchor=CENTER, width=125)
-        self.treev.column('Owner', anchor=CENTER, width=90)
-        self.treev.column('Location', anchor=CENTER, width=90)
-        self.treev.column('Status', anchor=CENTER, width=90)
+        self.treev.column('Project Name', anchor=CENTER, width=150)
+        self.treev.column('Owner', anchor=CENTER, width=100)
+        self.treev.column('Location', anchor=CENTER, width=120)
+        self.treev.column('Status', anchor=CENTER, width=110)
         self.treev.column('Primary Contact', anchor=CENTER, width=110)
         self.treev.heading('#0', text='', anchor=CENTER)
         self.treev.heading('Project Name', text='Project Name', anchor=CENTER)
