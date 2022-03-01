@@ -74,6 +74,24 @@ class admin_interface:
 
         self.treev.place(x=340, y=70)
 
+    def OutOfDateOnly(self):
+        # Replace the list of only out of date freedges
+        db_path = database_constants.DATABASE_PATH
+        fdb = load_internal_database(db_path)
+        out_of_date = fdb.get_out_of_date()
+        length_ood = len(out_of_date)
+
+        for item in self.treev.get_children():
+            self.treev.delete(item)
+
+        for fridge in range(length_ood):
+            self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
+                out_of_date[fridge].project_name, out_of_date[fridge].fridge_location.ToString(),
+                out_of_date[fridge].caretaker_name,
+                out_of_date[fridge].freedge_status.value, out_of_date[fridge].preferred_contact_method))
+
+        self.treev.place(x=340, y=70)
+
     def MenuDisplay(self):
         # initiate the menu window, and set it's title
         self.menu = Tk()
@@ -106,6 +124,13 @@ class admin_interface:
         exit_button = Button(menu, text="            Exit           ", font=("TkDefaultFont", 20), command=self.exit_,
                              bg="white", width=20)  # initiate the button
         exit_button.place(x=45, y=170)
+
+        #Button to view only out of date freedges
+
+        out_of_date_button = Button(menu, text="View only out of date freedges",font=("TkDefaultFont", 15),
+                                    command=self.OutOfDateOnly,bg="white", width=20)
+        out_of_date_button.place(x=45, y=220)
+
 
         self.treev = ttk.Treeview(menu, height=20)
 
