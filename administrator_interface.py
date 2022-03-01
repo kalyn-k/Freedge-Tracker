@@ -92,6 +92,7 @@ class admin_interface:
 
         self.treev.place(x=340, y=70)
 
+
     def MenuDisplay(self):
         # initiate the menu window, and set it's title
         self.menu = Tk()
