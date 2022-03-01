@@ -54,7 +54,7 @@ class Freedge:
 	
 	def time_since_last_update(self):
 		""" Returns # of days since the last activity status update. """
-		prev = self.date_installed
+		prev = self.last_status_update
 		today = date.today()
 		return (today - prev).days
 	

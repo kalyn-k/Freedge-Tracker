@@ -7,7 +7,7 @@ Authors: 		TODO
 Last Edited: 	2-22-2022
 Last Edit By:	Madison Werries
 """
-import os
+from os.path import exists
 import sqlite3
 from sqlite3 import Error
 from freedge_internal_database.database_constants import *
@@ -127,7 +127,8 @@ class FreedgeDatabase:
 		freedges = self.get_freedges()
 		needs_updating = []
 		for freedge in freedges:
-			if (freedge.time_since_last_update() > FIRST_UPDATE_THRESHOLD):
+			t = freedge.time_since_last_update()
+			if (t > FIRST_UPDATE_THRESHOLD):
 				needs_updating.append(freedge)
 		return needs_updating
 	
@@ -313,11 +314,7 @@ class FreedgeDatabase:
 
 def exists_internal_database(db_path):
 	""" Returns whether or not there exists a database at the given path. """
-	try:
-		sqlite3.connect(db_path)
-	except Error:
-		return False
-	return True
+	return(exists(db_path))
 
 def load_internal_database(db_path):
 	""" Loads and returns the database at the given path. """
