@@ -14,8 +14,8 @@ from tkinter import ttk
 from freedge_internal_database import database_constants
 from freedge_database import *
 
+
 # TODO: =======================================================================
-# Load the database on startup
 # Out-of-date tab
 # Update database
 # Not supposed to be notified, but is out-of-date
@@ -28,7 +28,7 @@ class admin_interface:
         # Define user windows for later use
         self.treev = None
         self.menu = None
-        
+
     def LoadDatabase(self, event=None):
         # Update the menu window
         fdb = load_internal_database(DATABASE_PATH)
@@ -75,10 +75,10 @@ class admin_interface:
         # Get list of list of freedges. freedges is a list of Freedge instances.
         # type(fdb) = FreedgeDatabase
         num_db = len(freedges)
-        
+
         # clear the list of freedges
         for item in self.treev.get_children():
-                self.treev.delete(item)
+            self.treev.delete(item)
         # Add the new list of freedges
         for fridge in range(num_db):
             self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
@@ -151,7 +151,7 @@ class admin_interface:
         self.treev.heading('Primary Contact', text='Primary Contact', anchor=CENTER)
 
         self.treev.place(x=340, y=70)
-      
+
         if (exists_internal_database(DATABASE_PATH)):
             fdb = load_internal_database(DATABASE_PATH)
             freedges = fdb.get_freedges()
@@ -162,4 +162,3 @@ class admin_interface:
 if __name__ == '__main__':
     screen = admin_interface()
     screen.MenuDisplay()
-
