@@ -3,9 +3,9 @@
 Title:	Administrator Interface for the Freedge Tracker System
 ===============================================================================
 Description:	TODO
-Authors:        Kalyn Koyanagi
-Last Edited:    2-25-2022
-Last Edit By:   Kalyn Koyanagi
+Authors:        Kalyn Koyanagi, Madison Werries
+Last Edited:    2-28-2022
+Last Edit By:   Madison Werries
 """
 import sys
 from tkinter import *
@@ -14,6 +14,11 @@ from tkinter import ttk
 from freedge_internal_database import database_constants
 from freedge_database import *
 
+# TODO: =======================================================================
+# Load the database on startup
+# Out-of-date tab
+# Update database
+# Not supposed to be notified, but is out-of-date
 
 class admin_interface:
     def __init__(self):
@@ -23,24 +28,35 @@ class admin_interface:
         # Define user windows for later use
         self.treev = None
         self.menu = None
+        
+    def LoadDatabase(self, event=None):
+        # Update the menu window
+        fdb = load_internal_database(DATABASE_PATH)
+        freedges = fdb.get_freedges()
+        # Update the menu window
+        self.UpdateDisplayData(freedges)
 
     def NewDatabase(self, event=None):
         # Get path of CSV file
         file_path = filedialog.askopenfilename()
         # Get path of database
-        database_path = database_constants.DATABASE_PATH
-        new_database_from_csv(database_path, file_path)
+        new_database_from_csv(DATABASE_PATH, file_path)
+        # Open the database
+        fdb = load_internal_database(DATABASE_PATH)
+        freedges = fdb.get_freedges()
         # Update the menu window
-        self.UpdateDisplayData()
+        self.UpdateDisplayData(freedges)
 
     def UpdateDatabase(self, event=None):
         # Get path of CSV file
         file_path = filedialog.askopenfilename()
         # Get path of database
-        database_path = database_constants.DATABASE_PATH
-        new_database_from_csv(database_path, file_path)
+        new_database_from_csv(DATABASE_PATH, file_path)
+        # Open the database
+        fdb = load_internal_database(DATABASE_PATH)
+        freedges = fdb.get_freedges()
         # Update the menu window
-        self.UpdateDisplayData()
+        self.UpdateDisplayData(freedges)
 
     def exit_(self):
         """
@@ -55,17 +71,15 @@ class admin_interface:
         """
         sys.exit()  # use the exit method from the sys module
 
-    def UpdateDisplayData(self):
+    def UpdateDisplayData(self, freedges):
         # Get list of list of freedges. freedges is a list of Freedge instances.
         # type(fdb) = FreedgeDatabase
-        db_path = database_constants.DATABASE_PATH
-        fdb = load_internal_database(db_path)
-        freedges = fdb.get_freedges()
         num_db = len(freedges)
-        # clear the treeview
+        
+        # clear the list of freedges
         for item in self.treev.get_children():
-            self.treev.delete(item)
-
+                self.treev.delete(item)
+        # Add the new list of freedges
         for fridge in range(num_db):
             self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
                 freedges[fridge].project_name, freedges[fridge].fridge_location.ToString(),
@@ -79,19 +93,7 @@ class admin_interface:
         db_path = database_constants.DATABASE_PATH
         fdb = load_internal_database(db_path)
         out_of_date = fdb.get_out_of_date()
-        length_ood = len(out_of_date)
-
-        for item in self.treev.get_children():
-            self.treev.delete(item)
-
-        for fridge in range(length_ood):
-            self.treev.insert(parent='', index=fridge, iid=fridge, text='', values=(
-                out_of_date[fridge].project_name, out_of_date[fridge].fridge_location.ToString(),
-                out_of_date[fridge].caretaker_name,
-                out_of_date[fridge].freedge_status.value, out_of_date[fridge].preferred_contact_method))
-
-        self.treev.place(x=340, y=70)
-
+        self.UpdateDisplayData(out_of_date)
 
     def MenuDisplay(self):
         # initiate the menu window, and set it's title
@@ -149,10 +151,15 @@ class admin_interface:
         self.treev.heading('Primary Contact', text='Primary Contact', anchor=CENTER)
 
         self.treev.place(x=340, y=70)
-
+      
+        if (exists_internal_database(DATABASE_PATH)):
+            fdb = load_internal_database(DATABASE_PATH)
+            freedges = fdb.get_freedges()
+            screen.UpdateDisplayData(freedges)
         menu.mainloop()
 
 
 if __name__ == '__main__':
     screen = admin_interface()
     screen.MenuDisplay()
+
