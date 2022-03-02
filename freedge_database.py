@@ -1,11 +1,20 @@
 """
 ===============================================================================
-Title:	Freedge Database for the Freedge Tracker System
+Title:  Freedge Database for the Freedge Tracker System
 ===============================================================================
-Description:	TODO
-Authors: 		TODO
-Last Edited: 	2-22-2022
-Last Edit By:	Madison Werries
+Description:    Creates and manages a new SQLite database. This database is loaded
+                with data read in from an inputted csv file. This information contains data
+                collected by Freedge Administrators via Google Docs regarding location of 
+                freedge, name of project, freedge contact information, and more.
+                
+                The FreedgeDatabase class holds functionality to create an SQLite 
+                database connection and implementation for database operations, 
+                such as creating a new database, updating a freedge object, returning 
+                freedge objects.
+
+Authors:        Madison Werries, Ginni Gallagher, TODO
+Last Edited:    3-1-2022
+Last Edit By:   Ginni Gallagher 
 """
 from os.path import exists
 import sqlite3
@@ -14,16 +23,33 @@ from freedge_internal_database.database_constants import *
 from caretaker_info_parser import *
 from freedge_data_entry import *
 
-# https://www.sqlitetutorial.net/sqlite-python/creating-database/
-# https://www.sqlitetutorial.net/sqlite-python/create-tables/
+"""
+Helpful links used in setting up database connection and database table:
+
+https://www.sqlitetutorial.net/sqlite-python/creating-database/
+https://www.sqlitetutorial.net/sqlite-python/create-tables/
+"""
 
 class FreedgeDatabase:
+	"""
+    Holds functionality to create an SQLite database connection, 
+    which returns a Connection object that can be used to perform 
+    database operations. These operations help create the database,
+    update objects within the database, and return database objects
+    in readable terms for use by other system components.
+    """
 	def __init__(self, db_location):
+		"""
+    	Initializes the location of the SQLite database used by the
+   		system.
+    	"""
 		self.db_location = db_location
 		
 	def open_connection(self):
-		""" Opens and returns this database's connection.
-			:returns the Connection variable. """
+		""" 
+		Open and return a database connection defined by db_location.
+        Returns: a Connection object - used to perform database operations. 
+        """
 		conn = None
 		try:
 			conn = sqlite3.connect(self.db_location)
@@ -33,7 +59,10 @@ class FreedgeDatabase:
 		return conn
 	
 	def create_table(self, conn, create_table_sql):
-		""" create a table from the create_table_sql statement """
+		""" 
+        Creates a table from the create_table_sql statement.
+        A table is an object that contains the data in the database.
+        """
 		try:
 			c = conn.cursor()
 			c.execute(create_table_sql)
@@ -41,6 +70,13 @@ class FreedgeDatabase:
 			print(e)
 	
 	def new_address(self, conn, address_data, temp=False):
+		"""
+        TODO
+        Description: 
+
+        Inputs:
+        Returns:
+        """
 		if (temp):
 			sql = '''INSERT INTO new_addresses(
 						freedge_id, street_address, city,
@@ -57,6 +93,13 @@ class FreedgeDatabase:
 		return cur.lastrowid
 	
 	def new_freedge(self, conn, freedge_data, temp=False):
+		"""
+        TODO
+        Description: 
+
+        Inputs:
+        Returns:
+        """
 		if (temp):
 			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
 						contact_name, active_status, phone_number, email_address,
@@ -73,7 +116,14 @@ class FreedgeDatabase:
 		return cur.lastrowid
 	
 	def row_to_freedge(self, row):
-		""" Converts an SQL row into an instance of the Freedge class. """
+		""" 
+        Converts an SQL row into an instance of the Freedge class. 
+        
+        TODO
+        Inputs: 
+            row - List containing strings of data for a specific freedge.
+        Returns:
+        """
 		# Convert yes/no form responses into the proper Status
 		# 		(`Status` class found in freedge_data_entry.py)
 		status_string = row[5].upper().strip()
@@ -110,7 +160,15 @@ class FreedgeDatabase:
 		return new_freedge
 	
 	def query_to_freedgelist(self, rows):
-		""" Converts all rows in an SQL query to Freedge objects. """
+		""" 
+        Converts all rows in an SQL query to Freedge objects. 
+        
+        TODO
+        Inputs: rows - A list of "rows", each row contains the information
+                for a freedge.
+
+        Returns: freedge_list - A list of Freedge objects
+        """
 		freedge_list = []
 		for row in rows:
 			new_freedge = self.row_to_freedge(row)
