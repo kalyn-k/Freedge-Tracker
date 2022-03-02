@@ -18,8 +18,6 @@ Description:	This is skeleton code to be updated with Twilio in order to
 
                 Instruction use and sample code:
                 https://www.twilio.com/docs/verify/email
-        
-                TODO is this good?
 
 Authors: 		Ellie Kobak,
 Last Edited: 	3-01-22
@@ -34,15 +32,16 @@ date         editor     changes
 from twilio.rest import TwilioRestClient    # Twilio extension to send email 
 
 from datetime import datetime               # used to update date
-from freedge_internal_database.database_constants import * # used to access constants for fridge object
-from caretaker_info_parser import *  # used to get contact information for each fridge
-from freedge_data_entry import *    # used to access fridge object for data information 
-from notificationMgmt import *      # main class definition
+import freedge_internal_database.database_constants  # used to access constants for fridge object
+import caretaker_info_parser   # used to get contact information for each fridge
+import freedge_data_entry      # used to access fridge object for data information 
+import freedge_database        # used to access the freedge database methods
+import notificationMgmt        # main class definition
+ 
 
-
-class email_mgmt(NotificationMgmt):
+class email_mgmt(notificationMgmt.NotificationMgmt):
     '''
-    This class enables email notifications from XXX (fridge owner person??) to the fridge caretakers.
+    This class enables email notifications from freedge organizers to the fridge caretakers.
     The classhas the attributes to send emails using the Twilio Email API
     '''
 
@@ -52,7 +51,8 @@ class email_mgmt(NotificationMgmt):
 
         Parameters:  None
 
-        Purpose:  initialize email management system to enable email communication between XXX and caretaker
+        Purpose:  initialize email management system to enable email communication between freedge organizers  
+                and caretaker
 
         Calls:  In funtioning version, will call freedge_data_entry.py in order to obtain correct contact 
                 info for each fridge.
@@ -72,11 +72,11 @@ class email_mgmt(NotificationMgmt):
 
         Parameters: None
         Calls:
-            called by: XXX when system has not been notified of activity in 90 days,
+            called by: admin_interface.py when system has not been notified of activity in 90 days,
                      notify_and_update() to send email
            
         Returns: caretaker_name -> string of name of caretaker, 
-                project_name -> string of name of fridge project,
+                 project_name -> string of name of fridge project,
                  last_update -> integer of date of last update
 
         '''
@@ -85,7 +85,7 @@ class email_mgmt(NotificationMgmt):
         last_update = 0         # initalializes variable to store last update
 
         # call to the other classes in order to use their methods
-        fdb = freedge_databse.FreedgeDatabase()  # freedge database class initialization
+        fdb = freedge_database.FreedgeDatabase()  # freedge database class initialization
         f = freedge_data_entry.Freedge()         # actual fridge class initialization
 
         fridge_list = fdb.get_out_of_date() # variable to obtain the list of freedge objects that are out of date
@@ -101,18 +101,7 @@ class email_mgmt(NotificationMgmt):
                 email = fdb.email
                 self.notify_and_update(f, fdb, project_name, caretaker_name, last_update, email)
 
-                # now set up the message with this information.
-                # message = f'Hi {caretaker_name}! We noticed that {project_name} has not been updated in {last_update} days' \
-                #           f'Is your Freedge still active?'
-
-
-                # now set up the message with this information.
-                # message = f'Hi {caretaker_name}! We noticed that {project_name} has not been updated in {last_update} days' \
-                #           f'Is your Freedge still active?'
-
-        return project_name, caretaker_name, last_update
-
-
+        return 
 
     def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update, email):
         '''
