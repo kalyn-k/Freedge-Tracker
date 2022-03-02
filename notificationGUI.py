@@ -29,6 +29,7 @@ message = f'Hello {caretaker_name}, {project_name} was last determined as active
 class pop_up:
     """
     TODO: description of class
+    This class
     """
     def __init__(self, caretaker_name, project_name, last_update):
         """
@@ -42,7 +43,7 @@ class pop_up:
         Called by: notify_and_update() in notificationMgmt.py to signal notification
         Returns: None, stores class information
         """
-        self.selected_button = False
+        self.selected_button = False    #
         self.ct_name = caretaker_name
         self.proj_name = project_name
         self.latest_update = last_update
@@ -83,7 +84,6 @@ class pop_up:
 
     def true_button(self):
         """
-        TODO:
         Purpose: Method to set the value of the status
         to True. Is called when the user selects the
         corresponding "Still active"
@@ -97,8 +97,9 @@ class pop_up:
 
     def get_status(self):
         """
-        TODO:
-        Purpose:
+        TODO
+        Purpose: Method to return the status of a notification
+        sent to the user.
         Parameters: None
 
         Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
@@ -119,6 +120,7 @@ class pop_up:
         self.pop_up_win.destroy()
 
 
+# TODO cut out
 if __name__ == '__main__':
     test = pop_up(caretaker_name,project_name,last_update)
     s = test.get_status()
