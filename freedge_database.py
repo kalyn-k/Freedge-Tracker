@@ -32,24 +32,24 @@ https://www.sqlitetutorial.net/sqlite-python/create-tables/
 
 class FreedgeDatabase:
 	"""
-    Holds functionality to create an SQLite database connection, 
-    which returns a Connection object that can be used to perform 
-    database operations. These operations help create the database,
-    update objects within the database, and return database objects
-    in readable terms for use by other system components.
-    """
+	Holds functionality to create an SQLite database connection, 
+	which returns a Connection object that can be used to perform 
+	database operations. These operations help create the database,
+	update objects within the database, and return database objects
+	in readable terms for use by other system components.
+	"""
 	def __init__(self, db_location):
 		"""
-    	Initializes the location of the SQLite database used by the
-   		system.
-    	"""
+		Initializes the location of the SQLite database used by the
+		system.
+		"""
 		self.db_location = db_location
 		
 	def open_connection(self):
 		""" 
 		Open and return a database connection defined by db_location.
-        Returns: a Connection object - used to perform database operations. 
-        """
+		Returns: a Connection object - used to perform database operations. 
+		"""
 		conn = None
 		try:
 			conn = sqlite3.connect(self.db_location)
@@ -60,9 +60,9 @@ class FreedgeDatabase:
 	
 	def create_table(self, conn, create_table_sql):
 		""" 
-        Creates a table from the create_table_sql statement.
-        A table is an object that contains the data in the database.
-        """
+		Creates a table from the create_table_sql statement.
+		A table is an object that contains the data in the database.
+		"""
 		try:
 			c = conn.cursor()
 			c.execute(create_table_sql)
@@ -71,12 +71,12 @@ class FreedgeDatabase:
 	
 	def new_address(self, conn, address_data, temp=False):
 		"""
-        TODO
-        Description: 
+		TODO
+		Description: 
 
-        Inputs:
-        Returns:
-        """
+		Inputs:
+		Returns:
+		"""
 		if (temp):
 			sql = '''INSERT INTO new_addresses(
 						freedge_id, street_address, city,
@@ -94,12 +94,12 @@ class FreedgeDatabase:
 	
 	def new_freedge(self, conn, freedge_data, temp=False):
 		"""
-        TODO
-        Description: 
-
-        Inputs:
-        Returns:
-        """
+		TODO
+		Description: 
+	
+		Inputs:
+		Returns:
+		"""
 		if (temp):
 			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
 						contact_name, active_status, phone_number, email_address,
@@ -117,13 +117,13 @@ class FreedgeDatabase:
 	
 	def row_to_freedge(self, row):
 		""" 
-        Converts an SQL row into an instance of the Freedge class. 
+		Converts an SQL row into an instance of the Freedge class. 
         
-        TODO
-        Inputs: 
-            row - List containing strings of data for a specific freedge.
-        Returns:
-        """
+		TODO
+		Inputs: 
+			row - List containing strings of data for a specific freedge.
+		Returns:
+		"""
 		# Convert yes/no form responses into the proper Status
 		# 		(`Status` class found in freedge_data_entry.py)
 		status_string = row[5].upper().strip()
@@ -161,14 +161,14 @@ class FreedgeDatabase:
 	
 	def query_to_freedgelist(self, rows):
 		""" 
-        Converts all rows in an SQL query to Freedge objects. 
+		Converts all rows in an SQL query to Freedge objects. 
         
-        TODO
-        Inputs: rows - A list of "rows", each row contains the information
-                for a freedge.
+		TODO
+		Inputs: rows - A list of "rows", each row contains the information
+				for a freedge.
 
-        Returns: freedge_list - A list of Freedge objects
-        """
+		Returns: freedge_list - A list of Freedge objects
+		"""
 		freedge_list = []
 		for row in rows:
 			new_freedge = self.row_to_freedge(row)
@@ -176,7 +176,12 @@ class FreedgeDatabase:
 		return freedge_list
 	
 	def get_freedges(self):
-		""" Returns a full list of Freedge Class objects. """
+		""" 
+		Grabs a full list of Freedge Class objects from database. 
+		
+		Inputs: None
+		Returns: A full list of freedges.
+		"""
 		# Connect to the database
 		conn = self.open_connection()
 		# Verify that the connection was successful
@@ -194,7 +199,13 @@ class FreedgeDatabase:
 		return self.query_to_freedgelist(rows)
 	
 	def get_out_of_date(self):
-		""" Returns a list of freedges whose information is out of date. """
+		""" 
+		Grabs a list of freedges whose information is out of date. 
+		
+		Inputs: None
+		Returns: A list of freedges that are out of date according to
+				their "time_since_last_update" attribute.
+		"""
 		freedges = self.get_freedges()
 		needs_updating = []
 		for freedge in freedges:
@@ -204,7 +215,13 @@ class FreedgeDatabase:
 		return needs_updating
 	
 	def update_freedge(self, f):
-		""" Update the database data of a specific Freedge. """
+		""" 
+		Update the database data of a specific Freedge. 
+		
+		TODO
+		Inputs:
+		Returns:
+		"""
 		print("updoot")
 		conn = self.open_connection()
 		# Verify that the connection was successful
@@ -262,8 +279,14 @@ class FreedgeDatabase:
 		conn.close()
 		
 	def compare_databases(self, new_csv_data):
-		""" Returns a tuple (added, removed, modified) of lists of freedges
-		 	whose data is different than the data in the passed csv file argument. """
+		""" 
+		Returns a tuple (added, removed, modified) of lists of freedges
+		whose data is different than the data in the passed csv file argument. 
+		
+		TODO
+		Inputs:
+		Returns:
+		"""
 		
 		# Open the connection and verify that it was made successfully
 		conn = self.open_connection()
@@ -437,11 +460,23 @@ class FreedgeDatabase:
 		return (to_add, to_remove, to_modify)
 
 def exists_internal_database(db_path):
-	""" Returns whether or not there exists a database at the given path. """
+	""" 
+	Returns whether or not there exists a database at the given path. 
+	
+	TODO
+	Inputs:
+	Returns:
+	"""
 	return(exists(db_path))
 
 def load_internal_database(db_path):
-	""" Loads and returns the database at the given path. """
+	""" 
+	Loads and returns the database at the given path. 
+	
+	TODO
+	Inputs:
+	Returns:
+	"""
 	try:
 		sqlite3.connect(DATABASE_PATH)
 	except Error as e:
@@ -451,7 +486,13 @@ def load_internal_database(db_path):
 	return freedgeDB
 	
 def new_database_from_csv(db_path, csv_file_path):
-	""" Creates and returns a new internal database from a csv file. """
+	""" 
+	Creates and returns a new internal database from a csv file. 
+	
+	TODO
+	Inputs:
+	Returns:
+	"""
 
 	# This defines the structure of the addresses table
 	sql_address_table = \
