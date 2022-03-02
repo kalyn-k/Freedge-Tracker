@@ -32,7 +32,7 @@ date         editor     changes
 # from typing import no_type_check   
 
 from datetime import datetime               # used to update date
-# import freedge_internal_database.database_constants  # used to access constants for fridge object
+import freedge_internal_database.database_constants  # used to access constants for fridge object
 # import caretaker_info_parser   # used to get contact information for each fridge
 import freedge_data_entry      # used to access fridge object for data information 
 import freedge_database        # used to access the freedge database methods
@@ -75,8 +75,8 @@ class NotificationMgmt():
         last_update = 0         # initalializes variable to store last update
 
         # call to the other classes in order to use their methods
-        fdb = freedge_database.FreedgeDatabase()  # freedge database class initialization
-        f = freedge_data_entry.Freedge()         # actual fridge class initialization
+        fdb = freedge_database.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
+        #f = freedge_data_entry.Freedge()         # actual fridge class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -84,11 +84,12 @@ class NotificationMgmt():
         # last update. These three items will be returned by the function to be used to craft a message to the
         # caretaker through the notification GUI.
         for fridge in fridge_list:
-            if f.can_notify is True:
-                project_name = f.project_name               # variable for project name
-                caretaker_name = f.caretaker_name           # variable for caretaker name
+            if fridge.can_notify is True:
+                project_name = fridge.project_name               # variable for project name
+                caretaker_name = fridge.caretaker_name           # variable for caretaker name
                 last_update = fdb.time_since_last_update()  # variable for time of last update
-                
+                #last_update = fridge.time_since_last_update()
+                print(f"Caretaker info: {caretaker_name}")
                 # signals the notifcation to be sent out
                 self.notify_and_update(f, fdb, project_name, caretaker_name, last_update)
 
@@ -131,7 +132,10 @@ class NotificationMgmt():
         
         return 
 
-
+if __name__ == '__main__':
+    test = NotificationMgmt()
+    test2 = test.get_fridge_info_message()
+    test2
 
 
 
