@@ -10,7 +10,7 @@ Last Edit By:	Liza Richards
 
 Edit Log
 date         editor     changes
-2-28-22      erk         initial doc
+2-28-22      erk        initial doc
 
 """
 from tkinter import *
@@ -52,9 +52,31 @@ class pop_up:
         self.pop_up_win.mainloop()
 
     def false_button(self):
+        """
+        Method to set the value of the status
+        to false. Is called when the user selects the
+        corresponding "No longer active"
+        option button.
+
+        Parameter:
+            None
+        Returns:
+            None
+        """
         self.selected_button = False
 
     def true_button(self):
+        """
+        Method to set the value of the status
+        to True. Is called when the user selects the
+        corresponding "Still active"
+        option button.
+
+        Parameter:
+            None
+        Returns:
+            None
+        """
         self.selected_button = True
 
     def get_status(self):
