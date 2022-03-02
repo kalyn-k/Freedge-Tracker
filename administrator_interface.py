@@ -7,14 +7,14 @@ Authors:        Kalyn Koyanagi, Madison Werries
 Last Edited:    2-28-2022
 Last Edit By:   Madison Werries
 """
-import sys
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter import ttk
 from tkinter.ttk import Notebook
-from freedge_internal_database import database_constants
-from freedge_database import *
+
 from freedge_data_entry import *
+from freedge_database import *
+
 
 # TODO: =======================================================================
 # Update database
@@ -32,6 +32,10 @@ class admin_interface:
         self.ood_tab = None     # Out of date freedges tab
         self.menu = None
         
+    # =========================================================================
+    # I/O for Administrator Interface
+    # =========================================================================
+
     def LoadDatabase(self):
         # Load the internal database
         self.fdb = load_internal_database(DATABASE_PATH)
@@ -92,6 +96,9 @@ class admin_interface:
         self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
         # Update the menu window
         self.UpdateFullDisplay()
+        
+    def OnTableClick(self, event):
+        return
 
     def exit_(self):
         """
@@ -105,6 +112,10 @@ class admin_interface:
             None
         """
         sys.exit()  # use the exit method from the sys module
+
+    # =========================================================================
+    # GUI for Administrator Interface
+    # =========================================================================
 
     def UpdateFullDisplay(self):
         freedges = self.fdb.get_freedges()

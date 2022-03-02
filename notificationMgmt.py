@@ -84,7 +84,7 @@ class NotificationMgmt():
         # last update. These three items will be returned by the function to be used to craft a message to the
         # caretaker through the notification GUI.
         for fridge in fridge_list:
-            if fridge.can_notify is True:
+            if fridge.can_notify():
                 project_name = fridge.project_name               # variable for project name
                 caretaker_name = fridge.caretaker_name           # variable for caretaker name
                 last_update = fridge.time_since_last_update()  # variable for time of last update
@@ -118,7 +118,7 @@ class NotificationMgmt():
         
         '''
         # calls notificatio GUI pop up function to send message
-        popup = notificationGUI.Pop_up(project_name, caretaker_name, last_update)
+        popup = notificationGUI.pop_up(project_name, caretaker_name, last_update)
         response = popup.selected_button    # variable with boolean value of activity notification response
 
         # calls to the other classes in order to use their methods
