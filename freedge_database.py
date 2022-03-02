@@ -76,15 +76,19 @@ class FreedgeDatabase:
 		""" Converts an SQL row into an instance of the Freedge class. """
 		# Convert yes/no form responses into the proper Status
 		# 		(`Status` class found in freedge_data_entry.py)
-		if (row[5].upper().strip() == "YES"):
+		status_string = row[5].upper().strip()
+		if (status_string == "YES"):
 			status = Status.Active
-		elif (row[5].upper().strip() == "NO"):
+		elif (status_string == Status.Active.value.upper()):
+			status = Status.Active
+		elif (status_string == "NO"):
+			status = Status.ConfirmedInactive
+		elif (status_string == Status.ConfirmedInactive.value.upper()):
 			status = Status.ConfirmedInactive
 		else:
 			status = Status.SuspectedInactive
-		
 		# Parse yes/no form responses into booleans
-		permission = (row[8].upper().strip() == "YES")
+		permission = (row[9].upper().strip() == "YES")
 		
 		# Create a new instance of a FreedgeAddress
 		address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
@@ -156,14 +160,18 @@ class FreedgeDatabase:
 			WHERE freedge_id = ?'''
 		
 		# Get the proper values to fill in the ? fields
+		permission = "no"
+		if (f.permission_to_notify):
+			permission = "yes"
+		
 		fields = [f.project_name, f.network_name,
 				  f.caretaker_name, f.date_installed.isoformat(),
-				  f.freedge_status.value, f.last_status_update, f.phone_number,
-				  f.email_address, f.permission_to_notify,
+				  str(f.freedge_status.value), f.last_status_update, f.phone_number,
+				  f.email_address, permission,
 				  f.preferred_contact_method, str(f.freedge_id)]
 		# Execute the update to the table
-		conn.execute(sql_update_freedges, fields)
-		
+		cur.execute(sql_update_freedges, fields)
+
 		# Update the corresponding entry in the addresses table
 		sql = '''
 			UPDATE addresses
@@ -180,7 +188,7 @@ class FreedgeDatabase:
 		fields = [addr.street_address, addr.city, addr.state_province,
 				  addr.zip_code, addr.country, str(f.freedge_id)]
 		# Execute the update to the table
-		conn.execute(sql, fields)
+		cur.execute(sql, fields)
 		# Commit the changes and close the connection
 		conn.commit()
 		conn.close()
@@ -352,7 +360,7 @@ def new_database_from_csv(db_path, csv_file_path):
 			last_status_update date DEFAULT (DATE('now')),
 			phone_number varchar(50),
 			email_address varchar(50),
-			permission_to_contact int DEFAULT 0,
+			permission_to_contact int,
 			preferred_contact_method varchar(10)
 		);"""
 	
