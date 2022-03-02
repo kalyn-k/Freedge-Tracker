@@ -69,6 +69,53 @@ class Freedge:
 	def reset_last_update(self):
 		""" Sets last update to today's date """
 		self.last_status_update = date.today()
+		
+	def comparison_string(self, field_name, old, new):
+		if (field_name == 'Location'):
+			ret = field_name + "\n"
+			ret += "Old: " + old.ToString()
+			ret += "New: " + new.ToString()
+		else:
+			ret = field_name + "\n"
+			ret += "Old: " + old
+			ret += "New: " + new
+		return ret
+		
+	def compare_freedges(self, f):
+		""" Returns a list of the fields which differ between two freedges. """
+		diff = []
+
+		field_names = ['Database ID', 'Project Name', 'Network Name',
+					   'Caretaker', 'Location', 'Date Installed',
+					   'Permission to Notify', 'Preferred Contact Method',
+					   'Phone Number', 'Email Address', 'Status',
+					   'Last Status Update']
+		f1 = [self.freedge_id, self.project_name, self.network_name,
+			  self.caretaker_name, self.fridge_location, self.date_installed,
+			  self.permission_to_notify, self.preferred_contact_method,
+			  self.phone_number, self.email_address, self.freedge_status,
+			  self.last_status_update]
+		f2 = [f.freedge_id, f.project_name, f.network_name,
+			  f.caretaker_name, f.fridge_location, f.date_installed,
+			  f.permission_to_notify, f.preferred_contact_method,
+			  f.phone_number, f.email_address, f.freedge_status,
+			  f.last_status_update]
+
+		for i in range(len(field_names)):
+			if (f1[i] != f2[i]):
+				c = self.comparison_string(field_names[i], f1[i], f2[i])
+				diff.append(c)
+				
+		return diff
+		
+	def ToString(self):
+		""" Converts the freedge data to a string containing the project name,
+			caretaker name, and status. """
+		loc = self.fridge_location
+		ret = "Project name: " + self.project_name + " Caretaker: " +\
+			self.caretaker_name + " Location: " + loc.state_province + ", " +\
+			loc.city
+		return ret
 
 class FreedgeAddress:
 	def __init__(self, loc):
@@ -82,9 +129,14 @@ class FreedgeAddress:
 	def ToString(self):
 		""" Returns a string version of the address. """
 		ret = ""
-		ret += self.street_address + ", "
-		ret += self.city + ", "
-		ret += self.state_province + ", "
-		ret += self.zip_code + ", "
-		ret += self.country
+		if (self.street_address != ""):
+			ret += self.street_address + ", "
+		if (self.city != ""):
+			ret += self.city + ", "
+		if (self.state_province != ""):
+			ret += self.state_province + ", "
+		if (self.zip_code != ""):
+			ret += self.zip_code + ", "
+		if (self.country != ""):
+			ret += self.country
 		return ret
