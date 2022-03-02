@@ -87,11 +87,11 @@ class NotificationMgmt():
             if fridge.can_notify is True:
                 project_name = fridge.project_name               # variable for project name
                 caretaker_name = fridge.caretaker_name           # variable for caretaker name
-                last_update = fdb.time_since_last_update()  # variable for time of last update
+                last_update = fridge.time_since_last_update()  # variable for time of last update
                 #last_update = fridge.time_since_last_update()
                 print(f"Caretaker info: {caretaker_name}")
                 # signals the notifcation to be sent out
-                self.notify_and_update(f, fdb, project_name, caretaker_name, last_update)
+                self.notify_and_update(fridge, fdb, project_name, caretaker_name, last_update)
 
         return 
 
