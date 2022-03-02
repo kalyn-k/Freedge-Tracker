@@ -1,3 +1,4 @@
+
 """
 ===============================================================================
 Title:	Notification GUI
@@ -5,16 +6,16 @@ Title:	Notification GUI
 Description:	TODO
 
 Authors: 		Kalyn Koyanagi, Ellie Kobak
-Last Edited: 	3-01-2022
-Last Edit By:	Ellie Kobak
+Last Edited: 	3-02-2022
+Last Edit By:	Kalyn Koyanagi
 
 Edit Log
 date         editor     changes
-3-01-22      kk         created first working version 
+3-01-22      kek        created first working version
 3-01-22      erk        documentation
-
+3-02-22      kek        more documentation
 """
-from tkinter import * 
+from tkinter import *
 
 # TODO
 # Test values
@@ -25,12 +26,12 @@ message = f'Hello {caretaker_name}, {project_name} was last determined as active
           f'still active? Please reply YES or NO '
 
 
-class Pop_up:
-    '''
+class pop_up:
+    """
     TODO: description of class
-    '''
+    """
     def __init__(self, caretaker_name, project_name, last_update):
-        '''
+        """
         TODO:
         Purpose:
 
@@ -38,12 +39,9 @@ class Pop_up:
             caretaker_name -> str
             project_name -> str
             last_update -> int?
-
         Called by: notify_and_update() in notificationMgmt.py to signal notification
-
         Returns: None, stores class information
-
-        '''
+        """
         self.selected_button = False
         self.ct_name = caretaker_name
         self.proj_name = project_name
@@ -70,47 +68,47 @@ class Pop_up:
         self.pop_up_win.mainloop()
 
     def false_button(self):
-        '''
+        """
         TODO:
-        Purpose:
+        Purpose: Method to set the value of the status
+        to false. Is called when the user selects the
+        corresponding "No longer active"
+        option button.
 
         Parameters: None
-            
         Called by: get_status()
-
         Returns: False -> boolean value
-        '''
+        """
         self.selected_button = False
 
     def true_button(self):
-        '''
+        """
         TODO:
-        Purpose:
+        Purpose: Method to set the value of the status
+        to True. Is called when the user selects the
+        corresponding "Still active"
+        option button.
 
         Parameters: None
-            
         Called by: get_status()
-
         Returns: True -> boolean value
-        '''
+        """
         self.selected_button = True
 
     def get_status(self):
-        '''
+        """
         TODO:
         Purpose:
-
         Parameters: None
-            
-        Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
 
-        Returns: False -> boolean value
-        '''
+        Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
+        Returns: boolean value
+        """
         return self.selected_button
 
     def exit_(self):
         """
-        Method to exit and end the program. Is called
+        Purpose: Method to exit and end the program. Is called
         when user clicks corresponding exit
         button on the menu window.
 
