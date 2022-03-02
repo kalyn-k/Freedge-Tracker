@@ -75,7 +75,6 @@ class admin_interface:
             for freedge in to_remove:
                 message += "\t" + freedge.ToString() + "\n"
             
-
         if (len(to_modify) > 0):
             message += "Freedges whose data will be MODIFIED:"
             for (f1, f2) in to_modify:
@@ -105,6 +104,7 @@ class admin_interface:
     def UpdateFullDisplay(self):
         freedges = self.fdb.get_freedges()
         out_of_date = self.fdb.get_out_of_date()
+        self.menu.update()
         screen.UpdateTableDisplay(self.main_tab, freedges)
         screen.UpdateTableDisplay(self.ood_tab, out_of_date)
     
@@ -249,6 +249,7 @@ class admin_interface:
         })
         style.theme_use("freedge_theme")
         if (exists_internal_database(DATABASE_PATH)):
+            self.menu.update()
             title = "An existing database was found at: " + DATABASE_PATH +\
                     ".\n\nWould you like to proceed with that database? Hit 'yes' to continue," \
                     "'no' to select a different database, or 'cancel' to quit."
@@ -257,10 +258,13 @@ class admin_interface:
             if (response is None):
                 self.exit_()
             elif (not response):
+                self.menu.update()
                 self.NewDatabase()
             else:
+                self.menu.update()
                 screen.LoadDatabase()
                 screen.UpdateFullDisplay()
+        
         root.mainloop()
 
 
