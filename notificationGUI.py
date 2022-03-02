@@ -4,16 +4,17 @@ Title:	Notification GUI
 ===============================================================================
 Description:	TODO
 
-Authors: 		Ellie Kobak, Liza Richars
-Last Edited: 	2-28-2022
-Last Edit By:	Liza Richards
+Authors: 		Kalyn Koyanagi, Ellie Kobak
+Last Edited: 	3-01-2022
+Last Edit By:	Ellie Kobak
 
 Edit Log
 date         editor     changes
-2-28-22      erk         initial doc
+3-01-22      kk         created first working version 
+3-01-22      erk        documentation
 
 """
-from tkinter import *
+from tkinter import * 
 
 # TODO
 # Test values
@@ -24,8 +25,25 @@ message = f'Hello {caretaker_name}, {project_name} was last determined as active
           f'still active? Please reply YES or NO '
 
 
-class pop_up:
+class Pop_up:
+    '''
+    TODO: description of class
+    '''
     def __init__(self, caretaker_name, project_name, last_update):
+        '''
+        TODO:
+        Purpose:
+
+        Parameters:
+            caretaker_name -> str
+            project_name -> str
+            last_update -> int?
+
+        Called by: notify_and_update() in notificationMgmt.py to signal notification
+
+        Returns: None, stores class information
+
+        '''
         self.selected_button = False
         self.ct_name = caretaker_name
         self.proj_name = project_name
@@ -52,12 +70,42 @@ class pop_up:
         self.pop_up_win.mainloop()
 
     def false_button(self):
+        '''
+        TODO:
+        Purpose:
+
+        Parameters: None
+            
+        Called by: get_status()
+
+        Returns: False -> boolean value
+        '''
         self.selected_button = False
 
     def true_button(self):
+        '''
+        TODO:
+        Purpose:
+
+        Parameters: None
+            
+        Called by: get_status()
+
+        Returns: True -> boolean value
+        '''
         self.selected_button = True
 
     def get_status(self):
+        '''
+        TODO:
+        Purpose:
+
+        Parameters: None
+            
+        Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
+
+        Returns: False -> boolean value
+        '''
         return self.selected_button
 
     def exit_(self):
@@ -66,10 +114,9 @@ class pop_up:
         when user clicks corresponding exit
         button on the menu window.
 
-        Parameter:
-            None
-        Returns:
-            None
+        Parameter: None
+        Called by: None
+        Returns: None
         """
         self.pop_up_win.destroy()
 

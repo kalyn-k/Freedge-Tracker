@@ -34,62 +34,77 @@ date         editor     changes
 from twilio.rest import TwilioRestClient    # Twilio extension to send email 
 
 from datetime import datetime               # used to update date
-from freedge_internal_database.database_constants import * # acc
-from caretaker_info_parser import *
-from freedge_data_entry import *    # 
+from freedge_internal_database.database_constants import * # used to access constants for fridge object
+from caretaker_info_parser import *  # used to get contact information for each fridge
+from freedge_data_entry import *    # used to access fridge object for data information 
 from notificationMgmt import *      # main class definition
 
 
 class email_mgmt(NotificationMgmt):
     '''
-    TODO add description
-
-    TODO update functions to match NotificationMgmt
+    This class enables email notifications from XXX (fridge owner person??) to the fridge caretakers.
+    The classhas the attributes to send emails using the Twilio Email API
     '''
 
     def __init__(self):
-        #remove?
-        self.sender = send_number
-        self.reciever = del_number
-        self.message = message
-        # NotificationMgmt.get_freedges()?
-        # FreedgeDatabase.get_freedges()?
-        fridge_list = []
+        """
+        This function is set up to be updated for non prototype version.
+
+        Parameters:  None
+
+        Purpose:  initialize email management system to enable email communication between XXX and caretaker
+
+        Calls:  In funtioning version, will call freedge_data_entry.py in order to obtain correct contact 
+                info for each fridge.
+        Returns: None, stores sender and reciever information in class initiation.
+        """
+
+        # self.sender =  UPDATE with Twilio account information
+        # self.reciever = UPDAtE with freedge_data_entry
+ 
 
     def get_fridge_info_message(self):
         '''
-        Obtains which freedges are out of date (have not had a status update in 90 days).
-        Collects the freedge's caretaker, name, and time since last update to be used to craft a message in the
-        notification GUI.
-        Update the freedge object's status based on user response, and then further update the freedge database.
+        This function obtains which freedges are out of date (have not had a status update in 90 days),
+        collects the freedge's caretaker, name, and time since last update to be used to craft a message to be 
+        emailed. The function also update the freedge object's status based on user response, and then further 
+        update the freedge database.
 
-
-        Inputs: None
-        Returns: caretaker_name, project_name, last_update
-        Called by:
+        Parameters: None
+        Calls:
+            called by: XXX when system has not been notified of activity in 90 days,
+                     notify_and_update() to send email
+           
+        Returns: caretaker_name -> string of name of caretaker, 
+                project_name -> string of name of fridge project,
+                 last_update -> integer of date of last update
 
         '''
-        project_name = ''
-        caretaker_name = ''
-        last_update = 0
+        project_name = ''       # initalializes variable for project name
+        caretaker_name = ''     # initalializes variable for caretaker name
+        last_update = 0         # initalializes variable to store last update
 
         # call to the other classes in order to use their methods
-        fdb = freedge_databse.FreedgeDatabase()
-        f = freedge_data_entry.Freedge()
+        fdb = freedge_databse.FreedgeDatabase()  # freedge database class initialization
+        f = freedge_data_entry.Freedge()         # actual fridge class initialization
 
-        # obtain the list of freedge objects that are out of date
-        fridge_list = fdb.get_out_of_date()
+        fridge_list = fdb.get_out_of_date() # variable to obtain the list of freedge objects that are out of date
 
         # iterate through this list of freedge objects and obtain the caretaker's name, project name, and time since
         # last update. These three items will be returned by the function to be used to craft a message to the
         # caretaker through the notification GUI.
         for fridge in fridge_list:
             if f.can_notify is True:
-                project_name = f.project_name
-                caretaker_name = f.caretaker_name
-                last_update = fdb.time_since_last_update()
-                # phone = fdb.phone_number
-                # method = fdb.preferred_contact_method  # will be the prototype pop up
+                project_name = f.project_name               # variable for project name
+                caretaker_name = f.caretaker_name           # variable for caretaker name
+                last_update = fdb.time_since_last_update()  # variable for time of last update
+                email = fdb.email
+                self.notify_and_update(f, fdb, project_name, caretaker_name, last_update, email)
+
+                # now set up the message with this information.
+                # message = f'Hi {caretaker_name}! We noticed that {project_name} has not been updated in {last_update} days' \
+                #           f'Is your Freedge still active?'
+
 
                 # now set up the message with this information.
                 # message = f'Hi {caretaker_name}! We noticed that {project_name} has not been updated in {last_update} days' \
@@ -99,16 +114,25 @@ class email_mgmt(NotificationMgmt):
 
 
 
-    def notify_and_update(self):
+    def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update, email):
         '''
-        Calls the notification interface which will return a boolean value based on whether or not the
-        Freedge is active.
-        Based on this boolean value, updates the freedge object status and then updates the freedge database status
-        for the specific fridge object.
+       Purpose: 
+            TO BE IMPLEMENTED IF USING EMAIL NOTIFICATIONS
+            Calls the notification interface class which will return a boolean value based on whether or not the
+            Freedge is active from user input.
+            Based on this boolean value, updates the freedge object status and then updates the freedge database status
+            for the specific fridge object.
 
-        Inputs: None
+        Parameters: 
+            caretaker_name -> str
+            project_name -> str
+            last_update -> int?
+
+        Calls:
+            update_status() of Freedge class
+
         Returns: None
-        Called by:
-
+        
         '''
+        pass
         
