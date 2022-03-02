@@ -40,26 +40,49 @@ class admin_interface:
 
     def NewDatabase(self):
         # Get the path of CSV file from the user
-        response = messagebox.askokcancel("File select", "Select a csv file to load into the database.")
-        file_types = my_filetypes = [('csv files', '.csv')]
+        messagebox.askokcancel("File select", "Select a csv file to load into the database.")
+        file_types = [('csv files', '.csv')]
         file_path = filedialog.askopenfilename(title="Please select the csv file containing the freedge data.",
                                                filetypes=file_types)
         if (file_path == ""):
             answer = messagebox.askretrycancel("Question", "Error: No file selected. Please hit 'Retry'"
                                                            " to select a csv file, or 'Cancel' to close the program.")
+            # If the user hit 'Cancel' or 'X', exit the application
             if (not answer):
                 self.exit_()
+            # If the user hit 'Retry', try to prompt them again to load a new database
             else:
                 self.NewDatabase()
         # Create a new database using the data from the CSV file
         self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
-        # Update the admin display tables
+        # Update the display
         self.UpdateFullDisplay()
 
     def UpdateDatabase(self, event=None):
         # TODO: output what will be changed
         # Get path of CSV file
         file_path = filedialog.askopenfilename()
+        (to_add, to_remove, to_modify) = self.fdb.compare_databases(file_path)
+        message = "If you load the selected csv file into the database, the following changes will be made:\n"
+        message += "-----------------------------------------------------------\n"
+        if (len(to_add) > 0):
+            message += "Freedges which will be ADDED:"
+            for freedge in to_add:
+                message += "\t" + freedge.ToString() + "\n"
+            message += "-----------------------------------------------------------\n"
+        if (len(to_remove) > 0):
+            message += "Freedges which will be REMOVED:"
+            for freedge in to_remove:
+                message += "\t" + freedge.ToString() + "\n"
+            
+        if (len(to_modify) > 0):
+            message += "Freedges whose data will be MODIFIED:"
+            for (f1, f2) in to_modify:
+                changes = f1.compare_freedges(f2)
+                message += "\t" + f1.ToString() + "\n"
+                for change in changes:
+                    message += change
+        messagebox.askokcancel("Proceed?", message+" Is this ok?")
         # Get path of database
         self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
         # Update the menu window
@@ -81,6 +104,7 @@ class admin_interface:
     def UpdateFullDisplay(self):
         freedges = self.fdb.get_freedges()
         out_of_date = self.fdb.get_out_of_date()
+        self.menu.update()
         screen.UpdateTableDisplay(self.main_tab, freedges)
         screen.UpdateTableDisplay(self.ood_tab, out_of_date)
     
@@ -110,7 +134,7 @@ class admin_interface:
         # Structure the table view of the Freedges
         columns = ('Project Name', 'Location', 'Owner', 'Freedge Status',
                    'Last Status Update', 'Time Since Last Update', 'Permission to Notify?', 'Primary Contact')
-        table = ttk.Treeview(tab, height=20, columns=columns, show='headings')
+        table = ttk.Treeview(tab, height=20, columns=columns, show='headings', selectmode='browse')
         table.place(x=0, y=0)
     
         # Insert the columns
@@ -134,10 +158,8 @@ class admin_interface:
         table.heading('Time Since Last Update', text='Time Since Last Update')
         table.heading('Permission to Notify?', text='Can Notify?')
         table.heading('Primary Contact', text='Primary Contact')
-        
         table.tag_configure("odd_row", background="white")
-        table.tag_configure("even_row", background="lightgrey")
-  
+
         return table
 
     def MenuDisplay(self):
@@ -203,7 +225,7 @@ class admin_interface:
         style = ttk.Style()
         default_font = 'Helvetica'
         
-        style.theme_create("freedge_theme", parent="alt", settings={
+        style.theme_create("freedge_theme", parent="default", settings={
             "TNotebook": {
                 "configure": {"tabmargins": [10, 10, 20, 10], "background": bg_color}},
             "TNotebook.Tab": {
@@ -212,30 +234,37 @@ class admin_interface:
                 "map": {"background": [("selected", gold_color), ('!active', bg_color), ('active', color_tab)],
                         "expand": [("selected", [1, 1, 1, 0])]}},
             "TFrame": {
-                "configure": {"background": "white"}},
+                "configure": {"background": "black"}},
             "Treeview.Heading": {
                 "configure": {"font": (default_font, 12), "foreground": "orange", "background": "dimgray"}},
+            'Treeview': {
+                'map': {
+                    'background': [('!selected', 'lightgrey'), ('selected', 'white')],
+                    'font': [('selected', ("Century Gothic", 10, 'bold'))],
+                }
+            },
             ".": {
                 "configure": {"font": (default_font, 10), "foreground": "gray"}
             }
         })
         style.theme_use("freedge_theme")
-        
         if (exists_internal_database(DATABASE_PATH)):
+            self.menu.update()
             title = "An existing database was found at: " + DATABASE_PATH +\
                     ".\n\nWould you like to proceed with that database? Hit 'yes' to continue," \
                     "'no' to select a different database, or 'cancel' to quit."
             
             response = messagebox.askyesnocancel("Database Found", title)
-            print("RESPONSE: ", response)
             if (response is None):
                 self.exit_()
             elif (not response):
+                self.menu.update()
                 self.NewDatabase()
             else:
-                print("DOING THAT ")
+                self.menu.update()
                 screen.LoadDatabase()
                 screen.UpdateFullDisplay()
+        
         root.mainloop()
 
 

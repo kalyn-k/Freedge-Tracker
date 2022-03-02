@@ -307,11 +307,43 @@ class FreedgeDatabase:
 					OR old.country != new.country))
 				'''
 		cur.execute(sql)
-		rows_to_modify = cur.fetchall()
+		rows_modify_from = cur.fetchall()
 		
+		sql = '''SELECT * FROM (freedges f1
+							JOIN addresses a1
+							USING(freedge_id))
+							AS old
+						WHERE EXISTS(
+							SELECT * FROM (new_freedges f2
+							JOIN new_addresses a2
+							USING (freedge_id))
+							AS new
+						WHERE old.project_name = new.project_name
+							AND (old.network_name != new.network_name
+							OR old.contact_name != new.contact_name
+							OR old.date_installed != new.date_installed
+							OR old.active_status != new.active_status
+							OR old.last_status_update != new.last_status_update
+							OR old.phone_number != new.phone_number
+							OR old.email_address != new.email_address
+							OR old.permission_to_contact != new.permission_to_contact
+							OR old.preferred_contact_method != new.preferred_contact_method
+							OR old.street_address != new.street_address
+							OR old.city != new.city
+							OR old.state_province != new.state_province
+							OR old.zip_code != new.zip_code
+							OR old.country != new.country))
+						'''
+		cur.execute(sql)
+		rows_modify_to = cur.fetchall()
+
 		to_add = self.query_to_freedgelist(rows_to_add)
 		to_remove = self.query_to_freedgelist(rows_to_remove)
-		to_modify = self.query_to_freedgelist(rows_to_modify)
+		to_modify = []
+		for i in range(len(rows_modify_from)):
+			f1 = self.row_to_freedge(rows_modify_from[i])
+			f2 = self.row_to_freedge(rows_modify_to[i])
+			to_modify.append((f1, f2))
 		
 		cur.execute("DROP TABLE IF EXISTS new_addresses;")
 		cur.execute("DROP TABLE IF EXISTS new_freedges;")
