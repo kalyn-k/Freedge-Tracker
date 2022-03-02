@@ -32,13 +32,13 @@ class Freedge:
 		self.network_name = nname
 		self.caretaker_name = cname
 		self.fridge_location = loc
-		self.date_installed = date.fromisoformat(installed_date)
+		self.date_installed = installed_date
 		self.permission_to_notify = permission
 		self.preferred_contact_method = c_method
 		self.phone_number = phone
 		self.email_address = email
 		self.freedge_status = Status.Active
-		self.last_status_update = date.fromisoformat(last_update)
+		self.last_status_update = last_update
 	
 	def can_notify(self):
 		""" Returns whether the freedge's owner has agreed to receive notifications. """

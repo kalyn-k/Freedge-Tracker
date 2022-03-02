@@ -89,12 +89,21 @@ class FreedgeDatabase:
 			status = Status.SuspectedInactive
 		# Parse yes/no form responses into booleans
 		permission = (row[9].upper().strip() == "YES")
-		
+		try:
+			installed_date = date.fromisoformat(row[6])
+		except:
+			installed_date = '0000-00-00'
+			
+		try:
+			last_update = date.fromisoformat(row[4])
+		except:
+			last_update = '0000-00-00'
+			
 		# Create a new instance of a FreedgeAddress
 		address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
 		# Create a new instance of a Freedge:
-		new_freedge = Freedge(row[0], row[1], row[2], row[3], address, row[6], row[10], row[7],
-							  row[8], row[4], permission)
+		new_freedge = Freedge(row[0], row[1], row[2], row[3], address, installed_date, row[10], row[7],
+							  row[8], last_update, permission)
 		# Set the address and the status of the freedge
 		new_freedge.freedge_status = status
 		
@@ -138,6 +147,7 @@ class FreedgeDatabase:
 	
 	def update_freedge(self, f):
 		""" Update the database data of a specific Freedge. """
+		print("updoot")
 		conn = self.open_connection()
 		# Verify that the connection was successful
 		if conn is None:
@@ -149,8 +159,8 @@ class FreedgeDatabase:
 			UPDATE freedges
 			SET project_name = ?,
 				network_name = ?,
-				contact_name = ?,
 				date_installed = ?,
+				contact_name = ?,
 				active_status = ?,
 				last_status_update = ?,
 				phone_number = ?,
@@ -165,7 +175,7 @@ class FreedgeDatabase:
 			permission = "yes"
 		
 		fields = [f.project_name, f.network_name,
-				  f.caretaker_name, f.date_installed.isoformat(),
+				  f.date_installed.isoformat(), f.caretaker_name,
 				  str(f.freedge_status.value), f.last_status_update, f.phone_number,
 				  f.email_address, permission,
 				  f.preferred_contact_method, str(f.freedge_id)]
@@ -247,7 +257,11 @@ class FreedgeDatabase:
 		# =====================================================================
 		# Get the freedges that would be ADDED to the database
 		# =====================================================================
-		sql = '''SELECT * FROM (new_freedges f2
+		sql = '''SELECT new.freedge_id, new.project_name, new.network_name, new.contact_name,
+		 				new.date_installed, new.active_status, new.last_status_update,
+		 				new.phone_number, new.email_address, new.permission_to_contact,
+		 				new.preferred_contact_method, new.street_address, new.city,
+		 				new.state_province, new.zip_code, new.country  FROM (new_freedges f2
 					JOIN new_addresses a2
 					USING (freedge_id))
 					AS new
@@ -264,7 +278,11 @@ class FreedgeDatabase:
 		# =====================================================================
 		# Get the freedges that would be REMOVED from the database
 		# =====================================================================
-		sql = '''SELECT * FROM (freedges f1
+		sql = '''SELECT old.freedge_id, old.project_name, old.network_name, old.contact_name,
+		 				old.date_installed, old.active_status, old.last_status_update,
+		 				old.phone_number, old.email_address, old.permission_to_contact,
+		 				old.preferred_contact_method, old.street_address, old.city,
+		 				old.state_province, old.zip_code, old.country FROM (freedges f1
 					JOIN addresses a1
 					USING(freedge_id))
 					AS old
@@ -281,7 +299,11 @@ class FreedgeDatabase:
 		# =====================================================================
 		# Get the freedges that would be CHANGED within the database
 		# =====================================================================
-		sql = '''SELECT * FROM (freedges f1
+		sql = '''SELECT old.freedge_id, old.project_name, old.network_name, old.contact_name,
+		 				old.date_installed, old.active_status, old.last_status_update,
+		 				old.phone_number, old.email_address, old.permission_to_contact,
+		 				old.preferred_contact_method, old.street_address, old.city,
+		 				old.state_province, old.zip_code, old.country FROM (freedges f1
 					JOIN addresses a1
 					USING(freedge_id))
 					AS old
@@ -309,7 +331,11 @@ class FreedgeDatabase:
 		cur.execute(sql)
 		rows_modify_from = cur.fetchall()
 		
-		sql = '''SELECT * FROM (freedges f1
+		sql = '''SELECT old.freedge_id, old.project_name, old.network_name, old.contact_name,
+		 				old.date_installed, old.active_status, old.last_status_update,
+		 				old.phone_number, old.email_address, old.permission_to_contact,
+		 				old.preferred_contact_method, old.street_address, old.city,
+		 				old.state_province, old.zip_code, old.country  FROM (freedges f1
 							JOIN addresses a1
 							USING(freedge_id))
 							AS old

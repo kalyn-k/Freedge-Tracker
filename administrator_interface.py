@@ -59,30 +59,35 @@ class admin_interface:
         self.UpdateFullDisplay()
 
     def UpdateDatabase(self, event=None):
-        # TODO: output what will be changed
         # Get path of CSV file
         file_path = filedialog.askopenfilename()
         (to_add, to_remove, to_modify) = self.fdb.compare_databases(file_path)
-        message = "If you load the selected csv file into the database, the following changes will be made:\n"
-        message += "-----------------------------------------------------------\n"
+        if (len(to_add) == 0 and len(to_remove) == 0 and len(to_modify) == 0):
+            message = "Loading the selected csv file will not change any data in the database."
+        else:
+            message = "If you load the selected csv file into the database, the following changes will be made:\n\n"
+      
         if (len(to_add) > 0):
-            message += "Freedges which will be ADDED:"
-            for freedge in to_add:
-                message += "\t" + freedge.ToString() + "\n"
-            message += "-----------------------------------------------------------\n"
+            message += "(" + str(len(to_add)) + ") entries will be ADDED.\n"
+            #for freedge in to_add:
+             #   message += freedge.ToString() + "\n"
+                
         if (len(to_remove) > 0):
-            message += "Freedges which will be REMOVED:"
-            for freedge in to_remove:
-                message += "\t" + freedge.ToString() + "\n"
-            
+            message += "(" + str(len(to_remove)) + ") entries will be REMOVED.\n"
+          #  message += "===== Freedges which will be REMOVED =====\n"
+           # for freedge in to_remove:
+             #   message += freedge.ToString() + "\n"
+
         if (len(to_modify) > 0):
-            message += "Freedges whose data will be MODIFIED:"
-            for (f1, f2) in to_modify:
-                changes = f1.compare_freedges(f2)
-                message += "\t" + f1.ToString() + "\n"
-                for change in changes:
-                    message += change
-        messagebox.askokcancel("Proceed?", message+" Is this ok?")
+            message += "(" + str(len(to_modify)) + ") entries will be MODIFIED.\n"
+           # message += "===== Freedges whose data will be MODIFIED =====\n"
+            #for (f1, f2) in to_modify:
+             #   changes = f1.compare_freedges(f2)
+              #  message += f1.ToString() + "\n"
+               # for change in changes:
+                #    message += change
+
+        messagebox.askokcancel("Proceed?", message+" Proceed?")
         # Get path of database
         self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
         # Update the menu window
