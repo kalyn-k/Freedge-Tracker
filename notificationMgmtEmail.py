@@ -42,7 +42,7 @@ import notificationMgmt        # main class definition
 class email_mgmt(notificationMgmt.NotificationMgmt):
     '''
     This class enables email notifications from freedge organizers to the fridge caretakers.
-    The classhas the attributes to send emails using the Twilio Email API
+    The class has the attributes to send emails using the Twilio Email API
     '''
 
     def __init__(self):

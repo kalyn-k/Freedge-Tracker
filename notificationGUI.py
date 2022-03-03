@@ -19,19 +19,21 @@ from tkinter import *
 from freedge_data_entry import *   # used to access fridge object for data information
 
 
-# TODO
+# TODO remove
 # Test values
-caretaker_name = "Liza"
-project_name = "Sample Fridge"
-last_update = "02-28-2022"
-message = f'Hello {caretaker_name}, {project_name} was last determined as active on {last_update}. Is this fridge ' \
-          f'still active? Please reply YES or NO '
-
+# caretaker_name = "Liza"
+# project_name = "Sample Fridge"
+# last_update = "02-28-2022"
+# message = f'Hello {caretaker_name}, {project_name} was last determined as active on {last_update}. Is this fridge ' \
+#           f'still active? Please reply YES or NO '
+#
 
 class pop_up:
     """
-    TODO: description of class
-    This class
+    # TODO is this okay?
+    This class creates a pop-up window upon each class instantiation to send a notification
+    to freedge caretakers. The class determines whether or not a freedge is still active
+    as a result of the pop-up window options.
     """
     def __init__(self, caretaker_name, project_name, last_update):
         """
@@ -41,14 +43,14 @@ class pop_up:
         Parameters:
             caretaker_name -> str
             project_name -> str
-            last_update -> int?
+            last_update -> int? TODO
         Called by: notify_and_update() in notificationMgmt.py to signal notification
         Returns: None, stores class information
         """
-        self.selected_button = False    #
-        self.ct_name = caretaker_name
-        self.proj_name = project_name
-        self.latest_update = last_update
+        self.selected_button = Status.ConfirmedInactive     #
+        self.ct_name = caretaker_name                       # the freedge's caretaker's name
+        self.proj_name = project_name                       # project name for the freedge
+        self.latest_update = last_update                    # last time the status of the freedge was updated
         self.message = f'Hello {self.ct_name}, {self.proj_name} was last determined as active \non {self.latest_update}' \
                        f'. Is this fridge still active? Please select one of the\n status options below and then click ' \
                        f'on "Send Reply" '
@@ -82,8 +84,7 @@ class pop_up:
         Called by: get_status()
         Returns: False -> boolean value
         """
-        # self.selected_button = False
-        self.selected_button = Status.ConfirmedInactive
+        self.selected_button = Status.ConfirmedInactive     # set the user selected button to ConfirmedInactive
 
     def true_button(self):
         """
@@ -96,8 +97,7 @@ class pop_up:
         Called by: get_status()
         Returns: True -> boolean value
         """
-        # self.selected_button = True
-        self.selected_button = Status.Active
+        self.selected_button = Status.Active     # set the user selected button to Active
 
     def get_status(self):
         """
@@ -109,7 +109,7 @@ class pop_up:
         Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
         Returns: boolean value
         """
-        return self.selected_button
+        return self.selected_button              # return which button the user selected
 
     def exit_(self):
         """
@@ -121,11 +121,11 @@ class pop_up:
         Called by: None
         Returns: None
         """
-        self.pop_up_win.destroy()
+        self.pop_up_win.destroy()               # close the pop-up window
 
 
 # TODO cut out
-if __name__ == '__main__':
-    test = pop_up(caretaker_name,project_name,last_update)
-    s = test.get_status()
-    print(s)
+# if __name__ == '__main__':
+#     test = pop_up(caretaker_name,project_name,last_update)
+#     s = test.get_status()
+#     print(s)
