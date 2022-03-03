@@ -7,14 +7,9 @@ Authors: 		TODO
 Last Edited: 	2-22-2022
 Last Edit By:	Madison Werries
 """
-import os
-import sqlite3
-from sqlite3 import Error
-from freedge_internal_database.database_constants import *
-from caretaker_info_parser import *
 from freedge_database import *
 def main():
-	tdb = new_database_from_csv(r".\test_data\fdb_needs_updating.db", DATABASE_CSV)
+	tdb = new_database_from_csv(r"../test_data/fdb_needs_updating.db", DATABASE_CSV)
 	freedges = tdb.get_freedges()
 	for i in range(len(freedges)):
 		print(freedges[i])

@@ -19,8 +19,8 @@ from os.path import exists
 import sqlite3
 from sqlite3 import Error
 from freedge_internal_database.database_constants import *
-from caretaker_info_parser import *
-from freedge_data_entry import *
+from datetime import date
+import Freedge_Database as FD
 
 """
 Helpful links used in setting up database connection and database table:
@@ -153,15 +153,15 @@ class FreedgeDatabase:
 		# 		(`Status` class found in freedge_data_entry.py)
 		status_string = row[5].upper().strip()
 		if (status_string == "YES"):
-			status = Status.Active
-		elif (status_string == Status.Active.value.upper()):
-			status = Status.Active
+			status = FD.Status.Active
+		elif (status_string == FD.Status.Active.value.upper()):
+			status = FD.Status.Active
 		elif (status_string == "NO"):
-			status = Status.ConfirmedInactive
-		elif (status_string == Status.ConfirmedInactive.value.upper()):
-			status = Status.ConfirmedInactive
+			status = FD.Status.ConfirmedInactive
+		elif (status_string == FD.Status.ConfirmedInactive.value.upper()):
+			status = FD.Status.ConfirmedInactive
 		else:
-			status = Status.SuspectedInactive
+			status = FD.Status.SuspectedInactive
 		# Parse yes/no form responses into booleans
 		permission = (row[9].upper().strip() == "YES")
 		try:
@@ -175,9 +175,9 @@ class FreedgeDatabase:
 			last_update = '0000-00-00'
 			
 		# Create a new instance of a FreedgeAddress
-		address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
+		address = FD.FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
 		# Create a new instance of a Freedge:
-		new_freedge = Freedge(row[0], row[1], row[2], row[3], address, installed_date, row[10], row[7],
+		new_freedge = FD.Freedge(row[0], row[1], row[2], row[3], address, installed_date, row[10], row[7],
 							  row[8], last_update, permission)
 		# Set the address and the status of the freedge
 		new_freedge.freedge_status = status
@@ -362,7 +362,7 @@ class FreedgeDatabase:
 		self.create_table(conn, sql_new_addresses)
 		
 		# Parse the data from the new csv file
-		new_freedge_dataset = parse_freedge_data_file(new_csv_data)
+		new_freedge_dataset = FD.parse_freedge_data_file(new_csv_data)
 		# Insert the data into the new temporary tables
 		for freedge_data in new_freedge_dataset:
 			fid = self.new_freedge(conn, freedge_data[0], True)
@@ -585,7 +585,7 @@ def new_database_from_csv(db_path, csv_file_path):
 		ConnectionError("Error: Could not create the database connection.")
 	
 	# Now that the (empty) tables have been created, parse data from the csv file
-	freedge_dataset = parse_freedge_data_file(csv_file_path)
+	freedge_dataset = FD.parse_freedge_data_file(csv_file_path)
 	# Insert all the parsed data into the database tables
 	for freedge_data in freedge_dataset:
 		# Add the individual freedge to the SQL table
@@ -605,7 +605,7 @@ if __name__ == '__main__':
 	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
 	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
 	fs = fdb.get_freedges()
-	fs[0].freedge_status = Status.SuspectedInactive
+	fs[0].freedge_status = FD.Status.SuspectedInactive
 	fdb.update_freedge(fs[0])
 	(add, remove, modidfy) = fdb.compare_databases(new_csv)
 	

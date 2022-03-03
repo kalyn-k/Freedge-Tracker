@@ -23,7 +23,6 @@ date		editor		changes
 """
 
 import csv
-import string
 
 from freedge_internal_database.database_constants import *
 

@@ -19,7 +19,7 @@ date         editor     changes
 """
 
 from tkinter import *
-from freedge_data_entry import *   # used to access fridge object for data information
+from Freedge_Database.freedge_data_entry import *   # used to access fridge object for data information
 
 class PopUp:
     """

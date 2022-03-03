@@ -1,48 +1,42 @@
 """
 ===============================================================================
-Title:	 SMS Notification Management
+Title:	 Email Notification Management
 ===============================================================================
 Description:	This is skeleton code to be updated with Twilio in order to 
-                send notifications via SMS. Twilio is a paid service and therefore 
+                send notifications via email. Twilio is a paid service and therefore 
                 we are not using it in the prototype. 
 
-                The SMS system will function through inheriting the notification class.
+                The email system will function through inheriting the notification class.
                 The NotificationMgmt is created using modularity so any future notification
                 type can be added without touching the main NotificationMgmt file. In order
-                for a future developer to implement texting, they will need to add to implement
+                for a future developer to implement emailing, they will need to add to implement
                 the notify_and_update function within the class.
 
-                Information on Twilio for setting up SMS:
+                Information on Twilio for setting up email:
                 Payment plans:
-                https://www.twilio.com/sms
+                https://www.twilio.com/sendgrid/email-api
 
                 Instruction use and sample code:
-                https://www.twilio.com/docs/sms#get-started
+                https://www.twilio.com/docs/verify/email
 
 Authors: 		Ellie Kobak,
-Last Edited: 	3-02-22
+Last Edited: 	3-01-22
 Last Edit By:	Ellie Kobak
 
 Edit Log
 date         editor     changes
 2-28-22      erk        initial doc
-3-02-22      erk        documentation
+3-01-22      erk        documentation
 """
 
-from twilio.rest import TwilioRestClient    # Twilio extension to send SMS 
-
-from datetime import datetime               # used to update date
-import freedge_internal_database.database_constants  # used to access constants for fridge object
-import caretaker_info_parser   # used to get contact information for each fridge
-import freedge_data_entry      # used to access fridge object for data information 
-import freedge_database        # used to access the freedge database methods
+from Freedge_Database import freedge_database, freedge_data_entry
 import notificationMgmt        # main class definition
  
 
-class sms_mgmt(notificationMgmt.NotificationMgmt):
+class email_mgmt(notificationMgmt.NotificationMgmt):
     '''
-    This class enables SMS notifications from freedge organizers to the fridge caretakers.
-    The classhas the attributes to send SMS using the Twilio SMS API
+    This class enables email notifications from freedge organizers to the fridge caretakers.
+    The class has the attributes to send emails using the Twilio Email API
     '''
 
     def __init__(self):
@@ -51,7 +45,8 @@ class sms_mgmt(notificationMgmt.NotificationMgmt):
 
         Parameters:  None
 
-        Purpose:  initialize email management system to enable email communication between freedge organizers  and caretaker
+        Purpose:  initialize email management system to enable email communication between freedge organizers  
+                and caretaker
 
         Calls:  In funtioning version, will call freedge_data_entry.py in order to obtain correct contact 
                 info for each fridge.
@@ -72,7 +67,7 @@ class sms_mgmt(notificationMgmt.NotificationMgmt):
         Parameters: None
         Calls:
             called by: admin_interface.py when system has not been notified of activity in 90 days,
-                     notify_and_update() to send SMS
+                     notify_and_update() to send email
            
         Returns: caretaker_name -> string of name of caretaker, 
                  project_name -> string of name of fridge project,
@@ -97,15 +92,15 @@ class sms_mgmt(notificationMgmt.NotificationMgmt):
                 project_name = f.project_name               # variable for project name
                 caretaker_name = f.caretaker_name           # variable for caretaker name
                 last_update = fdb.time_since_last_update()  # variable for time of last update
-                SMS = fdb.sms
-                self.notify_and_update(f, fdb, project_name, caretaker_name, last_update, SMS)
+                email = fdb.email
+                self.notify_and_update(f, fdb, project_name, caretaker_name, last_update, email)
 
         return 
 
-    def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update, SMS):
+    def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update, email):
         '''
        Purpose: 
-            TO BE IMPLEMENTED IF USING SMS NOTIFICATIONS
+            TO BE IMPLEMENTED IF USING EMAIL NOTIFICATIONS
             Calls the notification interface class which will return a boolean value based on whether or not the
             Freedge is active from user input.
             Based on this boolean value, updates the freedge object status and then updates the freedge database status

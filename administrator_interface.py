@@ -8,12 +8,11 @@ Last Edited:    3-2-2022
 Last Edit By:   Madison Werries
 """
 from tkinter import *
-from tkinter import messagebox, filedialog
-from tkinter import ttk
+from tkinter import ttk, messagebox, filedialog
 from tkinter.ttk import Notebook
 import sys
-from notificationMgmt import *
-from freedge_database import *
+import Notification_System as NS
+from Freedge_Database import *
 
 # TODO: =======================================================================
 # Update database
@@ -35,13 +34,13 @@ class AdministratorInterface:
     # =========================================================================
     # I/O for Administrator Interface
     # =========================================================================
-
+    
     def LoadDatabase(self):
         # Load the internal database
         self.fdb = load_internal_database(DATABASE_PATH)
         # Update the display tables
         self.UpdateFullDisplay()
-
+    
     def NewDatabase(self):
         # Get the path of CSV file from the user
         messagebox.askokcancel("File select", "Select a csv file to load into the database.")
@@ -141,7 +140,7 @@ class AdministratorInterface:
         
         response = messagebox.askokcancel("Confirm Notification", message)
         if response:
-            notifier = NotificationMgmt(self.root)
+            notifier = NS.NotificationMgmt(self.root)
             notifier.notify_and_update(self.fdb, freedge)
         else:
             return
@@ -193,7 +192,7 @@ class AdministratorInterface:
         
         if response:
             for freedge in to_notify:
-                notifier = NotificationMgmt(self.root)
+                notifier = NS.NotificationMgmt(self.root)
                 print(freedge.caretaker_name)
                 notifier.notify_and_update(self.fdb, freedge)
         self.UpdateFullDisplay()

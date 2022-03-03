@@ -28,8 +28,8 @@ date         editor     changes
                         integrated with the Administrator Interface (administrator_interface.py)
 """
 import freedge_internal_database.database_constants  # used to access constants for fridge object
-import freedge_database         # used to access the freedge database methods
-import notificationGUI          # for prototype only, used for popup display of notification
+import Freedge_Database as FD
+import Notification_System as NS        # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
     '''
@@ -65,7 +65,7 @@ class NotificationMgmt():
         '''
         
         # call to the other classes in order to use their methods
-        fdb = freedge_database.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
+        fdb = FD.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -101,7 +101,7 @@ class NotificationMgmt():
         Returns: None
         '''
         # calls notification GUI pop up function to send message
-        popup = notificationGUI.PopUp(self.root, freedge)
+        popup = NS.notificationGUI.PopUp(self.root, freedge)
         popup.pop_up_win.wait_variable(popup.response_received)
         response = popup.get_response()    # variable with value of the response
         
