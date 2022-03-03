@@ -1,3 +1,8 @@
 
 *.pyc
 *.pyc
+__pycache__/caretaker_info_parser.cpython-39.pyc
+__pycache__/freedge_data_entry.cpython-39.pyc
+__pycache__/freedge_database.cpython-39.pyc
+__pycache__/notificationGUI.cpython-39.pyc
+*.pyc

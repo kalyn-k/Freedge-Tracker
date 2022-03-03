@@ -42,7 +42,11 @@ class Freedge:
 	
 	def can_notify(self):
 		""" Returns whether the freedge's owner has agreed to receive notifications. """
-		return self.permission_to_notify
+		if not self.permission_to_notify:
+			return False
+		if self.freedge_status == Status.ConfirmedInactive:
+			return False
+		return True
 	
 	def set_permission_to_notify(self, can_notify: bool):
 		""" Change a freedge caretaker's notification permission status. """

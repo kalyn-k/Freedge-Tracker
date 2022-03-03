@@ -5,64 +5,71 @@ Title:	Notification GUI
 ===============================================================================
 Description:	TODO
 
-Authors: 		Kalyn Koyanagi, Ellie Kobak
-Last Edited: 	3-02-2022
-Last Edit By:	Kalyn Koyanagi
+Authors: 		Kalyn Koyanagi, Ellie Kobak, Madison Werries
+Last Edited: 	3-03-2022
+Last Edit By:	Madison Werries
 
 Edit Log
 date         editor     changes
+-----------------------------------------------------
 3-01-22      kek        created first working version
 3-01-22      erk        documentation
 3-02-22      kek        more documentation
+3-03-22      mgw        edited popups so all text is visible
 """
 from tkinter import *
 from freedge_data_entry import *   # used to access fridge object for data information
 
-
-# TODO remove
-# Test values
-# caretaker_name = "Liza"
-# project_name = "Sample Fridge"
-# last_update = "02-28-2022"
-# message = f'Hello {caretaker_name}, {project_name} was last determined as active on {last_update}. Is this fridge ' \
-#           f'still active? Please reply YES or NO '
-#
-
-class pop_up:
+class PopUp:
     """
     # TODO is this okay?
     This class creates a pop-up window upon each class instantiation to send a notification
     to freedge caretakers. The class determines whether or not a freedge is still active
     as a result of the pop-up window options.
     """
-    def __init__(self, caretaker_name, project_name, last_update):
+    def __init__(self, root, freedge: Freedge):
         """
         TODO:
         Purpose:
 
         Parameters:
-            caretaker_name -> str
-            project_name -> str
-            last_update -> int? TODO
+            freedge: Freedge
         Called by: notify_and_update() in notificationMgmt.py to signal notification
         Returns: None, stores class information
         """
-        self.selected_button = Status.ConfirmedInactive     #
-        self.ct_name = caretaker_name                       # the freedge's caretaker's name
-        self.proj_name = project_name                       # project name for the freedge
-        self.latest_update = last_update                    # last time the status of the freedge was updated
-        self.message = f'Hello {self.ct_name}, {self.proj_name} was last determined as active \non {self.latest_update}' \
-                       f'. Is this fridge still active? Please select one of the\n status options below and then click ' \
-                       f'on "Send Reply" '
-        self.pop_up_win = Tk()
-        self.pop_up_win.geometry("600x200")
-        self.pop_up_win.title("Status Check")  # TODO change this?
+        self.root = root
+        self.response_received = BooleanVar()
+        self.selected_button = Status.SuspectedInactive
+        
+        self.pop_up_win = Toplevel(self.root)
+        self.pop_up_win.geometry("600x400")
+        self.pop_up_win.resizable(False, False)
+        self.pop_up_win.attributes("-topmost", True)
+        self.pop_up_win.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.pop_up_win.title("Simulated Status Check")  # TODO change this?
         var = IntVar()
-        # Create a Header for the menu
-        header = Label(self.pop_up_win, width=75, text=self.message, bg="white", fg="black",
-                       font=("TkDefaultFont", 15))
-        header.pack(side=TOP, padx=10, pady=15)
 
+        ct_name = freedge.caretaker_name
+        proj_name = freedge.project_name
+        prev_update = freedge.last_status_update
+        
+        # Create a Header for the menu
+        note = "This is a simulated text/email message for the Freedge Tracker System.\n"
+        header1 = Label(self.pop_up_win, width=200, text=note, fg="red", font=("TkDefaultFont", 10), wraplength=500)
+        header1.pack(padx=10, pady=15)
+        self.message = f'Hi {ct_name}!\n' \
+                       f'This is a message from the folks at freedge.org.\n\n' \
+                       f'According to our systems, the status of your community fridge, "{proj_name}" in ' \
+                       f'{freedge.fridge_location.ShortString()}, was last updated on: {prev_update}.\n\n' \
+                       f' To keep our Freedge communities up-to-date, we would like to check in about the' \
+                       f' status of this fridge. Please select one of the status options below, and click' \
+                       f' "Send Reply" to confirm.\n\n\n'
+        
+        # Add the message for the notification
+        header = Label(self.pop_up_win, width=200, text=self.message, fg="black",
+                       font=("TkDefaultFont", 11), wraplength=500, justify=LEFT)
+        header.pack(padx=10)
+        
         not_active = Radiobutton(self.pop_up_win, text="No longer active", variable=var, value=1,
                                  command=self.false_button)
         active = Radiobutton(self.pop_up_win, text="Still active", variable=var, value=2, command=self.true_button)
@@ -70,7 +77,6 @@ class pop_up:
         not_active.pack()
         active.pack()
         send_reply.pack()
-        self.pop_up_win.mainloop()
 
     def false_button(self):
         """
@@ -110,6 +116,12 @@ class pop_up:
         Returns: boolean value
         """
         return self.selected_button              # return which button the user selected
+    
+    def on_close(self):
+        print("closed")
+        self.selected_button = Status.SuspectedInactive
+        self.response_received.set(True)
+        self.pop_up_win.destroy()
 
     def exit_(self):
         """
@@ -121,11 +133,6 @@ class pop_up:
         Called by: None
         Returns: None
         """
+        self.selected_button = self.get_status()
+        self.response_received.set(True)
         self.pop_up_win.destroy()               # close the pop-up window
-
-
-# TODO cut out
-# if __name__ == '__main__':
-#     test = pop_up(caretaker_name,project_name,last_update)
-#     s = test.get_status()
-#     print(s)

@@ -48,6 +48,9 @@ class NotificationMgmt():
     system. The class has the attributes to signal a popup notification.
     '''
 
+    def __init__(self, root):
+        self.root = root
+        
     def get_fridge_info_message(self):
         '''
         Purpose:
@@ -81,17 +84,13 @@ class NotificationMgmt():
         # caretaker through the notification GUI.
         for fridge in fridge_list:
             if fridge.can_notify():
-                project_name = fridge.project_name               # variable for project name
-                caretaker_name = fridge.caretaker_name           # variable for caretaker name
-                last_update = fridge.time_since_last_update()  # variable for time of last update
+                return
+            # signals the notifcation to be sent out
+                # self.notify_and_update(fdb, fridge)
 
-                # signals the notifcation to be sent out
-                self.notify_and_update(fridge, fdb, project_name, caretaker_name, last_update)
+        return
 
-        return 
-
-
-    def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update):
+    def notify_and_update(self, fdb, freedge):
         '''
         Purpose: 
             Calls the notification interface class which will return a boolean value based on whether or not the
@@ -113,21 +112,18 @@ class NotificationMgmt():
         
         '''
         # calls notification GUI pop up function to send message
-        popup = notificationGUI.pop_up(project_name, caretaker_name, last_update)
-        response = popup.selected_button    # variable with boolean value of activity notification response
-        
+        popup = notificationGUI.PopUp(self.root, freedge)
+        print("waiting for response change")
+        popup.pop_up_win.wait_variable(popup.response_received)
+        print("biip")
+        response = popup.get_status()    # variable with boolean value of activity notification response
         # if fridge is still active, updates fridge
         if response:
             freedge.update_status(response)     # updates activity status of freedge object
-            fdb.update_freedge(freedge)         # updates the freedge database with the freedge object
             freedge.reset_last_update()         # resets the freedge objects time since last update
-        
-        return 
+            fdb.update_freedge(freedge)         # updates the freedge database with the freedge object
+        return
 
-if __name__ == '__main__':
-    test = NotificationMgmt()
-    test2 = test.get_fridge_info_message()
-    test2
 
 
 

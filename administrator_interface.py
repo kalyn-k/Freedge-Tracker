@@ -4,7 +4,7 @@ Title:	Administrator Interface for the Freedge Tracker System
 ===============================================================================
 Description:	TODO
 Authors:        Kalyn Koyanagi, Madison Werries
-Last Edited:    2-28-2022
+Last Edited:    3-2-2022
 Last Edit By:   Madison Werries
 """
 from tkinter import *
@@ -12,14 +12,13 @@ from tkinter import messagebox, filedialog
 from tkinter import ttk
 from tkinter.ttk import Notebook
 import sys
-from freedge_data_entry import *
+from notificationMgmt import *
 from freedge_database import *
 
 # TODO: =======================================================================
 # Update database
 # Not supposed to be notified, but is out-of-date
 # rename update_date
-
 
 class AdministratorInterface:
     def __init__(self):
@@ -98,30 +97,106 @@ class AdministratorInterface:
         # Update the menu window
         self.UpdateFullDisplay()
         
-    def OnTableClick(self, event):
-        """ What to do when the administrator clicks on a freedge in the display table. """
+    def GetSelected(self):
         nb = self.notebook
         i = nb.index(nb.select())
         table = None
         if (i == 0):
             table = self.main_tab
-        if (i == 1):
+        elif (i == 1):
             table = self.ood_tab
-        
-        freedges = load_internal_database(DATABASE_PATH).get_freedges()
+        if len(table.selection()) == 0:
+            return None
         fields = list(table.item(table.selection(), 'values'))
-        selected = freedges[int(fields[0])-1]
+        freedges = self.fdb.get_freedges()
+        selected = freedges[int(fields[0]) - 1]
+        return selected
+        
+    def OnTableClick(self, event):
+        """ What to do when the administrator clicks on a freedge in the display table. """
+        selected = self.GetSelected()
         print(selected.ToString())
         
-    def NotifyFreedge(self):
-        print("notifying one freedge")
-
+    def NotifyFreedge(self, freedge):
+        if freedge is None:
+            print("nothing is selected!")
+            return
+        if not freedge.can_notify():
+            messagebox.showwarning("Permission Denied", "The selected freedge "
+                "caretaker has not given permission to receive notifications.")
+            return
+        
+        if (freedge.preferred_contact_method == ContactMethod.SMS.value):
+            message = "Do you want to check in with the selected freedge caretaker via SMS?\n\n"
+            message += "Project name:\t" + freedge.project_name + "\n"
+            message += "Caretaker name:\t" + freedge.caretaker_name + "\n"
+            message += "Phone number:\t" + freedge.phone_number + "\n"
+            message += "Last update:\t" + str(freedge.time_since_last_update()) + " days ago.\n"
+        else:
+            message = "Do you want to check in with the selected freedge caretaker via email?\n\n"
+            message += "Project name:\t" + freedge.project_name + "\n"
+            message += "Caretaker name:\t" + freedge.caretaker_name + "\n"
+            message += "Email:\t" + freedge.email_address + "\n"
+            message += "Last update:\t" + str(freedge.time_since_last_update()) + " days ago.\n"
+        
+        response = messagebox.askokcancel("Confirm Notification", message)
+        if response:
+            notifier = NotificationMgmt(self.root)
+            notifier.notify_and_update(self.fdb, freedge)
+        else:
+            return
+      
+    def NotifySelected(self):
+        # Get the currently selected Freedge entry
+        selected: Freedge = self.GetSelected()
+        if selected is None:
+            print("nothing is selected!")
+            return
+        if not selected.can_notify():
+            messagebox.showwarning("Permission Denied", "The selected freedge "
+                "caretaker has not given permission to receive notifications.")
+            return
+        self.NotifyFreedge(selected)
+        
     def NotifyAll(self):
+        # TODO
         print("notifying all freedges")
     
     def NotifyOutOfDate(self):
-        print("notifying all out of date freedges")
-    
+        ood_list = self.fdb.get_out_of_date()
+        to_notify = []
+        message = "It has been " + str(FIRST_UPDATE_THRESHOLD) + " or more days" \
+            " since the following freedge caretakers were prompted for status updates:\n"
+        for freedge in ood_list:
+            if freedge.can_notify():
+                to_notify.append(freedge)
+        
+        if (len(to_notify) == 0):
+            messagebox.showinfo("No Caretakers to Notify", "All statuses are currently up to date.")
+            return
+                
+        for freedge in to_notify:
+            message += "-------------------------------------------\n"
+            message += "Project name:\t" + freedge.project_name + "\n"
+            message += "Caretaker name:\t" + freedge.caretaker_name + "\n"
+            message += "Phone number:\t" + freedge.phone_number + "\n"
+            message += "Last update:\t" + str(freedge.time_since_last_update()) + " days ago.\n"
+
+        messagebox.showinfo("Caretaker Information", message)
+        prompt = "The following caretakers will be contacted to request a status update:\n"
+        for freedge in to_notify:
+            prompt += "Name: " + freedge.caretaker_name + "\t"
+            prompt += "Contact:\t" + freedge.phone_number + "\n"
+        prompt += "\nHit 'ok' to confirm or 'cancel' to cancel."
+       
+        response = messagebox.askokcancel("Verify Message", prompt)
+        
+        if response:
+            for freedge in to_notify:
+                notifier = NotificationMgmt(self.root)
+                print(freedge.caretaker_name)
+                notifier.notify_and_update(self.fdb, freedge)
+        
     def exit_(self):
         """
         Method to exit and end the program. Is called
@@ -240,7 +315,6 @@ class AdministratorInterface:
         # =====================================================================
         # Creating the GUI Buttons
         # =====================================================================
-        
         # Button to Create new database (db)
         create_db_button = Button(root, text="Create new Database", font=("TkDefaultFont", 12),
                                   command=self.NewDatabase,
@@ -253,18 +327,18 @@ class AdministratorInterface:
         update_db_button.place(x=30, y=230)
 
         # Button to notify selected freedge
-        exit_button = Button(root, text="            Notify Selected Freedge           ", font=("TkDefaultFont", 12), command=self.NotifyFreedge,
+        notif_selected = Button(root, text="Notify Selected", font=("TkDefaultFont", 12), command=self.NotifySelected,
                              bg="white", width=15)  # initiate the button
-        exit_button.place(x=30, y=300)
+        notif_selected.place(x=30, y=300)
         
-        # Button to notify all out-of-date freedge
-        exit_button = Button(root, text="            Notify Out-Of-Date           ", font=("TkDefaultFont", 12), command=self.NotifyOutOfDate(),
+        # Button to notify all out-of-date freedges
+        notif_ood = Button(root, text="Notify Out-Of-Date", font=("TkDefaultFont", 12), command=self.NotifyOutOfDate,
                              bg="white", width=15)  # initiate the button
-        exit_button.place(x=30, y=350)
+        notif_ood.place(x=30, y=350)
 
-        # Button to notify all out-of-date freedge
-        exit_button = Button(root, text="            Notify All           ", font=("TkDefaultFont", 12),
-                             command=self.NotifyAll(),
+        # Button to send a message to all freedges
+        exit_button = Button(root, text="Notify All", font=("TkDefaultFont", 12),
+                             command=self.NotifyAll,
                              bg="white", width=15)  # initiate the button
         exit_button.place(x=30, y=400)
         
