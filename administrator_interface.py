@@ -172,7 +172,7 @@ class AdministratorInterface:
                 to_notify.append(freedge)
         
         if (len(to_notify) == 0):
-            messagebox.showinfo("No Caretakers to Notify", "All statuses are currently up to date.")
+            messagebox.showinfo("No Caretakers to Notify", "All freedge statuses in the system are currently up to date.")
             return
                 
         for freedge in to_notify:

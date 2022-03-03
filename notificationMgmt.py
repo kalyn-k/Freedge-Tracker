@@ -7,10 +7,10 @@ Description:	Obtains which freedges in the database are considered out of date a
                 notification message by the notification GUI. Also uses the user response from the GUI to then
                 update the status of the Freedge in the database.
 
-Authors: 		Ellie Kobak, Liza Richards
+Authors: 		Ellie Kobak, Liza Richards, Madison Werries
 Creation Date:  February 17, 2022
-Last Edited: 	2-24-2022
-Last Edit By:	Liza Richards
+Last Edited: 	3-03-2022
+Last Edit By:	Madison Werries
 
 
 Edit Log
@@ -24,22 +24,12 @@ date         editor     changes
 2-28-22     erk         Added the notify function to interact with a notification GUI component that will get user
                         input to update the status of each fridge that was originally out of date.
 3-02-22     erk         documentation
-
+3-03-22     mgw         changed the way the NotificationMgmt class is initialized so the notifications are properly
+                        integrated with the Administrator Interface (administrator_interface.py)
 """
-
-# import csv          # used to implement reading from csv files
-# import string
-# from typing import no_type_check   
-
-from datetime import datetime               # used to update date
 import freedge_internal_database.database_constants  # used to access constants for fridge object
-# import caretaker_info_parser   # used to get contact information for each fridge
-import freedge_data_entry      # used to access fridge object for data information 
-import freedge_database        # used to access the freedge database methods
-import notificationGUI      # for prototype only, used for popup display of notification
-
-#message = "Hi {}, we noticed that {} has not been update in {} days. Is this Freedge still active?"
-
+import freedge_database         # used to access the freedge database methods
+import notificationGUI          # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
     '''
@@ -73,7 +63,7 @@ class NotificationMgmt():
         Inputs: None
         Returns: caretaker_name, project_name, last_update
         '''
-
+        
         # call to the other classes in order to use their methods
         fdb = freedge_database.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
 
@@ -109,16 +99,16 @@ class NotificationMgmt():
         Called by: get_fridge_info_message
 
         Returns: None
-        
         '''
         # calls notification GUI pop up function to send message
         popup = notificationGUI.PopUp(self.root, freedge)
-        print("waiting for response change")
         popup.pop_up_win.wait_variable(popup.response_received)
-        print("biip")
-        response = popup.get_status()    # variable with boolean value of activity notification response
-        # if fridge is still active, updates fridge
-        if response:
+        response = popup.get_response()    # variable with value of the response
+        
+        # If the user simply did not respond:
+        if response is None:
+            print("no response.")
+        else:
             freedge.update_status(response)     # updates activity status of freedge object
             freedge.reset_last_update()         # resets the freedge objects time since last update
             fdb.update_freedge(freedge)         # updates the freedge database with the freedge object

@@ -1,4 +1,3 @@
-
 """
 ===============================================================================
 Title:	Notification GUI
@@ -11,12 +10,14 @@ Last Edit By:	Madison Werries
 
 Edit Log
 date         editor     changes
------------------------------------------------------
 3-01-22      kek        created first working version
 3-01-22      erk        documentation
 3-02-22      kek        more documentation
-3-03-22      mgw        edited popups so all text is visible
+3-03-22      mgw        edited popups so all text is visible and the popups
+                        display one at a time, waiting for a response from
+                        the user before proceeding.
 """
+
 from tkinter import *
 from freedge_data_entry import *   # used to access fridge object for data information
 
@@ -39,7 +40,7 @@ class PopUp:
         """
         self.root = root
         self.response_received = BooleanVar()
-        self.selected_button = Status.SuspectedInactive
+        self.response_value = None
         
         self.pop_up_win = Toplevel(self.root)
         self.pop_up_win.geometry("600x400")
@@ -81,16 +82,14 @@ class PopUp:
     def false_button(self):
         """
         TODO:
-        Purpose: Method to set the value of the status
-        to false. Is called when the user selects the
-        corresponding "No longer active"
-        option button.
+        Purpose: Method to set the value of the status to false. Is called when
+        the user selects the corresponding "No longer active" option button.
 
         Parameters: None
         Called by: get_status()
         Returns: False -> boolean value
         """
-        self.selected_button = Status.ConfirmedInactive     # set the user selected button to ConfirmedInactive
+        self.response_value = Status.ConfirmedInactive     # set the user selected button to ConfirmedInactive
 
     def true_button(self):
         """
@@ -103,9 +102,9 @@ class PopUp:
         Called by: get_status()
         Returns: True -> boolean value
         """
-        self.selected_button = Status.Active     # set the user selected button to Active
+        self.response_value = Status.Active     # set the user selected button to Active
 
-    def get_status(self):
+    def get_response(self):
         """
         TODO
         Purpose: Method to return the status of a notification
@@ -115,11 +114,13 @@ class PopUp:
         Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
         Returns: boolean value
         """
-        return self.selected_button              # return which button the user selected
+        return self.response_value              # return which button the user selected
     
     def on_close(self):
-        print("closed")
-        self.selected_button = Status.SuspectedInactive
+        """ If the user simply closes the window, record it as a non-response. This is akin to someone ignoring
+            a message for an extended period of time.
+        """
+        self.response_value = None
         self.response_received.set(True)
         self.pop_up_win.destroy()
 
@@ -133,6 +134,6 @@ class PopUp:
         Called by: None
         Returns: None
         """
-        self.selected_button = self.get_status()
+        self.response_value = self.get_response()
         self.response_received.set(True)
         self.pop_up_win.destroy()               # close the pop-up window

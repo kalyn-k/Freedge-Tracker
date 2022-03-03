@@ -253,7 +253,6 @@ class FreedgeDatabase:
 
 		Returns: None
 		"""
-		print("updoot")
 		conn = self.open_connection()
 		# Verify that the connection was successful
 		if conn is None:
