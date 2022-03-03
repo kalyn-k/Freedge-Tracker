@@ -23,7 +23,7 @@ from freedge_data_entry import *   # used to access fridge object for data infor
 
 class PopUp:
     """
-    # TODO is this okay?
+    # TODO is this okay?     <---- add description about the fact that this is for the prototype only.
     This class creates a pop-up window upon each class instantiation to send a notification
     to freedge caretakers. The class determines whether or not a freedge is still active
     as a result of the pop-up window options.

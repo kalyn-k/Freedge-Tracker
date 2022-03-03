@@ -10,10 +10,11 @@ Last Edit By:	Madison Werries
 #==============================================================================
 # Constants for how often to check in with Freedge Caretakers
 #==============================================================================
+# Desired threshold for the number of days since the last status update where
+# we would like to get a status update from the freedge caretaker again.
 FIRST_UPDATE_THRESHOLD = 90
-SECOND_UPDATE_THRESHOLD = 14
-THIRD_UPDATE_THRESHOLD = 3
-FOURTH_UPDATE_THRESHOLD = 1
+# Time before a freedge's status automatically switches to 'Suspected Inactive'
+SECOND_UPDATE_THRESHOLD = 365
 
 #==============================================================================
 # Paths to the internal database file

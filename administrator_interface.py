@@ -73,23 +73,23 @@ class AdministratorInterface:
       
         if (len(to_add) > 0):
             message += "(" + str(len(to_add)) + ") entries will be ADDED.\n"
-            #for freedge in to_add:
-             #   message += freedge.ToString() + "\n"
+            # for freedge in to_add:
+            # message += freedge.ToString() + "\n"
                 
         if (len(to_remove) > 0):
             message += "(" + str(len(to_remove)) + ") entries will be REMOVED.\n"
-          #  message += "===== Freedges which will be REMOVED =====\n"
-           # for freedge in to_remove:
-             #   message += freedge.ToString() + "\n"
+            # message += "===== Freedges which will be REMOVED =====\n"
+            # for freedge in to_remove:
+            # message += freedge.ToString() + "\n"
 
         if (len(to_modify) > 0):
             message += "(" + str(len(to_modify)) + ") entries will be MODIFIED.\n"
-           # message += "===== Freedges whose data will be MODIFIED =====\n"
-            #for (f1, f2) in to_modify:
-             #   changes = f1.compare_freedges(f2)
-              #  message += f1.ToString() + "\n"
-               # for change in changes:
-                #    message += change
+            # message += "===== Freedges whose data will be MODIFIED =====\n"
+            # for (f1, f2) in to_modify:
+            # changes = f1.compare_freedges(f2)
+            # message += f1.ToString() + "\n"
+            # for change in changes:
+            # message += change
 
         messagebox.askokcancel("Proceed?", message+" Proceed?")
         # Get path of database
@@ -165,16 +165,16 @@ class AdministratorInterface:
     def NotifyOutOfDate(self):
         ood_list = self.fdb.get_out_of_date()
         to_notify = []
-        message = "It has been " + str(FIRST_UPDATE_THRESHOLD) + " or more days" \
-            " since the following freedge caretakers were prompted for status updates:\n"
         for freedge in ood_list:
             if freedge.can_notify():
                 to_notify.append(freedge)
         
         if (len(to_notify) == 0):
-            messagebox.showinfo("No Caretakers to Notify", "All freedge statuses in the system are currently up to date.")
+            messagebox.showinfo("No Caretakers to Notify",
+                "All freedge statuses in the system are currently up to date.")
             return
-                
+        message = "It has been " + str(FIRST_UPDATE_THRESHOLD) + " or more days" \
+            " since the following freedge caretakers were prompted for status updates:\n"
         for freedge in to_notify:
             message += "-------------------------------------------\n"
             message += "Project name:\t" + freedge.project_name + "\n"
@@ -196,6 +196,7 @@ class AdministratorInterface:
                 notifier = NotificationMgmt(self.root)
                 print(freedge.caretaker_name)
                 notifier.notify_and_update(self.fdb, freedge)
+        self.UpdateFullDisplay()
         
     def exit_(self):
         """
