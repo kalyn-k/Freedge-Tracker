@@ -16,6 +16,8 @@ date         editor     changes
 3-02-22      kek        more documentation
 """
 from tkinter import *
+from freedge_data_entry import *   # used to access fridge object for data information
+
 
 # TODO
 # Test values
@@ -80,7 +82,8 @@ class pop_up:
         Called by: get_status()
         Returns: False -> boolean value
         """
-        self.selected_button = False
+        # self.selected_button = False
+        self.selected_button = Status.ConfirmedInactive
 
     def true_button(self):
         """
@@ -93,7 +96,8 @@ class pop_up:
         Called by: get_status()
         Returns: True -> boolean value
         """
-        self.selected_button = True
+        # self.selected_button = True
+        self.selected_button = Status.Active
 
     def get_status(self):
         """

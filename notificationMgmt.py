@@ -70,13 +70,9 @@ class NotificationMgmt():
         Inputs: None
         Returns: caretaker_name, project_name, last_update
         '''
-        project_name = ''       # initalializes variable for project name
-        caretaker_name = ''     # initalializes variable for caretaker name
-        last_update = 0         # initalializes variable to store last update
 
         # call to the other classes in order to use their methods
         fdb = freedge_database.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
-        #f = freedge_data_entry.Freedge()         # actual fridge class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -88,8 +84,7 @@ class NotificationMgmt():
                 project_name = fridge.project_name               # variable for project name
                 caretaker_name = fridge.caretaker_name           # variable for caretaker name
                 last_update = fridge.time_since_last_update()  # variable for time of last update
-                #last_update = fridge.time_since_last_update()
-                print(f"Caretaker info: {caretaker_name}")
+
                 # signals the notifcation to be sent out
                 self.notify_and_update(fridge, fdb, project_name, caretaker_name, last_update)
 
@@ -117,18 +112,15 @@ class NotificationMgmt():
         Returns: None
         
         '''
-        # calls notificatio GUI pop up function to send message
+        # calls notification GUI pop up function to send message
         popup = notificationGUI.pop_up(project_name, caretaker_name, last_update)
         response = popup.selected_button    # variable with boolean value of activity notification response
-
-        # calls to the other classes in order to use their methods
-        # fdb = freedge_database.FreedgeDatabase() 
-        # freedge = freedge_data_entry.Freedge()
         
         # if fridge is still active, updates fridge
         if response:
-            freedge.update_status()                       # updates activity status with new time
-            fdb.update_freedge(freedge.update_freedge())  # updates fridge database with new activity update
+            freedge.update_status(response)     # updates activity status of freedge object
+            fdb.update_freedge(freedge)         # updates the freedge database with the freedge object
+            freedge.reset_last_update()         # resets the freedge objects time since last update
         
         return 
 
