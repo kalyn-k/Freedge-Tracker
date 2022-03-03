@@ -11,17 +11,17 @@ from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter import ttk
 from tkinter.ttk import Notebook
-
+import sys
 from freedge_data_entry import *
 from freedge_database import *
-
 
 # TODO: =======================================================================
 # Update database
 # Not supposed to be notified, but is out-of-date
 # rename update_date
 
-class admin_interface:
+
+class AdministratorInterface:
     def __init__(self):
         """
         TODO
@@ -30,8 +30,9 @@ class admin_interface:
         self.fdb = None         # Connection to Freedge database
         self.main_tab = None    # All freedges tab
         self.ood_tab = None     # Out of date freedges tab
-        self.menu = None
-        
+        self.root = None
+        self.notebook = None
+    
     # =========================================================================
     # I/O for Administrator Interface
     # =========================================================================
@@ -98,8 +99,29 @@ class admin_interface:
         self.UpdateFullDisplay()
         
     def OnTableClick(self, event):
-        return
+        """ What to do when the administrator clicks on a freedge in the display table. """
+        nb = self.notebook
+        i = nb.index(nb.select())
+        table = None
+        if (i == 0):
+            table = self.main_tab
+        if (i == 1):
+            table = self.ood_tab
+        
+        freedges = load_internal_database(DATABASE_PATH).get_freedges()
+        fields = list(table.item(table.selection(), 'values'))
+        selected = freedges[int(fields[0])-1]
+        print(selected.ToString())
+        
+    def NotifyFreedge(self):
+        print("notifying one freedge")
 
+    def NotifyAll(self):
+        print("notifying all freedges")
+    
+    def NotifyOutOfDate(self):
+        print("notifying all out of date freedges")
+    
     def exit_(self):
         """
         Method to exit and end the program. Is called
@@ -120,7 +142,7 @@ class admin_interface:
     def UpdateFullDisplay(self):
         freedges = self.fdb.get_freedges()
         out_of_date = self.fdb.get_out_of_date()
-        self.menu.update()
+        self.root.update()
         screen.UpdateTableDisplay(self.main_tab, freedges)
         screen.UpdateTableDisplay(self.ood_tab, out_of_date)
     
@@ -142,19 +164,21 @@ class admin_interface:
             if (f.preferred_contact_method == ContactMethod.Email.value):
                 contact = f.email_address
             table.insert(parent='', index=fridge, iid=fridge, text='', tags=tag, values=(
-                f.project_name, f.fridge_location.ToString(),
+                f.freedge_id, f.project_name, f.fridge_location.ToString(),
                 f.caretaker_name, f.freedge_status.value, f.last_status_update,
                 f.time_since_last_update(), f.permission_to_notify, contact))
 
     def BuildTable(self, tab):
         # Structure the table view of the Freedges
-        columns = ('Project Name', 'Location', 'Owner', 'Freedge Status',
+        columns = ('FID', 'Project Name', 'Location', 'Owner', 'Freedge Status',
                    'Last Status Update', 'Time Since Last Update', 'Permission to Notify?', 'Primary Contact')
         table = ttk.Treeview(tab, height=20, columns=columns, show='headings', selectmode='browse')
         table.place(x=0, y=0)
+        table.pack()
     
         # Insert the columns
         table.column('#0', width=0, stretch=NO)
+        table.column('FID', anchor=CENTER, width=50)
         table.column('Project Name', anchor=CENTER, width=200)
         table.column('Location', anchor=CENTER, width=100)
         table.column('Owner', anchor=CENTER)
@@ -166,6 +190,7 @@ class admin_interface:
     
         # Insert the headers
         table.heading('#0', text='')
+        table.heading('FID', text='FID')
         table.heading('Project Name', text='Project Name')
         table.heading('Location', text='Location')
         table.heading('Owner', text='Owner')
@@ -175,7 +200,8 @@ class admin_interface:
         table.heading('Permission to Notify?', text='Can Notify?')
         table.heading('Primary Contact', text='Primary Contact')
         table.tag_configure("odd_row", background="white")
-
+        
+        table.bind('<<TreeviewSelect>>', self.OnTableClick)
         return table
 
     def MenuDisplay(self):
@@ -188,7 +214,7 @@ class admin_interface:
         root.wm_state('zoomed')
         root.configure(bg='gray')      # Set menu background color
         root.maxsize()
-        self.menu = root
+        self.root = root
 
         # Create a Header for the menu
         header = Label(root, width=50, text="Freedge Tracker", bg="gray", fg="white",
@@ -204,7 +230,8 @@ class admin_interface:
         tab2 = Frame(notebook, width=width-200, height=500)
         notebook.add(tab1, text='    All    ')
         notebook.add(tab2, text='Out of Date')
-        notebook.place(x=250, y=100)
+        notebook.place(x=200, y=100)
+        self.notebook = notebook
 
         # Build the tables to be displayed in the two tabs
         self.main_tab = self.BuildTable(tab1)
@@ -213,21 +240,38 @@ class admin_interface:
         # =====================================================================
         # Creating the GUI Buttons
         # =====================================================================
+        
         # Button to Create new database (db)
         create_db_button = Button(root, text="Create new Database", font=("TkDefaultFont", 12),
                                   command=self.NewDatabase,
-                                  bg="white", width=20)  # initiate the button
-        create_db_button.place(x=45, y=150)
+                                  bg="white", width=15)  # initiate the button
+        create_db_button.place(x=30, y=180)
 
         # Button to update database
         update_db_button = Button(root, text="Update Database", font=("TkDefaultFont", 12), command=self.UpdateDatabase,
-                                  bg="white", width=20)  # initiate the button
-        update_db_button.place(x=45, y=200)
+                                  bg="white", width=15)  # initiate the button
+        update_db_button.place(x=30, y=230)
 
+        # Button to notify selected freedge
+        exit_button = Button(root, text="            Notify Selected Freedge           ", font=("TkDefaultFont", 12), command=self.NotifyFreedge,
+                             bg="white", width=15)  # initiate the button
+        exit_button.place(x=30, y=300)
+        
+        # Button to notify all out-of-date freedge
+        exit_button = Button(root, text="            Notify Out-Of-Date           ", font=("TkDefaultFont", 12), command=self.NotifyOutOfDate(),
+                             bg="white", width=15)  # initiate the button
+        exit_button.place(x=30, y=350)
+
+        # Button to notify all out-of-date freedge
+        exit_button = Button(root, text="            Notify All           ", font=("TkDefaultFont", 12),
+                             command=self.NotifyAll(),
+                             bg="white", width=15)  # initiate the button
+        exit_button.place(x=30, y=400)
+        
         # Button to exit session
         exit_button = Button(root, text="            Exit           ", font=("TkDefaultFont", 12), command=self.exit_,
-                             bg="white", width=20)  # initiate the button
-        exit_button.place(x=45, y=250)
+                             bg="white", width=15)  # initiate the button
+        exit_button.place(x=30, y=500)
         
         # =====================================================================
         # Configure the style of the display
@@ -265,7 +309,7 @@ class admin_interface:
         })
         style.theme_use("freedge_theme")
         if (exists_internal_database(DATABASE_PATH)):
-            self.menu.update()
+            self.root.update()
             title = "An existing database was found at: " + DATABASE_PATH +\
                     ".\n\nWould you like to proceed with that database? Hit 'yes' to continue," \
                     "'no' to select a different database, or 'cancel' to quit."
@@ -274,10 +318,10 @@ class admin_interface:
             if (response is None):
                 self.exit_()
             elif (not response):
-                self.menu.update()
+                self.root.update()
                 self.NewDatabase()
             else:
-                self.menu.update()
+                self.root.update()
                 screen.LoadDatabase()
                 screen.UpdateFullDisplay()
         
@@ -285,6 +329,6 @@ class admin_interface:
 
 
 if __name__ == '__main__':
-    screen = admin_interface()
+    screen = AdministratorInterface()
     screen.MenuDisplay()
 
