@@ -113,8 +113,7 @@ class Freedge:
 			caretaker name, and status. """
 		loc = self.fridge_location
 		ret = "Project name: " + self.project_name + " Caretaker: " +\
-			self.caretaker_name + " Location: " + loc.state_province + ", " +\
-			loc.city
+			self.caretaker_name + " Location: " + loc.ShortString()
 		return ret
 
 class FreedgeAddress:
@@ -125,6 +124,15 @@ class FreedgeAddress:
 		self.state_province = loc[2]
 		self.zip_code = loc[3]
 		self.country = loc[4]
+		
+	def ShortString(self):
+		""" Returns a string of the form '{city}, {state/province}' """
+		ret = self.city
+		if (len(self.state_province) == 0):
+			ret += ", " + self.country
+		else:
+			ret += ", " + self.state_province
+		return ret
 		
 	def ToString(self):
 		""" Returns a string version of the address. """
