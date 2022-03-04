@@ -12,7 +12,7 @@ Description:    Creates and manages a new SQLite database. This database is load
 				SQL databases.
 
 Authors:        Madison Werries, Ginni Gallagher, TODO
-Last Edited:    3-1-2022
+Last Edited:    3-3-2022
 Last Edit By:   Ginni Gallagher 
 """
 from os.path import exists
@@ -43,8 +43,7 @@ class FreedgeDatabase:
 		Initializes the location of the SQLite database used by the
 		system.
 
-		Input:
-			db_location - string defining location of file.
+		Parameters: db_location -> string defining location of file.
 
 		Returns: None
 		"""
@@ -54,10 +53,10 @@ class FreedgeDatabase:
 		""" 
 		Open and return a database connection defined by db_location.
 
-		Input: None
+		Parameters: None
 
 		Returns: 
-			A Connection object - used to perform database operations. 
+			A Connection object -> used to perform database operations. 
 		"""
 		conn = None
 		try:
@@ -72,8 +71,7 @@ class FreedgeDatabase:
 		Creates a table from the create_table_sql statement.
 		A table is an object that contains the data in the database.
 
-		Input:
-			conn - An open Connection object linked to the database.
+		Parameters: conn -> An open Connection object linked to the database.
 
 		Returns: None
 		"""
@@ -88,13 +86,12 @@ class FreedgeDatabase:
 		TODO
 		Description: (???)
 
-		Inputs:
-			conn - An open Connection object linked to the database.
-			address_data - A string containing data of specific freedge.
-			temp - A boolean used to determine if address already exists. Default is False. (???)
+		Parameters:
+			conn -> An open Connection object linked to the database.
+			address_data -> A string containing data of specific freedge.
+			temp -> A boolean used to determine if address already exists. Default is False. (???)
 
-		Returns:
-			The ID of the last row in the database (???)
+		Returns: The ID of the last row in the database (???)
 		"""
 		if (temp):
 			sql = '''INSERT INTO new_addresses(
@@ -116,13 +113,12 @@ class FreedgeDatabase:
 		TODO
 		Inserts a new freedge into the database. (??? Add more?)
 	
-		Inputs:
-			conn - An open Connection object linked to the database. 
-			freedge_data - (???)
-			temp - A boolean used to determine if freedge data already exists. Default is False. (???)
+		Parameters:
+			conn -> An open Connection object linked to the database. 
+			freedge_data -> (???)
+			temp -> A boolean used to determine if freedge data already exists. Default is False. (???)
 
-		Returns:
-			The ID of the last row in the database. (???)
+		Returns: The ID of the last row in the database. (???)
 		"""
 		if (temp):
 			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
@@ -143,11 +139,9 @@ class FreedgeDatabase:
 		""" 
 		Converts an SQL row into an instance of the Freedge class. 
         
-		TODO
-		Inputs: 
-			row - List containing strings of data for a specific freedge. (???)
-		Returns:
-			new_freedge - A instance of the Freedge class.
+		Parameters: row -> List of strings containing data for a freedge. 
+
+		Returns: new_freedge -> A instance of the Freedge class.
 		"""
 		# Convert yes/no form responses into the proper Status
 		# 		(`Status` class found in freedge_data_entry.py)
@@ -189,10 +183,10 @@ class FreedgeDatabase:
 		Converts all rows in an SQL query to Freedge objects. 
         
 		TODO
-		Inputs: rows - A list of "rows", each row contains the information
-				for a freedge. (???)
+		Parameters: rows -> A list of "rows", each row contains the information
+					for a freedge. (???)
 
-		Returns: freedge_list - A list of Freedge objects.
+		Returns: freedge_list -> A list of Freedge objects.
 		"""
 		freedge_list = []
 		for row in rows:
@@ -204,10 +198,9 @@ class FreedgeDatabase:
 		""" 
 		Grabs a full list of Freedge Class objects from database. 
 		
-		Inputs: None
+		Parameters: None
 
-		Returns: 
-			A full list of freedges. (???)
+		Returns: A full list of freedges. (???)
 		"""
 		# Connect to the database
 		conn = self.open_connection()
@@ -229,7 +222,7 @@ class FreedgeDatabase:
 		""" 
 		Grabs a list of freedges whose information is out of date. 
 		
-		Inputs: None
+		Parameters: None
 
 		Returns: 
 			A list of freedges that are out of date according to
@@ -247,9 +240,7 @@ class FreedgeDatabase:
 		""" 
 		Update the database data for a specific Freedge object. 
 		
-		TODO
-		Inputs:
-			f - (???)
+		Parametrs: f -> a Freedge object; the freedge to be updated
 
 		Returns: None
 		"""
@@ -313,9 +304,7 @@ class FreedgeDatabase:
 		Determines what freedges have data that is different
 		from the data in the passed csv file argument. (??? Add point about use of this?)
 		
-		TODO
-		Inputs:
-			new_csv_data - (??? format of this?)
+		Parameters: new_csv_data -> a string of the name of the desired csv file
 
 		Returns:
 			Tuple of lists of freedges whose data is different from the 
@@ -497,11 +486,9 @@ def exists_internal_database(db_path):
 	""" 
 	Returns whether or not there exists a database at the given path. 
 	
-	Inputs:
-		db_path - Path of str or bytes to be tested.
+	Parameters: db_path -> a string defining the path to be tested.
 	
-	Returns:
-		True or False
+	Returns: exists(db_path) -> a bool True or False if database exists
 	"""
 	return(exists(db_path))
 
@@ -509,12 +496,10 @@ def load_internal_database(db_path):
 	""" 
 	Loads and returns the database at the given path. 
 	
-	TODO
-	Inputs:
-		db_path - Path of database to be loaded.
+	Parameters: db_path -> a string indicating the path of the database to be loaded.
 
 	Returns:
-		freedgeDB - Instance of FreedgeDatabase object.
+		freedgeDB -> Instance of FreedgeDatabase object.
 	"""
 	try:
 		sqlite3.connect(DATABASE_PATH)
@@ -528,10 +513,9 @@ def new_database_from_csv(db_path, csv_file_path):
 	""" 
 	Creates and returns a new internal database from a csv file. 
 	
-	TODO
-	Inputs:
-		db_path - Path of database to be created.
-		csv_file_path - Path of the input csv file.
+	Parameters:
+		db_path -> Path of database to be created.
+		csv_file_path -> Path of the input csv file.
 
 	Returns:
 		freedgeDB - New FreedgeDatabase class isntance.
