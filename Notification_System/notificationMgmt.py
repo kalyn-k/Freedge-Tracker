@@ -9,8 +9,8 @@ Description:	Obtains which freedges in the database are considered out of date a
 
 Authors: 		Ellie Kobak, Liza Richards, Madison Werries
 Creation Date:  February 17, 2022
-Last Edited: 	3-03-2022
-Last Edit By:	Madison Werries
+Last Edited: 	3-04-2022
+Last Edit By:	Ellie Kobak
 
 
 Edit Log
@@ -26,10 +26,11 @@ date         editor     changes
 3-02-22     erk         documentation
 3-03-22     mgw         changed the way the NotificationMgmt class is initialized so the notifications are properly
                         integrated with the Administrator Interface (administrator_interface.py)
+3-04-22     erk         updated documentation to make more consistent
 """
-import freedge_internal_database.database_constants  # used to access constants for fridge object
-import Freedge_Database as FD
-import Notification_System as NS        # for prototype only, used for popup display of notification
+import freedge_internal_database.database_constants   # used to access constants for fridge object
+import Freedge_Database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import Notification_System as NS                      # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
     '''
@@ -39,6 +40,16 @@ class NotificationMgmt():
     '''
 
     def __init__(self, root):
+        '''
+        Purpose: TODO
+
+        Parameters: TODO
+
+        Calls:
+            Called by: TODO
+
+        Returns: None, initializes NotififacationMgmt class
+        '''
         self.root = root
         
     def get_fridge_info_message(self):
@@ -55,13 +66,7 @@ class NotificationMgmt():
             called by: admin_interface.py when system has not been notified of activity in 90 days, or if 
                     user presses the notify button
                     notify_and_update() to send notification
-           
-        Returns: caretaker_name -> string of name of caretaker, 
-                 project_name -> string of name of fridge project,
-                 last_update -> integer of date of last update
-
-        Inputs: None
-        Returns: caretaker_name, project_name, last_update
+        Returns: None
         '''
         
         # call to the other classes in order to use their methods
@@ -82,16 +87,15 @@ class NotificationMgmt():
 
     def notify_and_update(self, fdb, freedge):
         '''
-        Purpose: 
+        Purpose:  TODO double check if still right TODO
             Calls the notification interface class which will return a boolean value based on whether or not the
             Freedge is active from user input.
             Based on this boolean value, updates the freedge object status and then updates the freedge database status
             for the specific fridge object.
 
         Parameters: 
-            caretaker_name -> str
-            project_name -> str
-            last_update -> int?
+            fdb -> fridge database object
+            freedge -> freedge object
 
         Calls: notificationGUI.py in order to notify user of fridge activity
             update_status() of Freedge class
@@ -101,13 +105,14 @@ class NotificationMgmt():
         Returns: None
         '''
         # calls notification GUI pop up function to send message
-        popup = NS.notificationGUI.PopUp(self.root, freedge)
-        popup.pop_up_win.wait_variable(popup.response_received)
-        response = popup.get_response()    # variable with value of the response
+        popup = NS.notificationGUI.PopUp(self.root, freedge)        # signals notification popup 
+        popup.pop_up_win.wait_variable(popup.response_received)     # TODO
+        response = popup.get_response()                             # variable with value of the response
         
-        # If the user simply did not respond:
+        # If the user did not respond:
         if response is None:
             print("no response.")
+        # If the user did respond
         else:
             freedge.update_status(response)     # updates activity status of freedge object
             freedge.reset_last_update()         # resets the freedge objects time since last update

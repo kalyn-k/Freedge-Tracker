@@ -27,19 +27,20 @@ Edit Log
 date         editor     changes
 2-28-22      erk        initial doc
 3-01-22      erk        documentation
+3-04-22      erk        updated documentation and code to match updated NotificationMgmt Class
 """
+import freedge_internal_database.database_constants   # used to access constants for fridge object
+import Freedge_Database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import Notification_System as NS                      # for prototype only, used for popup display of notification
 
-from Freedge_Database import freedge_database, freedge_data_entry
-import notificationMgmt        # main class definition
- 
 
-class email_mgmt(notificationMgmt.NotificationMgmt):
+class email_mgmt(NS.NotificationMgmt):
     '''
     This class enables email notifications from freedge organizers to the fridge caretakers.
     The class has the attributes to send emails using the Twilio Email API
     '''
 
-    def __init__(self):
+    def __init__(self, root):
         """
         This function is set up to be updated for non prototype version.
 
@@ -52,7 +53,7 @@ class email_mgmt(notificationMgmt.NotificationMgmt):
                 info for each fridge.
         Returns: None, stores sender and reciever information in class initiation.
         """
-
+        self.root = root # TODO
         # self.sender =  UPDATE with Twilio account information
         # self.reciever = UPDAtE with freedge_data_entry
  
@@ -69,35 +70,25 @@ class email_mgmt(notificationMgmt.NotificationMgmt):
             called by: admin_interface.py when system has not been notified of activity in 90 days,
                      notify_and_update() to send email
            
-        Returns: caretaker_name -> string of name of caretaker, 
-                 project_name -> string of name of fridge project,
-                 last_update -> integer of date of last update
+        Returns: None
 
         '''
-        project_name = ''       # initalializes variable for project name
-        caretaker_name = ''     # initalializes variable for caretaker name
-        last_update = 0         # initalializes variable to store last update
-
         # call to the other classes in order to use their methods
-        fdb = freedge_database.FreedgeDatabase()  # freedge database class initialization
-        f = freedge_data_entry.Freedge()         # actual fridge class initialization
+        fdb = FD.load_internal_database(freedge_internal_database.database_constants.DATABASE_PATH)  # freedge database class initialization
 
-        fridge_list = fdb.get_out_of_date() # variable to obtain the list of freedge objects that are out of date
+        fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
-        # iterate through this list of freedge objects and obtain the caretaker's name, project name, and time since
+        # Iterates through list of freedge objects and obtains the caretaker's name, project name, and time since
         # last update. These three items will be returned by the function to be used to craft a message to the
         # caretaker through the notification GUI.
         for fridge in fridge_list:
-            if f.can_notify is True:
-                project_name = f.project_name               # variable for project name
-                caretaker_name = f.caretaker_name           # variable for caretaker name
-                last_update = fdb.time_since_last_update()  # variable for time of last update
-                email = fdb.email
-                self.notify_and_update(f, fdb, project_name, caretaker_name, last_update, email)
+            if fridge.can_notify():
+                return
+            # signals the notifcation to be sent out
 
         return 
 
-    def notify_and_update(self, freedge, fdb, project_name, caretaker_name, last_update, email):
+    def notify_and_update(self, fdb, freedge):
         '''
        Purpose: 
             TO BE IMPLEMENTED IF USING EMAIL NOTIFICATIONS
@@ -107,12 +98,13 @@ class email_mgmt(notificationMgmt.NotificationMgmt):
             for the specific fridge object.
 
         Parameters: 
-            caretaker_name -> str
-            project_name -> str
-            last_update -> int?
+            fdb -> fridge database object
+            freedge -> freedge object
 
-        Calls:
+        Calls: notificationGUI.py in order to notify user of fridge activity
             update_status() of Freedge class
+
+        Called by: get_fridge_info_message
 
         Returns: None
         
