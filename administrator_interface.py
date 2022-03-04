@@ -2,9 +2,13 @@
 ===============================================================================
 Title:	Administrator Interface for the Freedge Tracker System
 ===============================================================================
-Description:	TODO
+Description:	This is the Administrator Interface module for the Freedge
+                Tracker System. It is the main driver for the system, and
+                is responsible for both I/O from an administrator and the
+                GUI display to the admin (the user).
+                
 Authors:        Kalyn Koyanagi, Madison Werries
-Last Edited:    3-2-2022
+Last Edited:    3-4-2022
 Last Edit By:   Madison Werries
 """
 from tkinter.ttk import *
@@ -16,20 +20,29 @@ from Freedge_Database import *
 
 class AdministratorInterface:
     def __init__(self):
-        self.fdb_path = None
-        self.fdb = None
         """
-        TODO
+        Initializes a new instance of the AdministratorInterface class.
         """
-        # Define user windows for later use
-        self.main_tab = None    # All freedges tab
-        self.ood_tab = None     # Out of date freedges tab
-        self.root = None
-        self.notebook = None
-        self.info_box = None
-        self.selected_info = None
-        self.prompt_label = None
-        self.ib_width = 30
+        # =====================================================================
+        # Information about the currently loaded database.
+        # =====================================================================
+        self.fdb_path = None        # The file path to the internal database
+        self.fdb = None             # The FreedgeDatabase object
+
+        # =====================================================================
+        # GUI elements which need to be accessed later on:
+        # =====================================================================
+        self.root = None            # The root of the GUI display
+        
+        self.main_tab = None        # Tab display showing all freedges
+        self.ood_tab = None         # Tab for showing out-of-date freedges
+        self.notebook = None        # The panel containing the two tabs
+        
+        self.info_box = None        # GUI for info about a particular freedge
+        self.info_label = None      # Currently displayed freedge info
+        self.prompt_label = None    # Text to prompt user for action (used
+                                    # when no database has been loaded yet)
+        self.ib_width = 30          # Fixed width for info_box display
     
     # =========================================================================
     # I/O for Administrator Interface
@@ -155,10 +168,10 @@ class AdministratorInterface:
     def OnTableClick(self, event):
         """ What to do when the administrator clicks on a freedge in the display table. """
         selected = self.GetSelected()
-        self.info_box.destroy()
-        self.info_box = ttk.Label(self.selected_info, text=selected.ToString(),
+        self.info_label.destroy()
+        self.info_label = ttk.Label(self.info_box, text=selected.ToString(),
             justify=LEFT, style='TLabel', width=self.ib_width)
-        self.info_box.grid(sticky="ew", row=1)
+        self.info_label.grid(sticky="ew", row=1)
     
     def NotifyFreedge(self, freedge):
         if (self.fdb is None):
@@ -382,20 +395,19 @@ class AdministratorInterface:
         self.ood_tab = self.BuildTable(tab2)
         
         # Create the display box to show the admin more info about a selected freedge in the table
-        selected_info = Frame(root, height=514, width=30)
-        selected_info.place(x=1160, y=160)
-        self.selected_info = selected_info
-        label = ttk.Label(selected_info, text="Selected Freedge Information",
+        info_box = Frame(root, height=514, width=30)
+        info_box.place(x=1160, y=160)
+        self.info_box = info_box
+        label = ttk.Label(info_box, text="Selected Freedge Information",
                         style='TFrame.TLabel', width=self.ib_width)
         label.columnconfigure(0, weight=1)
         label.grid(column=0, row=0,sticky="ew")
-        info_box = ttk.Label(selected_info, width=self.ib_width)
-        self.info_box = info_box
-        info_box.grid(column=0, row=1, sticky="ew")
-        info_box.columnconfigure(0, weight=1)
-        info_box.rowconfigure(1, weight=1)
+        info_label = ttk.Label(info_box, width=self.ib_width)
+        self.info_label = info_label
+        info_label.grid(column=0, row=1, sticky="ew")
+        info_label.columnconfigure(0, weight=1)
+        info_label.rowconfigure(1, weight=1)
 
-        
         # =====================================================================
         # Creating the GUI Buttons
         # =====================================================================
