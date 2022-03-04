@@ -18,7 +18,7 @@ Last Edit By:   Ginni Gallagher
 from os.path import exists
 import sqlite3
 from sqlite3 import Error
-from freedge_internal_database.database_constants import *
+from Internal_Data.database_constants import *
 from datetime import date
 import Freedge_Database as FD
 
@@ -583,14 +583,3 @@ def new_database_from_csv(db_path, csv_file_path):
 	conn.close()
 	# Return the FreedgeDatabase class instance
 	return freedgeDB
-
-
-if __name__ == '__main__':
-	new_csv = r".\test_data\freeedge_data_tiny_edited.csv"
-	fdb = new_database_from_csv(DATABASE_PATH, DATABASE_CSV)
-	fs = fdb.get_freedges()
-	fs[0].freedge_status = FD.Status.SuspectedInactive
-	fdb.update_freedge(fs[0])
-	(add, remove, modidfy) = fdb.compare_databases(new_csv)
-	
-	#fdb = load_internal_database(DATABASE_PATH)

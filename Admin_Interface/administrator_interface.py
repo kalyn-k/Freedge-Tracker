@@ -7,56 +7,100 @@ Authors:        Kalyn Koyanagi, Madison Werries
 Last Edited:    3-2-2022
 Last Edit By:   Madison Werries
 """
-import tkinter
-from tkinter import ttk, messagebox, filedialog
+from tkinter.ttk import *
 from tkinter import *
-from tkinter.ttk import Notebook
+from tkinter import ttk, messagebox, filedialog
 import sys
 import Notification_System as NS
 from Freedge_Database import *
 
 class AdministratorInterface:
     def __init__(self):
+        self.fdb_path = None
+        self.fdb = None
         """
         TODO
         """
         # Define user windows for later use
-        self.fdb = None         # Connection to Freedge database
         self.main_tab = None    # All freedges tab
         self.ood_tab = None     # Out of date freedges tab
         self.root = None
         self.notebook = None
         self.info_box = None
+        self.selected_info = None
+        self.prompt_label = None
+        self.ib_width = 30
     
     # =========================================================================
     # I/O for Administrator Interface
     # =========================================================================
-    
+
     def LoadDatabase(self):
-        # Load the internal database
-        self.fdb = load_internal_database(DATABASE_PATH)
+        file_types = [('db files', '.db')]
+        prompt = "Please select the .db file to load into the system."
+        messagebox.showinfo("Select internal database location", prompt)
+        db_file_path = filedialog.askopenfilename(
+            title="Please select the internal database file.",
+            filetypes=file_types, defaultextension=".db")
+        # If they provided a filename correctly
+        if (db_file_path != ""):
+            self.OpenDatabase(db_file_path)
         # Update the display tables
         self.UpdateFullDisplay()
     
-    def NewDatabase(self):
-        # Get the path of CSV file from the user
-        messagebox.askokcancel("File select", "Select a csv file to load into the database.")
-        file_types = [('csv files', '.csv')]
-        file_path = filedialog.askopenfilename(title="Please select the csv file containing the freedge data.",
-                                               filetypes=file_types)
-        if (file_path == ""):
-            answer = messagebox.askretrycancel("Question", "Error: No file selected. Please hit 'Retry'"
-                                                           " to select a csv file, or 'Cancel' to close the program.")
-            # If the user hit 'Cancel' or 'X', exit the application
-            if (not answer):
-                self.exit_()
-            # If the user hit 'Retry', try to prompt them again to load a new database
-            else:
-                self.NewDatabase()
+    def OpenDatabase(self, db_file_path):
         # Create a new database using the data from the CSV file
-        self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
-        # Update the display
-        self.UpdateFullDisplay()
+        self.fdb_path = db_file_path
+        self.fdb = load_internal_database(db_file_path)
+        # Set the path of the most recently accessed database:
+        saved_fdb_path = open("Internal_Data/fdb_path.txt", "w+")
+        saved_fdb_path.write("This is a text file which contains the file path to"
+                             " the last database(.db file) that was opened.\n")
+        saved_fdb_path.write(self.fdb_path)
+        saved_fdb_path.close()
+    
+    def SaveDatabase(self, csv_file_path):
+        file_types = [('db files', '.db')]
+        prompt = "Please select where you would like to save the internal database file."
+        messagebox.showinfo("Select internal database location", prompt)
+        db_file_path = filedialog.asksaveasfilename(
+            title="Please select where to save the internal .db file to",
+            filetypes=file_types, defaultextension=".db")
+        # If they provided a filename correctly
+        if (db_file_path != ""):
+            # Create a new database using the data from the CSV file
+            self.fdb_path = db_file_path
+            self.fdb = new_database_from_csv(db_file_path, csv_file_path)
+            # Set the path of the most recently accessed database:
+            saved_fdb_path = open("Internal_Data/fdb_path.txt", "w+")
+            saved_fdb_path.write("This is a text file which contains the file path to"
+                                 " the last database(.db file) that was opened.\n")
+            saved_fdb_path.write(self.fdb_path)
+            saved_fdb_path.close()
+    
+    def NewDatabase(self):
+        prompt = "Please select the csv file you would like to use to create a new freedge database."
+        # Get the path of CSV file from the user
+        user_response = messagebox.showinfo("Please Select a CSV file", prompt)
+        if user_response is None or not user_response:
+            return
+        file_types = [('csv files', '.csv')]
+        continue_prompts = True
+        while continue_prompts:
+            csv_file_path = filedialog.askopenfilename(title="Please select the csv"
+                " file containing the freedge data.", filetypes=file_types)
+            if (csv_file_path is None or csv_file_path == ""):
+                answer = messagebox.askretrycancel("Question", "Error: No file selected.")
+                # If the user hit 'Cancel' or 'X', discontinue the prompts,
+                # and do not create a new database file
+                if (answer is None or not answer):
+                    continue_prompts = False
+                    continue
+            else:
+                continue_prompts = False
+                self.SaveDatabase(csv_file_path)
+                # Update the display with the newly loaded data
+                self.UpdateFullDisplay()
 
     def UpdateDatabase(self, event=None):
         # Get path of CSV file
@@ -89,7 +133,7 @@ class AdministratorInterface:
 
         messagebox.askokcancel("Proceed?", message+" Proceed?")
         # Get path of database
-        self.fdb = new_database_from_csv(DATABASE_PATH, file_path)
+        self.fdb = new_database_from_csv(self.fdb_path, file_path)
         # Update the menu window
         self.UpdateFullDisplay()
         
@@ -111,13 +155,14 @@ class AdministratorInterface:
     def OnTableClick(self, event):
         """ What to do when the administrator clicks on a freedge in the display table. """
         selected = self.GetSelected()
-        print(selected.ToString())
         self.info_box.destroy()
-        self.info_box = ttk.Label(self.selected_info, text=selected.ToString(), justify=LEFT, style='TLabel', width=50)
-        self.info_box.grid(sticky=tkinter.S, row=1)
-        print('boop')
+        self.info_box = ttk.Label(self.selected_info, text=selected.ToString(),
+            justify=LEFT, style='TLabel', width=self.ib_width)
+        self.info_box.grid(sticky="ew", row=1)
     
     def NotifyFreedge(self, freedge):
+        if (self.fdb is None):
+            return
         if freedge is None:
             print("nothing is selected!")
             return
@@ -143,10 +188,11 @@ class AdministratorInterface:
         if response:
             notifier = NS.NotificationMgmt(self.root)
             notifier.notify_and_update(self.fdb, freedge)
-        else:
-            return
+        self.UpdateFullDisplay()
       
     def NotifySelected(self):
+        if (self.fdb is None):
+            return
         # Get the currently selected Freedge entry
         selected: Freedge = self.GetSelected()
         if selected is None:
@@ -157,12 +203,17 @@ class AdministratorInterface:
                 "caretaker has not given permission to receive notifications.")
             return
         self.NotifyFreedge(selected)
-        
+        self.UpdateFullDisplay()
+
     def NotifyAll(self):
+        if (self.fdb is None):
+            return
         # TODO
         print("notifying all freedges")
     
     def NotifyOutOfDate(self):
+        if (self.fdb is None):
+            return
         ood_list = self.fdb.get_out_of_date()
         to_notify = []
         for freedge in ood_list:
@@ -194,7 +245,6 @@ class AdministratorInterface:
         if response:
             for freedge in to_notify:
                 notifier = NS.NotificationMgmt(self.root)
-                print(freedge.caretaker_name)
                 notifier.notify_and_update(self.fdb, freedge)
         self.UpdateFullDisplay()
         
@@ -216,11 +266,24 @@ class AdministratorInterface:
     # =========================================================================
 
     def UpdateFullDisplay(self):
+        if (self.fdb is None):
+            prompt = "No database loaded.\n\n" \
+                     "Click 'New Database' to create a new freedge database from a csv file." \
+                     "\n\nClick 'Load Database' to load in an existing database from a .db file."
+            none_found = Label(self.notebook, text=prompt, anchor='center', foreground="#e74c3c",
+                               background="#d4dadd", width=50, wraplength=300, font=("Helvetica", 12))
+            none_found.place(relx=0.5, rely=0.5, anchor='center')
+            self.prompt_label = none_found
+            return
+        else:
+            if self.prompt_label is not None:
+                self.prompt_label.destroy()
+        
         freedges = self.fdb.get_freedges()
         out_of_date = self.fdb.get_out_of_date()
         self.root.update()
-        screen.UpdateTableDisplay(self.main_tab, freedges)
-        screen.UpdateTableDisplay(self.ood_tab, out_of_date)
+        self.UpdateTableDisplay(self.main_tab, freedges)
+        self.UpdateTableDisplay(self.ood_tab, out_of_date)
     
     def UpdateTableDisplay(self, table, freedges: [Freedge]):
         # clear the list of freedges
@@ -275,8 +338,16 @@ class AdministratorInterface:
 
         table.bind('<<TreeviewSelect>>', self.OnTableClick)
         return table
+    
+    def AddButton(self, parent, label, cmd, xpos, ypos):
+        font_style = "Helvetica"
+        font_size = 10
+        width = 15
+        button = Button(parent, text=label, command=cmd, font=(font_style,
+            font_size), width=width, justify=CENTER)
+        button.place(x=xpos, y=ypos)
 
-    def MenuDisplay(self):
+    def CreateDisplay(self):
         # Initialize the display for the Administrator Interface
         root = Tk()
         root.title("Freedge Tracker")
@@ -284,20 +355,21 @@ class AdministratorInterface:
         height = root.winfo_screenheight()-150
         root.geometry("%dx%d" % (width, height))
         root.wm_state('zoomed')
-        root.configure(bg='gray')      # Set menu background color
+        root.configure(bg='#34495e')      # Set menu background color
         root.maxsize()
         self.root = root
 
         # Create a Header for the menu
-        header = Label(root, width=50, text="Freedge Tracker", bg="gray", fg="white",
+        header = Label(root, width=50, text="Freedge Tracker", background="#34495e", foreground="white",
                        font=("TkDefaultFont", 30))
         header.pack(side=TOP, padx=10, pady=30)
+        header.place(x=100, y=40)
 
         # =====================================================================
         # Creating the Freedge Info Tables
         # =====================================================================
         # Tabs for the table (https://www.geeksforgeeks.org/creating-tabbed-widget-with-python-tkinter/)
-        notebook = Notebook(root, height=480)
+        notebook = Notebook(root, height=480, width=880)
         tab1 = Frame(notebook)
         tab2 = Frame(notebook)
         notebook.add(tab1, text='    All    ')
@@ -311,62 +383,56 @@ class AdministratorInterface:
         
         # Create the display box to show the admin more info about a selected freedge in the table
         selected_info = Frame(root, height=514, width=30)
-        selected_info.place(x=1150, y=100)
+        selected_info.place(x=1160, y=160)
         self.selected_info = selected_info
-        label = ttk.Label(selected_info, text="Selected Freedge Information", justify=CENTER, style='TFrame.TLabel', width=30)
-        label.pack(fill='both', expand=True)
-        label.grid(column=0, row=0)
-        selected_info.columnconfigure(0, weight=1)
-        selected_info.rowconfigure(0, weight=1)
+        label = ttk.Label(selected_info, text="Selected Freedge Information",
+                        style='TFrame.TLabel', width=self.ib_width)
+        label.columnconfigure(0, weight=1)
+        label.grid(column=0, row=0,sticky="ew")
+        info_box = ttk.Label(selected_info, width=self.ib_width)
+        self.info_box = info_box
+        info_box.grid(column=0, row=1, sticky="ew")
+        info_box.columnconfigure(0, weight=1)
+        info_box.rowconfigure(1, weight=1)
+
         
-        label.grid(sticky=tkinter.NW, row=0)
-        woop = ttk.Label(selected_info, text="fajalfjslfjslfjslfsj", justify=LEFT, style='TFrame.TLabel')
-        self.info_box = woop
         # =====================================================================
         # Creating the GUI Buttons
         # =====================================================================
+        block1 = Frame(root, height=150, width=150, background="#34495e")
+        block1.place(x=30, y=100)
         # Button to Create new database (db)
-        create_db_button = Button(root, text="Create new Database", font=("TkDefaultFont", 12),
-                                  command=self.NewDatabase,
-                                  bg="white", width=15)  # initiate the button
-        create_db_button.place(x=30, y=180)
-
+        self.AddButton(block1, "Create Database", self.NewDatabase, 10, 10)
         # Button to update database
-        update_db_button = Button(root, text="Update Database", font=("TkDefaultFont", 12), command=self.UpdateDatabase,
-                                  bg="white", width=15)  # initiate the button
-        update_db_button.place(x=30, y=230)
+        self.AddButton(block1, "Load Database", self.LoadDatabase, 10, 60)
 
+        block2 = Frame(root, height=220, width=150, background="#34495e")
+        block2.place(x=30, y=300)
         # Button to notify selected freedge
-        notif_selected = Button(root, text="Notify Selected", font=("TkDefaultFont", 12), command=self.NotifySelected,
-                             bg="white", width=15)  # initiate the button
-        notif_selected.place(x=30, y=300)
+        self.AddButton(block2, "Notify Selected", self.NotifySelected, 10, 10)
         
         # Button to notify all out-of-date freedges
-        notif_ood = Button(root, text="Notify Out-Of-Date", font=("TkDefaultFont", 12), command=self.NotifyOutOfDate,
-                             bg="white", width=15)  # initiate the button
-        notif_ood.place(x=30, y=350)
+        self.AddButton(block2, "Notify Out-Of-Date", self.NotifyOutOfDate, 10, 60)
 
         # Button to send a message to all freedges
-        exit_button = Button(root, text="Notify All", font=("TkDefaultFont", 12),
-                             command=self.NotifyAll,
-                             bg="white", width=15)  # initiate the button
-        exit_button.place(x=30, y=400)
-        
+        self.AddButton(block2, "Notify All", self.NotifyAll, 10, 110)
+
+        block3 = Frame(root, height=220, width=150, background="#34495e")
+        block3.place(x=30, y=500)
         # Button to exit session
-        exit_button = Button(root, text="            Exit           ", font=("TkDefaultFont", 12), command=self.exit_,
-                             bg="white", width=15)  # initiate the button
-        exit_button.place(x=30, y=500)
+        self.AddButton(block3, "Exit", self.exit_, 10, 10)
         
         # =====================================================================
         # Configure the style of the display
         # =====================================================================
-        # Notebook color
-        bg_color = "darkgrey"
-        gold_color = "gold"
+        # Colors for the GUI display
+        bg_color = "#bdc3c7"
+        light_base = "#ecf0f1"
+        gold_color = "#ffcd02"
         color_tab = "#ccdee0"
         
         # style
-        style = ttk.Style()
+        style = Style()
         default_font = 'Helvetica'
         
         style.theme_create("freedge_theme", parent="default", settings={
@@ -379,19 +445,19 @@ class AdministratorInterface:
                 "map": {"background": [("selected", gold_color), ('!active', "lightgrey"), ('active', color_tab)],
                         "expand": [("selected", [1, 1, 1, 0])]}},
             "TFrame": {
-                "configure": {"background": "black", "borderwidth": [0], "highlightthickness": [0]}},
+                "configure": {"borderwidth": [0], "highlightthickness": [0]}},
             "TFrame.TLabel": {
                 "configure": {"font": (default_font, 14), "foreground": "orange", "background": "dimgray"}
             },
             "TLabel": {
-                "configure": {"font": (default_font, 10), "foreground": "white", "background": "dimgray"}
+                "configure": {"font": (default_font, 10), "foreground": "dimgray", "background": "white"}
             },
             "Treeview.Heading": {
                 "configure": {"font": (default_font, 12), "foreground": "orange", "background": "dimgray"}},
             'Treeview': {
-                "configure": {"fieldbackground": "darkgrey", "borderwidth": [0], "highlightthickness": [0]},
+                "configure": {"fieldbackground": "#bdc3c7", "borderwidth": [0], "highlightthickness": [0]},
                 'map': {
-                    'background': [('!selected', 'lightgrey'), ('selected', 'white')],
+                    'background': [('!selected', light_base), ('selected', 'white')],
                     'font': [('selected', ("Century Gothic", 10, 'bold'))],
                 }
             },
@@ -401,25 +467,53 @@ class AdministratorInterface:
         })
         style.theme_use("freedge_theme")
         
-        if (exists_internal_database(DATABASE_PATH)):
-            self.root.update()
-            title = "An existing database was found at: " + DATABASE_PATH +\
-                    ".\n\nWould you like to proceed with that database? Hit 'yes' to continue," \
-                    "'no' to select a different database, or 'cancel' to quit."
-            
-            response = messagebox.askyesnocancel("Database Found", title)
-            if (response is None):
-                self.exit_()
-            elif (not response):
-                self.NewDatabase()
-            else:
-                screen.LoadDatabase()
-                screen.UpdateFullDisplay()
-        
-        root.mainloop()
-
 
 if __name__ == '__main__':
-    screen = AdministratorInterface()
-    screen.MenuDisplay()
+    # Create a new Administrator Interface
+    MainInterface = AdministratorInterface()
+    # Build the Administrator Interface's GUI
+    MainInterface.CreateDisplay()
+    
+    # Check whether or not an internal database already exists. This
+    # information is stored using the file: "Internal_Data/fdb_path.txt"
+    try:
+        # Check that the file "Internal_Data/fdb_path.txt" exists
+        path_location = open("Internal_Data/fdb_path.txt", "r")
+    except IOError:
+        # If there's an error and the internal file does not exist, create it
+        path_location = open("Internal_Data/fdb_path.txt", "w+")
+        # Write a header briefly describing the file
+        path_location.write("This is a text file which contains the file path"
+                            " to the last database (.db file) that was opened.")
+        # Write a blank line to be filled with the file path later
+        path_location.write("")
+    
+    # Read the lines in from the internal file
+    lines = path_location.readlines()
+    db_file_found = False               # Whether we successfully find a .db file
+    located_file_path = ""              # The path to the .db file, if one is found
+    path_location.close()
+    # If the number of lines is less than 2, there is no file path specified
+    if (len(lines) >= 2):
+        # The first line is the header, the second is the file location
+        located_file_path = lines[1]
+        db_file_found = exists_internal_database(located_file_path)
+    
+    # Ensure that the dialogue boxes will be shown
+    MainInterface.root.update()
+    
+    # If an internal database file was found...
+    if (db_file_found):
+        # Prompt the user for whether they want to use the (.db) file found
+        title = "An existing database was found at: " + located_file_path + \
+                ".\n\nWould you like to proceed with that database?"
+        response = messagebox.askyesno("Database Found", title)
+        # If they gave a response (ie, didn't just hit 'X')...
+        if (response is not None):
+            if response:
+                # Otherwise, load the internal database file that was found
+                MainInterface.fdb_path = located_file_path
+                MainInterface.OpenDatabase(located_file_path)
+    MainInterface.UpdateFullDisplay()
+    MainInterface.root.mainloop()
 

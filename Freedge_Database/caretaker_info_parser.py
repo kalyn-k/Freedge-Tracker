@@ -24,7 +24,7 @@ date		editor		changes
 
 import csv
 
-from freedge_internal_database.database_constants import *
+from Internal_Data.database_constants import *
 
 def remove_whitespace(field_name):
 	""" 

@@ -20,11 +20,7 @@ SECOND_UPDATE_THRESHOLD = 365
 # Paths to the internal database file
 #==============================================================================
 # The path for the location of the internal database file
-# Default = r"..\freedge_internal_database\pythonsqlite.db"
-#DATABASE_PATH = r".\freedge_internal_database\freedge_database.db"
-# DATABASE_PATH = r".\test_data\fdb_needs_updating.db"
 DATABASE_PATH = r"./test_data/fdb_needs_updating.db"
-DATABASE_CSV = r"../test_data/freeedge_data_tiny.csv"
 
 #==============================================================================
 # CSV File Column Labels/Headers

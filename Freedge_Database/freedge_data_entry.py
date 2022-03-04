@@ -18,7 +18,7 @@ Last Edit By:	Ginni Gallagher
 from enum import Enum
 from datetime import date
 from numpy.core.defchararray import upper
-from freedge_internal_database import database_constants as dbc
+from Internal_Data import database_constants as dbc
 
 class Status(Enum):
 	""" 
@@ -236,7 +236,7 @@ class Freedge:
 		return diff
 		
 	def ToString(self):
-		""" 
+		"""
 		Converts the freedge data to a string containing the project name,
 		caretaker name, and status.
 		 
@@ -244,9 +244,19 @@ class Freedge:
 
 		Returns: ret -> a formatted string describing the freedge location 
 		"""
-		loc = self.fridge_location
-		ret = "Project name: " + self.project_name + " Caretaker: " +\
-			self.caretaker_name + " Location: " + loc.ShortString()
+		ret = "Database ID:\t" + str(self.freedge_id)
+		ret += "\nProject Name:\t" + self.project_name
+		ret += "\nNetwork Name:\t" + self.network_name
+		ret += "\nCaretaker:\t" + self.caretaker_name
+		ret += "\nFridge Location:\t" + self.fridge_location.ToDisplayString()
+		ret += "\nDate Installed:\t" + str(self.date_installed)
+		ret += "\nMay Notify?:\t" + str(self.permission_to_notify)
+		ret += "\nPreferred Contact:\t" + self.preferred_contact_method
+		ret += "\nPhone Number:\t" + self.phone_number
+		ret += "\nEmail Address:\t" + self.email_address
+		ret += "\nFridge Status:\t" + str(self.freedge_status.value)
+		ret += "\nLast status update:\t" + str(self.last_status_update)
+		ret += "\nDays since last update:\t" + str(self.time_since_last_update())
 		return ret
 
 class FreedgeAddress:
@@ -315,4 +325,18 @@ class FreedgeAddress:
 			ret += self.zip_code + ", "
 		if (self.country != ""):
 			ret += self.country
+		return ret
+	
+	def ToDisplayString(self):
+		ret = ""
+		if (self.street_address != ""):
+			ret += self.street_address + "\n\t\t"
+		if (self.city != ""):
+			ret += self.city + ", "
+		if (self.state_province != ""):
+			ret += self.state_province + ", "
+		if (self.zip_code != ""):
+			ret += self.zip_code + " "
+		if (self.country != ""):
+			ret += "\n\t\t" + self.country
 		return ret
