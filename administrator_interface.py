@@ -7,17 +7,13 @@ Authors:        Kalyn Koyanagi, Madison Werries
 Last Edited:    3-2-2022
 Last Edit By:   Madison Werries
 """
-from tkinter import *
+import tkinter
 from tkinter import ttk, messagebox, filedialog
+from tkinter import *
 from tkinter.ttk import Notebook
 import sys
 import Notification_System as NS
 from Freedge_Database import *
-
-# TODO: =======================================================================
-# Update database
-# Not supposed to be notified, but is out-of-date
-# rename update_date
 
 class AdministratorInterface:
     def __init__(self):
@@ -30,6 +26,7 @@ class AdministratorInterface:
         self.ood_tab = None     # Out of date freedges tab
         self.root = None
         self.notebook = None
+        self.info_box = None
     
     # =========================================================================
     # I/O for Administrator Interface
@@ -115,7 +112,11 @@ class AdministratorInterface:
         """ What to do when the administrator clicks on a freedge in the display table. """
         selected = self.GetSelected()
         print(selected.ToString())
-        
+        self.info_box.destroy()
+        self.info_box = ttk.Label(self.selected_info, text=selected.ToString(), justify=LEFT, style='TLabel', width=50)
+        self.info_box.grid(sticky=tkinter.S, row=1)
+        print('boop')
+    
     def NotifyFreedge(self, freedge):
         if freedge is None:
             print("nothing is selected!")
@@ -239,43 +240,39 @@ class AdministratorInterface:
             if (f.preferred_contact_method == ContactMethod.Email.value):
                 contact = f.email_address
             table.insert(parent='', index=fridge, iid=fridge, text='', tags=tag, values=(
-                f.freedge_id, f.project_name, f.fridge_location.ToString(),
-                f.caretaker_name, f.freedge_status.value, f.last_status_update,
-                f.time_since_last_update(), f.permission_to_notify, contact))
+                f.freedge_id, f.project_name, f.fridge_location.ShortString(),
+                f.caretaker_name, f.freedge_status.value, f.last_status_update))
 
     def BuildTable(self, tab):
         # Structure the table view of the Freedges
         columns = ('FID', 'Project Name', 'Location', 'Owner', 'Freedge Status',
-                   'Last Status Update', 'Time Since Last Update', 'Permission to Notify?', 'Primary Contact')
-        table = ttk.Treeview(tab, height=20, columns=columns, show='headings', selectmode='browse')
+                   'Last Status Update')
+        table = ttk.Treeview(tab, height=30, columns=columns, show='headings', selectmode='browse')
         table.place(x=0, y=0)
         table.pack()
-    
+        ttk.Style().configure("Treeview", background="black",
+                              foreground="black", fieldbackground="black")
         # Insert the columns
         table.column('#0', width=0, stretch=NO)
-        table.column('FID', anchor=CENTER, width=50)
-        table.column('Project Name', anchor=CENTER, width=200)
-        table.column('Location', anchor=CENTER, width=100)
-        table.column('Owner', anchor=CENTER)
-        table.column('Freedge Status', anchor=CENTER, width=150)
-        table.column('Last Status Update', anchor=CENTER, width=100)
-        table.column('Time Since Last Update', anchor=CENTER, width=200)
-        table.column('Permission to Notify?', anchor=CENTER, width=100)
-        table.column('Primary Contact', anchor=CENTER, width=200)
+        table.column('FID', anchor='w', width=40)
+        table.column('Project Name', anchor='w', width=240)
+        table.column('Location', anchor='w', width=200)
+        table.column('Owner', anchor='w', width=150)
+        table.column('Freedge Status', anchor='w', width=150)
+        table.column('Last Status Update', anchor='w', width=100)
     
         # Insert the headers
-        table.heading('#0', text='')
-        table.heading('FID', text='FID')
-        table.heading('Project Name', text='Project Name')
-        table.heading('Location', text='Location')
-        table.heading('Owner', text='Owner')
-        table.heading('Freedge Status', text='Freedge Status')
-        table.heading('Last Status Update', text='Last Update')
-        table.heading('Time Since Last Update', text='Time Since Last Update')
-        table.heading('Permission to Notify?', text='Can Notify?')
-        table.heading('Primary Contact', text='Primary Contact')
-        table.tag_configure("odd_row", background="white")
+        table.heading('#0', text='', anchor='w')
+        table.heading('FID', anchor='w', text='FID')
+        table.heading('Project Name', anchor='w', text='Project Name')
+        table.heading('Location', anchor='w', text='Location')
+        table.heading('Owner', anchor='w', text='Owner')
+        table.heading('Freedge Status', anchor='w', text='Freedge Status')
+        table.heading('Last Status Update', anchor='w', text='Last Update')
         
+        table.tag_configure("odd_row", anchor='w', background="white")
+        table.tag_configure("even_row", anchor='w', background="red")
+
         table.bind('<<TreeviewSelect>>', self.OnTableClick)
         return table
 
@@ -300,9 +297,9 @@ class AdministratorInterface:
         # Creating the Freedge Info Tables
         # =====================================================================
         # Tabs for the table (https://www.geeksforgeeks.org/creating-tabbed-widget-with-python-tkinter/)
-        notebook = Notebook(root)
-        tab1 = Frame(notebook, width=width-200, height=500)
-        tab2 = Frame(notebook, width=width-200, height=500)
+        notebook = Notebook(root, height=480)
+        tab1 = Frame(notebook)
+        tab2 = Frame(notebook)
         notebook.add(tab1, text='    All    ')
         notebook.add(tab2, text='Out of Date')
         notebook.place(x=200, y=100)
@@ -311,7 +308,20 @@ class AdministratorInterface:
         # Build the tables to be displayed in the two tabs
         self.main_tab = self.BuildTable(tab1)
         self.ood_tab = self.BuildTable(tab2)
-    
+        
+        # Create the display box to show the admin more info about a selected freedge in the table
+        selected_info = Frame(root, height=514, width=30)
+        selected_info.place(x=1150, y=100)
+        self.selected_info = selected_info
+        label = ttk.Label(selected_info, text="Selected Freedge Information", justify=CENTER, style='TFrame.TLabel', width=30)
+        label.pack(fill='both', expand=True)
+        label.grid(column=0, row=0)
+        selected_info.columnconfigure(0, weight=1)
+        selected_info.rowconfigure(0, weight=1)
+        
+        label.grid(sticky=tkinter.NW, row=0)
+        woop = ttk.Label(selected_info, text="fajalfjslfjslfjslfsj", justify=LEFT, style='TFrame.TLabel')
+        self.info_box = woop
         # =====================================================================
         # Creating the GUI Buttons
         # =====================================================================
@@ -351,7 +361,7 @@ class AdministratorInterface:
         # Configure the style of the display
         # =====================================================================
         # Notebook color
-        bg_color = "lightgrey"
+        bg_color = "darkgrey"
         gold_color = "gold"
         color_tab = "#ccdee0"
         
@@ -361,17 +371,25 @@ class AdministratorInterface:
         
         style.theme_create("freedge_theme", parent="default", settings={
             "TNotebook": {
-                "configure": {"tabmargins": [10, 10, 20, 10], "background": bg_color}},
+                "configure": {"padding": [30, 5], "tabmargins": [0, 10, 20, 10], "background": bg_color,
+                              "borderwidth": [0], "highlightthickness": [0]}},
             "TNotebook.Tab": {
-                "configure": {"padding": [30, 10], "background": bg_color, "font": (default_font, 14),
+                "configure": {"padding": [30, 5], "background": bg_color, "font": (default_font, 14),
                               "borderwidth": [0]},
-                "map": {"background": [("selected", gold_color), ('!active', bg_color), ('active', color_tab)],
+                "map": {"background": [("selected", gold_color), ('!active', "lightgrey"), ('active', color_tab)],
                         "expand": [("selected", [1, 1, 1, 0])]}},
             "TFrame": {
-                "configure": {"background": "black"}},
+                "configure": {"background": "black", "borderwidth": [0], "highlightthickness": [0]}},
+            "TFrame.TLabel": {
+                "configure": {"font": (default_font, 14), "foreground": "orange", "background": "dimgray"}
+            },
+            "TLabel": {
+                "configure": {"font": (default_font, 10), "foreground": "white", "background": "dimgray"}
+            },
             "Treeview.Heading": {
                 "configure": {"font": (default_font, 12), "foreground": "orange", "background": "dimgray"}},
             'Treeview': {
+                "configure": {"fieldbackground": "darkgrey", "borderwidth": [0], "highlightthickness": [0]},
                 'map': {
                     'background': [('!selected', 'lightgrey'), ('selected', 'white')],
                     'font': [('selected', ("Century Gothic", 10, 'bold'))],
@@ -382,6 +400,7 @@ class AdministratorInterface:
             }
         })
         style.theme_use("freedge_theme")
+        
         if (exists_internal_database(DATABASE_PATH)):
             self.root.update()
             title = "An existing database was found at: " + DATABASE_PATH +\
@@ -392,10 +411,8 @@ class AdministratorInterface:
             if (response is None):
                 self.exit_()
             elif (not response):
-                self.root.update()
                 self.NewDatabase()
             else:
-                self.root.update()
                 screen.LoadDatabase()
                 screen.UpdateFullDisplay()
         
