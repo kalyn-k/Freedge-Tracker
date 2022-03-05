@@ -17,7 +17,7 @@ Last Edit By:	Ginni Gallagher
 """
 from enum import Enum
 from datetime import date 
-from Internal_Data import database_constants as dbc
+from InternalData import database_constants as dbc
 
 class Status(Enum):
 	""" 
@@ -118,9 +118,7 @@ class Freedge:
 
 		Returns: True or False
 		"""
-		if not self.permission_to_notify:
-			return False
-		return True
+		return self.permission_to_notify
 	
 	def set_permission_to_notify(self, can_notify: bool):
 		""" 

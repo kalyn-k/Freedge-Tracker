@@ -23,7 +23,7 @@ date		editor		changes
 """
 
 import csv
-from Internal_Data.database_constants import *
+from InternalData.database_constants import *
 
 def remove_whitespace(field_name):
 	""" 

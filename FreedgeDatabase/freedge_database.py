@@ -18,9 +18,9 @@ Last Edit By:   Ginni Gallagher
 from os.path import exists
 import sqlite3
 from sqlite3 import Error
-from Internal_Data.database_constants import *
+from InternalData.database_constants import *
 from datetime import date
-import Freedge_Database as FD
+import FreedgeDatabase as FD
 
 """
 Helpful links used in setting up database connection and database table:
@@ -502,7 +502,7 @@ def load_internal_database(db_path):
 		freedgeDB -> Instance of FreedgeDatabase object.
 	"""
 	try:
-		sqlite3.connect(DATABASE_PATH)
+		sqlite3.connect(DATABASE_PATH_INFO)
 	except Error as e:
 		ConnectionError(e, " Unable to find or connect to database at the given path.")
 		return None

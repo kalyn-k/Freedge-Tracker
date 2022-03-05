@@ -29,9 +29,9 @@ date         editor     changes
 3-01-22      erk        documentation
 3-04-22      erk        updated documentation and code to match updated NotificationMgmt Class
 """
-import Internal_Data.database_constants  # used to access constants for fridge object
-import Freedge_Database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
-import Notification_System as NS                      # for prototype only, used for popup display of notification
+import InternalData.database_constants  # used to access constants for fridge object
+import FreedgeDatabase as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import NotificationSystem as NS                      # for prototype only, used for popup display of notification
 
 
 class email_mgmt(NS.NotificationMgmt):
@@ -74,7 +74,7 @@ class email_mgmt(NS.NotificationMgmt):
 
         '''
         # call to the other classes in order to use their methods
-        fdb = FD.load_internal_database(Internal_Data.database_constants.DATABASE_PATH)  # freedge database class initialization
+        fdb = FD.load_internal_database(InternalData.database_constants.DATABASE_PATH_INFO)  # freedge database class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 

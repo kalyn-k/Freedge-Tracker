@@ -20,9 +20,9 @@ SECOND_UPDATE_THRESHOLD = 365
 # Paths to the internal database file
 #==============================================================================
 # The path for the location of the internal database file
-DATABASE_PATH = r"./test_data/fdb_needs_updating.db"
+DATABASE_PATH_INFO = r"InternalData/fdb_path.txt"
 
-#==============================================================================
+#=============================================================================
 # CSV File Column Labels/Headers
 #==============================================================================
 # The column label in the csv file for the freedge's project name
