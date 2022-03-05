@@ -3,27 +3,26 @@
 Title:	Caretaker Info Parser for the Freedge Tracker System
 ===============================================================================
 Description:	Read in data from a csv file, input by the user. Parser
-				collects data from file rows to determine general data and
-				address associated with each freedge. This data is used to populate
-				the freedge database from the csv file. 
+		collects data from file rows to determine general data and
+		address associated with each freedge. This data is used to populate
+		the freedge database from the csv file. 
 
-				Parser works under the assumption that file has been pre-validated
-				by a Freedge Administrator and follows a consistent format.
+		Parser works under the assumption that file has been pre-validated
+		by a Freedge Administrator and follows a consistent format.
 				
-Authors: 		Madison Werries, Ginni Gallagher
+Authors: 	Madison Werries, Ginni Gallagher
 Last Edited: 	3-2-2022
 Last Edit By:	Ginni Gallagher
 
 Edit Log
 date		editor		changes
-2-22-22		mw			initial doc
-2-22-22		mw			created preliminary structure for database
-2-23-22		mw			transfered database into new file
-3-1-22		gg			documentation
+2-22-22		mw		initial doc
+2-22-22		mw		created preliminary structure for database
+2-23-22		mw		transfered database into new file
+3-1-22		gg		documentation
 """
 
 import csv
-
 from Internal_Data.database_constants import *
 
 def remove_whitespace(field_name):
@@ -83,7 +82,10 @@ def _parse_field(data):
 	"""
 	Check to ensure data field is not empty.
 
-	Calls: Not called; Madison, is this needed still? (???)
+	Parameters: data -> a string of data to be checked
+
+	Returns: data -> the same string of data
+		or None
 	"""
 	if (len(data) == 0):
 		return None
@@ -101,6 +103,9 @@ def _parse_address(entry_data):
 	"""
 	parsed = []
 	headers = _get_address_format()
+
+	# converts fields of datatype None to a string if needed
+	# add all data to the list to be returned
 	for header in headers:
 		field = entry_data[header]
 		if field is None:
@@ -121,6 +126,9 @@ def _parse_row(entry_data):
 	"""
 	parsed = []
 	headers = _get_headers()
+
+	# converts fields of datatype None to a string if needed
+	# add all data to the list to be returned
 	for header in headers:
 		field = entry_data[header]
 		if field is None:
@@ -132,8 +140,6 @@ def _parse_row(entry_data):
 def parse_freedge_data_file(filename):
 	"""
 	Reads in freedge information from a comma-separated csv file. 
-	Uses python built-in csv DictReader method to map data from each row
-	to a specific fieldname.
 
 	Parameter: filename -> a string defining the name of the csv file to be opened
 
@@ -151,9 +157,17 @@ def parse_freedge_data_file(filename):
 	freedge_database_entries = []
 	
 	with open(filename, newline='') as csvfile:
+
+		# DictReader is built-in python method to map data from each file row
+		# to a specific fieldname
 		info_reader = csv.DictReader(csvfile)
+
+		# ensures file is not empty
 		if(info_reader.line_num == 0):
 			EOFError("The csv file is empty.")
+
+		# for each row of data, parse general info and addresses differently
+		# then add parsed data to freedge entries list
 		for row_data in info_reader:
 			general_data = _parse_row(row_data)
 			address = _parse_address(row_data)
