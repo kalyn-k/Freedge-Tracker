@@ -16,8 +16,7 @@ Last Edited: 	3-3-2022
 Last Edit By:	Ginni Gallagher
 """
 from enum import Enum
-from datetime import date
-from numpy.core.defchararray import upper
+from datetime import date 
 from Internal_Data import database_constants as dbc
 
 class Status(Enum):
