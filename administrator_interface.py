@@ -19,9 +19,42 @@ import Notification_System as NS
 from Freedge_Database import *
 
 class AdministratorInterface:
+    """
+    The class responsible for the main interface of the Freedge Tracker System.
+    It manages both the I/O and the GUI display to the Freedge Administrators.
+    
+    Attributes
+    =======================================================================
+    fdb_path: str
+        The full path to open the internal database file
+        
+    fdb: FreedgeDatabase
+        This is the currently open FreedgeDatabase object (if any).
+        The abbreviation stands for "Freedge database."
+        
+    root
+        The root of the tkinter GUI display
+    
+    notebook = None        # The panel containing the two tabs
+
+    main_tab
+    Tab display showing all freedges
+    self.ood_tab = None         # Tab for showing out-of-date freedges
+    
+    self.info_box = None        # GUI for info about a particular freedge
+    self.info_label = None      # Currently displayed freedge info
+    self.prompt_label = None    # Text to prompt user for action (used
+                                # when no database has been loaded yet)
+        self.ib_width = 30          # Fixed width for info_box display
+        
+    Methods
+    =======================================================================
+    """
     def __init__(self):
         """
         Initializes a new instance of the AdministratorInterface class.
+        
+        
         """
         # =====================================================================
         # Information about the currently loaded database.
@@ -168,13 +201,15 @@ class AdministratorInterface:
     def OnTableClick(self, event):
         """ What to do when the administrator clicks on a freedge in the display table. """
         selected = self.GetSelected()
-        self.info_label.destroy()
-        self.info_label = ttk.Label(self.info_box, text=selected.ToString(),
-            justify=LEFT, style='TLabel', width=self.ib_width)
-        self.info_label.grid(sticky="ew", row=1)
+        if selected is not None:
+            self.info_label.destroy()
+            self.info_label = ttk.Label(self.info_box, text=selected.ToString(),
+                justify=LEFT, style='TLabel', width=self.ib_width)
+            self.info_label.grid(sticky="ew", row=1)
     
     def NotifyFreedge(self, freedge):
         if (self.fdb is None):
+            print("fdb is None")
             return
         if freedge is None:
             print("nothing is selected!")
@@ -183,7 +218,10 @@ class AdministratorInterface:
             messagebox.showwarning("Permission Denied", "The selected freedge "
                 "caretaker has not given permission to receive notifications.")
             return
-        
+        if freedge.freedge_status == Status.ConfirmedInactive:
+            messagebox.showwarning("Inactive Freedge", "The selected freedge "
+                " has been previously confirmed as inactive.")
+            return
         if (freedge.preferred_contact_method == ContactMethod.SMS.value):
             message = "Do you want to check in with the selected freedge caretaker via SMS?\n\n"
             message += "Project name:\t" + freedge.project_name + "\n"
@@ -519,10 +557,10 @@ if __name__ == '__main__':
         # Prompt the user for whether they want to use the (.db) file found
         title = "An existing database was found at: " + located_file_path + \
                 ".\n\nWould you like to proceed with that database?"
-        response = messagebox.askyesno("Database Found", title)
+        proceed_response = messagebox.askyesno("Database Found", title)
         # If they gave a response (ie, didn't just hit 'X')...
-        if (response is not None):
-            if response:
+        if (proceed_response is not None):
+            if proceed_response:
                 # Otherwise, load the internal database file that was found
                 MainInterface.fdb_path = located_file_path
                 MainInterface.OpenDatabase(located_file_path)

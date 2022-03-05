@@ -271,7 +271,7 @@ class FreedgeDatabase:
 			permission = "yes"
 		
 		fields = [f.project_name, f.network_name,
-				  f.date_installed.isoformat(), f.caretaker_name,
+				  f.date_installed, f.caretaker_name,
 				  str(f.freedge_status.value), f.last_status_update, f.phone_number,
 				  f.email_address, permission,
 				  f.preferred_contact_method, str(f.freedge_id)]

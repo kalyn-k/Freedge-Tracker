@@ -121,8 +121,6 @@ class Freedge:
 		"""
 		if not self.permission_to_notify:
 			return False
-		if self.freedge_status == Status.ConfirmedInactive:
-			return False
 		return True
 	
 	def set_permission_to_notify(self, can_notify: bool):
