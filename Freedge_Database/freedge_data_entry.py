@@ -3,15 +3,15 @@
 Title:	Freedge Data Entry Class for the Freedge Tracker System
 ===============================================================================
 Description:	Holds Freedge class and Freedge Address class constructors.
-				Freedge objects are used store location-specific information
-				for each freedge in the system. Additional information is 
-				stored in a freedge object, such as the current status of
-				the freedge (active or inactive) and the preferred method
-				of contact for reaching the freedge caretaker (SMS or email).
+		Freedge objects are used store location-specific information
+		for each freedge in the system. Additional information is 
+		stored in a freedge object, such as the current status of
+		the freedge (active or inactive) and the preferred method
+		of contact for reaching the freedge caretaker (SMS or email).
 
-				Freedge objects are added and stored in the FreedgeDatabase.
+		Freedge objects are added and stored in the FreedgeDatabase.
 
-Authors: 		Madison Werries, Ginni Gallagher
+Authors: 	Madison Werries, Ginni Gallagher
 Last Edited: 	3-3-2022
 Last Edit By:	Ginni Gallagher
 """
@@ -54,7 +54,7 @@ class Freedge:
 	""" 
 	A class containing information about a particular freedge in the FreedgeDatabase. 
 	
-	Attributes (??? all str? - also do we like this or is it too much text)
+	Attributes
 	-----------
 	freedge_id -> a string of the id assigned to the freedge for use in database
 	project_name -> a string of the name of the specific freedge
@@ -214,17 +214,22 @@ class Freedge:
 					   'Permission to Notify', 'Preferred Contact Method',
 					   'Phone Number', 'Email Address', 'Status',
 					   'Last Status Update']
+
+		# attributes for the first freedge object
 		f1 = [self.freedge_id, self.project_name, self.network_name,
 			  self.caretaker_name, self.fridge_location, self.date_installed,
 			  self.permission_to_notify, self.preferred_contact_method,
 			  self.phone_number, self.email_address, self.freedge_status,
 			  self.last_status_update]
+
+		# attributes for the second freedge object
 		f2 = [f.freedge_id, f.project_name, f.network_name,
 			  f.caretaker_name, f.fridge_location, f.date_installed,
 			  f.permission_to_notify, f.preferred_contact_method,
 			  f.phone_number, f.email_address, f.freedge_status,
 			  f.last_status_update]
 
+		# compare each field between the freedge objects, looking for differences
 		for i in range(len(field_names)):
 			if (f1[i] != f2[i]):
 				c = self.comparison_string(field_names[i], f1[i], f2[i])
@@ -325,6 +330,13 @@ class FreedgeAddress:
 		return ret
 	
 	def ToDisplayString(self):
+		"""
+		Returns a full string of the freedge's address, formatted for display.
+
+		Parameters: None
+
+		Returns: ret -> a string
+		"""
 		ret = ""
 		if (self.street_address != ""):
 			ret += self.street_address + "\n\t\t"
