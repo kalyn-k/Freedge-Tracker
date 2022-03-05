@@ -240,7 +240,7 @@ class AdministratorInterface:
             notifier = NS.NotificationMgmt(self.root)
             notifier.notify_and_update(self.fdb, freedge)
         self.UpdateFullDisplay()
-      
+    
     def NotifySelected(self):
         if (self.fdb is None):
             return
@@ -319,7 +319,7 @@ class AdministratorInterface:
     def UpdateFullDisplay(self):
         if (self.fdb is None):
             prompt = "No database loaded.\n\n" \
-                     "Click 'New Database' to create a new freedge database from a csv file." \
+                     "Click 'Create Database' to create a new freedge database from a csv file." \
                      "\n\nClick 'Load Database' to load in an existing database from a .db file."
             none_found = Label(self.notebook, text=prompt, anchor='center', foreground="#e74c3c",
                                background="#d4dadd", width=50, wraplength=300, font=("Helvetica", 12))
