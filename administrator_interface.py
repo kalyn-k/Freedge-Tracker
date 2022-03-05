@@ -29,24 +29,43 @@ class AdministratorInterface:
         The full path to open the internal database file
         
     fdb: FreedgeDatabase
-        This is the currently open FreedgeDatabase object (if any).
-        The abbreviation stands for "Freedge database."
+        This is instance of the FreedgeDatabase class which is currently open
+        in the system, if any. The abbreviation stands for "Freedge database."
         
-    root
-        The root of the tkinter GUI display
+    root: Tk
+        The root of the GUI display, created by calling Tk().
     
-    notebook = None        # The panel containing the two tabs
+    notebook: Notebook
+        The tkinter Notebook responsible for displaying the table of freedge
+        database information. It contains two tabs: the main_tab, which shows
+        the list of all the freedges, and the ood_tab, which shows the list of
+        freedges with out of date information.
 
     main_tab
-    Tab display showing all freedges
-    self.ood_tab = None         # Tab for showing out-of-date freedges
+       The GUI for displaying the table list of all freedges in the database.
+       A child of self.notebook.
+       
+    ood_tab
+        The GUI for showing the table list of all freedges in the database
+        which are considered to be "out-of-date".
+        A child of self.notebook
     
-    self.info_box = None        # GUI for info about a particular freedge
-    self.info_label = None      # Currently displayed freedge info
-    self.prompt_label = None    # Text to prompt user for action (used
-                                # when no database has been loaded yet)
-        self.ib_width = 30          # Fixed width for info_box display
+    info_box
+        GUI tkinter Frame for displaying information about a particular
+        freedge, updated whenever the user clicks on an entry in the table.
+    
+    info_label
+        The tkinter Label which controls the text of the currently selected
+        freedge info. A child of info_box.
         
+    ib_width
+        Fixed width to maintain consistency for the info_box display Labels.
+    
+    prompt_label
+        A tkinter Label which shows text instructions prompting the user for
+        action. This is shown when no database has been loaded yet, and is
+        destroyed after a database has been loaded into the system.
+    
     Methods
     =======================================================================
     """
@@ -146,7 +165,7 @@ class AdministratorInterface:
                 continue_prompts = False
                 self.SaveDatabase(csv_file_path)
                 # Update the display with the newly loaded data
-                self.UpdateFullDisplay()
+        self.UpdateFullDisplay()
 
     def UpdateDatabase(self, event=None):
         # Get path of CSV file
