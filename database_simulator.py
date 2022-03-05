@@ -7,10 +7,10 @@ Authors: 		TODO
 Last Edited: 	2-22-2022
 Last Edit By:	Madison Werries
 """
-from Freedge_Database import *
+from Freedge_Database import new_database_from_csv
 from datetime import date
 def main():
-	tdb = new_database_from_csv(r"../test_data/fdb_needs_updating.db", "../test_data/freeedge_data_tiny.csv")
+	tdb = new_database_from_csv(r"test_data/fdb_needs_updating.db", "./test_data/freeedge_data_tiny.csv")
 	freedges = tdb.get_freedges()
 	for i in range(len(freedges)):
 		print(freedges[i])
