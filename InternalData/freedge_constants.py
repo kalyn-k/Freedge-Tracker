@@ -10,7 +10,7 @@ Description:	A list of constants for the Freedge Tracker System. These
 				
 Authors: 		Madison Werries
 Last Edited: 	03-06-2022
-Last Edit By:	Madison Werries
+Last Edit By:	Ginni Gallagher
 """
 #==============================================================================
 # Constants for how often to check in with Freedge Caretakers
@@ -18,8 +18,6 @@ Last Edit By:	Madison Werries
 # Desired threshold for the number of days since the last status update where
 # we would like to get a status update from the freedge caretaker again.
 FIRST_UPDATE_THRESHOLD = 90
-# Time before a freedge's status automatically switches to 'Suspected Inactive'
-SECOND_UPDATE_THRESHOLD = 365
 
 #==============================================================================
 # Internal Data Constants
