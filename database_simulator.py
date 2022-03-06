@@ -39,7 +39,8 @@ Last Edited: 	3-06-2022
 Last Edit By:	Ginni Gallagher
 ===============================================================================
 """
-from FreedgeDatabase import new_database_from_csv
+from FreedgeDatabase import new_database_from_csv, freedge_data_entry
+from InternalData import freedge_constants
 from datetime import date
 import random
 
@@ -55,17 +56,31 @@ def main():
 	
 	# Define a list of years to be used when setting last_status_update values of the freedges
 	years = [2017, 2018, 2019, 2020, 2021]
+
+	# Get current date to use in determining the activity status of an out-of-date freedge
+	curr_date = date.today()
 	
-	# Update the dates of the freedges to randomly selected past dates (creating out-of-date freedges)
-	# Every nth freedge's date will not be updated (to ensure some freedge are up-to-date)
-	n = random.randint(3, 20)
+	# Update the dates of the freedges to a randomly selected past date (creating out-of-date freedges)
+	# Every nth freedge's date will not be updated (to ensure some freedges in dataset are up-to-date)
+	n = random.randint(2, 10)
 	for i in range(len(freedges)):
+
+		# Randomly generate date and update freedge data
 		if (i % n != 0):
 			year = random.choice(years)
 			month = random.randint(1, 12)
 			day = random.randint(1,28)
-			freedges[i].last_status_update = date(year, month, day)
+			out_of_date = date(year, month, day)
+
+			freedges[i].last_status_update = out_of_date
+
+			# if freedge date is past {FIRST_UPDATE_THRESHOLD} days old, update activity status to "SuspectedInactive"
+			days_since_update = curr_date - out_of_date
+			if (days_since_update.days > freedge_constants.FIRST_UPDATE_THRESHOLD):
+				freedges[i].freedge_status = freedge_data_entry.Status.SuspectedInactive
+
 			tdb.update_freedge(freedges[i])
+
 
 if __name__ == '__main__':
 	main()
