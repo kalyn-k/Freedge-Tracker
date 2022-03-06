@@ -46,27 +46,27 @@ class AdministratorInterface:
         the list of all the freedges, and the ood_tab, which shows the list of
         freedges with out of date information.
 
-    main_tab
+    main_tab: Frame
        The GUI for displaying the table list of all freedges in the database.
        A child of self.notebook.
        
-    ood_tab
+    ood_tab: Frame
         The GUI for showing the table list of all freedges in the database
         which are considered to be "out-of-date".
         A child of self.notebook
     
-    info_box
+    info_box: Frame
         GUI tkinter Frame for displaying information about a particular
         freedge, updated whenever the user clicks on an entry in the table.
     
-    info_label
+    info_label: Label
         The tkinter Label which controls the text of the currently selected
         freedge info. A child of info_box.
         
-    ib_width
+    ib_width: int
         Fixed width to maintain consistency for the info_box display Labels.
     
-    prompt_label
+    prompt_label: Label
         A tkinter Label which shows text instructions prompting the user for
         action. This is shown when no database has been loaded yet, and is
         destroyed after a database has been loaded into the system.
@@ -86,7 +86,7 @@ class AdministratorInterface:
     LoadDatabase(db_file_path)
         Opens the database at the given path, loading the database into the
         system and updating the internal file which stores the most recently
-        accessed databse file. Called by SelecteDatabaseToLoad() and the
+        accessed database file. Called by SelecteDatabaseToLoad() and the
         main driver module, freedge_tracker.py.
     
     SelectCSV()

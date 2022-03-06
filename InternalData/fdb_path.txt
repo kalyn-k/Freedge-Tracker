@@ -1,2 +1,2 @@
 This is a text file which contains the file path to the last database(.db file) that was opened.
-C:/Users/meera/Documents/GitHub/422-Freedge/test_data/wowow.db
+C:/Users/meera/Documents/GitHub/422-Freedge/test_data/fdb_needs_updating.db
