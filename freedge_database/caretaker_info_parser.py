@@ -145,9 +145,9 @@ def parse_freedge_data_file(filename):
 
 	Calls:
 		Called by:
-			freedge_tracker_database.compare_databases -> loads a new csv file and compares to
+			freedge_database.compare_databases -> loads a new csv file and compares to 
 			state of current database
-			freedge_tracker_database.new_database_from_csv() -> loads data from csv file into
+			freedge_database.new_database_from_csv() -> loads data from csv file into
 			database
 
 	Returns: freedge_database_entries -> a list of lists of strings containing all general and 
