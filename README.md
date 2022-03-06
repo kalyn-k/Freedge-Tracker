@@ -22,22 +22,28 @@ The system is now ready for use, select the “Create Database” or “Load Dat
 
 Additional Setup: For this program to run as intended, the file that holds all of the freedge data must be in a .csv comma separated format. The first line of the file must contain a comma separated header of the format:
 
-<project_name> <network_name> <street_address> <city> <state/province> <zip_code> <country> <main_contact_method> <date_installed> <contact_name> <activity_status> <phone_number> <email_address>
+<project_name> <network_name> <street_address> <city> <state/province> <zip_code> <country> 
+ <main_contact_method> <date_installed> <contact_name> <activity_status> <phone_number> <email_address>
 
-The rows that follow the header will contain the corresponding freedge information in the same order shown by the header. Additionally, each installation date and the date of the last status update have to be in the formation:
+The rows that follow the header will contain the corresponding freedge information in the same order shown by the 
+header. Additionally, each installation date and the date of the last status update have to be in the formation:
 YYYY-MM-DD
-Every header under the constants file NEEDS to exist in the CSV file with the same name. The user can change the names of headers in the InternalData folder in the “freedge_constants.py” file to match the format of the CSV file. NOTE: No fields in the constants file can be deleted or missing from either the freedge_constants.py or the CSV file.
-
-
+Every header under the constants file NEEDS to exist in the CSV file with the same name. The user can change the 
+names of headers in the InternalData folder in the “freedge_constants.py” file to match the format of the CSV file.
+NOTE: No fields in the constants file can be deleted or missing from either the freedge_constants.py or the CSV file.
 
 Software Dependencies: Python 3
 
 Directory Structure:
-“AdminInterface” includes the files that enable the whole system  to run, including all of the tkinter display file set-ups.
-“FreedgeDatabase” includes all of the components that work together to create the freedge database. 
-“InternalData” contains a constant file and a path file that allows easy updating of global variables.
-“NotificationSystem” includes all of the files that work together to send the user notifications. 
-“Test_data” is a folder that contains all of the test csv files that can be uploaded into the system. It also includes one database file that contains out of date fridges for testing. 
-“Documentation” is a file containing the system requirements, system standards
-The “Freedge-Tracker.zip” is a zip file containing all the files necessary to run the system on your local machine with the instructions above.
-The “freedge_tracker.py” file is the main driver for the system. This file will be run in the terminal to start the software. 
+1. “AdminInterface” includes the files that enable the whole system  to run, including all of the tkinter display 
+   file set-ups.
+2. “FreedgeDatabase” includes all of the components that work together to create the freedge database. 
+3. “InternalData” contains a constant file and a path file that allows easy updating of global variables.
+4. “NotificationSystem” includes all of the files that work together to send the user notifications. 
+5. “Test_data” is a folder that contains all of the test csv files that can be uploaded into the system. It also
+   includes one database file that contains out of date fridges for testing. 
+6. “Documentation” is a file containing the system requirements, system standards
+7. The “Freedge-Tracker.zip” is a zip file containing all the files necessary to run the system on your local 
+   machine with the instructions above.
+8. The “freedge_tracker.py” file is the main driver for the system. This file will be run in the terminal to start
+   the software. 
