@@ -18,9 +18,9 @@ Last Edit By:   Ginni Gallagher
 from os.path import exists
 import sqlite3
 from sqlite3 import Error
-from internal_data.database_constants import *
+from InternalData.database_constants import *
 from datetime import date
-import freedge_database as FD
+import FreedgeDatabase as FD
 
 """
 Helpful links used in setting up database connection and database table:
@@ -499,7 +499,7 @@ def load_internal_database(db_path):
 	Parameters: db_path -> a string indicating the path of the database to be loaded.
 
 	Returns:
-		freedgeDB -> Instance of freedge_database object.
+		freedgeDB -> Instance of FreedgeDatabase object.
 	"""
 	try:
 		sqlite3.connect(DATABASE_PATH_INFO)
@@ -518,7 +518,7 @@ def new_database_from_csv(db_path, csv_file_path):
 		csv_file_path -> Path of the input csv file.
 
 	Returns:
-		freedgeDB - New freedge_database class isntance.
+		freedgeDB - New FreedgeDatabase class isntance.
 	"""
 
 	# This defines the structure of the addresses table
@@ -548,7 +548,7 @@ def new_database_from_csv(db_path, csv_file_path):
 			preferred_contact_method varchar(10)
 		);"""
 	
-	# Create the new freedge_database class object
+	# Create the new FreedgeDatabase class object
 	freedgeDB = FreedgeDatabase(db_path)
 	# create a database connection
 	conn = freedgeDB.open_connection()
@@ -581,5 +581,5 @@ def new_database_from_csv(db_path, csv_file_path):
 	conn.commit()
 	# Close the connection
 	conn.close()
-	# Return the freedge_database class instance
+	# Return the FreedgeDatabase class instance
 	return freedgeDB

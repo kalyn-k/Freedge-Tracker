@@ -3,15 +3,15 @@
 Title:	Main Driver for the Freedge Tracker System
 ===============================================================================
 Description:	This is the main driver for the Freedge Tracker System. Its
-				primary interactions are with the admin_interface module
+				primary interactions are with the AdminInterface module
 				to start the program.
                 
 Authors:        Madison Werries
 Last Edited:    3-5-2022
 Last Edit By:   Madison Werries
 """
-from freedge_database import *
-from admin_interface import *
+from FreedgeDatabase import *
+from AdminInterface import *
 
 def main():
 	# Create a new Administrator Interface
@@ -20,9 +20,9 @@ def main():
 	MainInterface.CreateDisplay()
 	
 	# Check whether or not an internal database already exists. This
-	# information is stored using the file: "internal_data/fdb_path.txt"
+	# information is stored using the file: "InternalData/fdb_path.txt"
 	try:
-		# Check that the file "internal_data/fdb_path.txt" exists
+		# Check that the file "InternalData/fdb_path.txt" exists
 		path_location = open(DATABASE_PATH_INFO, "r")
 	except IOError:
 		# If there's an error and the internal file does not exist, create it

@@ -18,9 +18,9 @@ Resources/help in using tkinter found at:
 from tkinter.ttk import *
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
-import notification_system as NS
-from freedge_database import *
-from admin_interface.tkinter_style import *
+import NotificationSystem as NS
+from FreedgeDatabase import *
+from AdminInterface.tkinter_style import *
 import sys
 
 class AdministratorInterface:
@@ -34,7 +34,7 @@ class AdministratorInterface:
         The full path to open the internal database file
         
     fdb: FreedgeDatabase
-        This is instance of the freedge_database class which is currently open
+        This is instance of the FreedgeDatabase class which is currently open
         in the system, if any. The abbreviation stands for "Freedge database."
         
     root: Tk
@@ -74,7 +74,7 @@ class AdministratorInterface:
     Methods
     ===========================================================================
     __init__()
-        Initializes a new instance of the admin_interface class.
+        Initializes a new instance of the AdminInterface class.
         Requires no arguments.
     
     CreateDatabase()
@@ -132,7 +132,7 @@ class AdministratorInterface:
     NotifyOutOfDate()
         Sends a notification to each of the caretakers who have not been
         contacted in the amount of time defined by FIRST_UPDATE_THRESHOLD in
-        the constants file (internal_data/database_constants.py). The system
+        the constants file (InternalData/database_constants.py). The system
         first prompts the user with information about the freedges which will
         be messaged, allowing them to confirm or cancel the mass-send.
     
@@ -165,10 +165,10 @@ class AdministratorInterface:
     """
     def __init__(self):
         """
-        Initializes a new instance of the admin_interface class.
+        Initializes a new instance of the AdminInterface class.
         """
         self.fdb_path = None        # The file path to the internal database
-        self.fdb = None             # The freedge_database object
+        self.fdb = None             # The FreedgeDatabase object
         self.root = None            # The root of the GUI display
         self.main_tab = None        # Tab display showing all freedges
         self.ood_tab = None         # Tab for showing out-of-date freedges
@@ -215,7 +215,7 @@ class AdministratorInterface:
         if not exists_internal_database(db_file_path):
             FileNotFoundError("Could not locate the database at: ", db_file_path)
         
-        # Load the database file as an instance of the freedge_database class
+        # Load the database file as an instance of the FreedgeDatabase class
         self.fdb = load_internal_database(db_file_path)
         # Update the interface's current database path for future use
         self.fdb_path = db_file_path
@@ -466,7 +466,7 @@ class AdministratorInterface:
         """
         Sends a notification to each of the caretakers who have not been
         contacted in the amount of time defined by FIRST_UPDATE_THRESHOLD in
-        the constants file (internal_data/database_constants.py).
+        the constants file (InternalData/database_constants.py).
         
         Returns: None
         """

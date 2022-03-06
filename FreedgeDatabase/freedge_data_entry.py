@@ -9,7 +9,7 @@ Description:	Holds Freedge class and Freedge Address class constructors.
 		the freedge (active or inactive) and the preferred method
 		of contact for reaching the freedge caretaker (SMS or email).
 
-		Freedge objects are added and stored in the freedge_database.
+		Freedge objects are added and stored in the FreedgeDatabase.
 
 Authors: 	Madison Werries, Ginni Gallagher
 Last Edited: 	3-3-2022
@@ -17,7 +17,7 @@ Last Edit By:	Ginni Gallagher
 """
 from enum import Enum
 from datetime import date 
-from internal_data import database_constants as dbc
+from InternalData import database_constants as dbc
 
 class Status(Enum):
 	""" 
@@ -52,7 +52,7 @@ class ContactMethod(Enum):
 	
 class Freedge:
 	""" 
-	A class containing information about a particular freedge in the freedge_database.
+	A class containing information about a particular freedge in the FreedgeDatabase. 
 	
 	Attributes
 	-----------
