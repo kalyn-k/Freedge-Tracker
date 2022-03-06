@@ -11,7 +11,7 @@ Description:    Creates and manages a new SQLite database. This database is load
 				and abstraction provides ease of reading for programmers not familiar with
 				SQL databases.
 
-Authors:        Madison Werries, Ginni Gallagher, TODO
+Authors:        Madison Werries, Ginni Gallagher
 Last Edited:    3-3-2022
 Last Edit By:   Ginni Gallagher 
 """
@@ -19,8 +19,9 @@ from os.path import exists
 import sqlite3
 from sqlite3 import Error
 from internal_data.database_constants import *
+from database.freedge_data_entry import *
+from database.caretaker_info_parser import parse_freedge_data_file
 from datetime import date
-import freedge_tracker_database as FD
 
 """
 Helpful links used in setting up database connection and database table:
@@ -147,15 +148,15 @@ class FreedgeDatabase:
 		# 		(`Status` class found in freedge_data_entry.py)
 		status_string = row[5].upper().strip()
 		if (status_string == "YES"):
-			status = FD.Status.Active
-		elif (status_string == FD.Status.Active.value.upper()):
-			status = FD.Status.Active
+			status = Status.Active
+		elif (status_string == Status.Active.value.upper()):
+			status = Status.Active
 		elif (status_string == "NO"):
-			status = FD.Status.ConfirmedInactive
-		elif (status_string == FD.Status.ConfirmedInactive.value.upper()):
-			status = FD.Status.ConfirmedInactive
+			status = Status.ConfirmedInactive
+		elif (status_string == Status.ConfirmedInactive.value.upper()):
+			status = Status.ConfirmedInactive
 		else:
-			status = FD.Status.SuspectedInactive
+			status = Status.SuspectedInactive
 		# Parse yes/no form responses into booleans
 		permission = (row[9].upper().strip() == "YES")
 		try:
@@ -169,9 +170,9 @@ class FreedgeDatabase:
 			last_update = '0000-00-00'
 			
 		# Create a new instance of a FreedgeAddress
-		address = FD.FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
+		address = FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
 		# Create a new instance of a Freedge:
-		new_freedge = FD.Freedge(row[0], row[1], row[2], row[3], address, installed_date, row[10], row[7],
+		new_freedge = Freedge(row[0], row[1], row[2], row[3], address, installed_date, row[10], row[7],
 							  row[8], last_update, permission)
 		# Set the address and the status of the freedge
 		new_freedge.freedge_status = status
@@ -351,7 +352,7 @@ class FreedgeDatabase:
 		self.create_table(conn, sql_new_addresses)
 		
 		# Parse the data from the new csv file
-		new_freedge_dataset = FD.parse_freedge_data_file(new_csv_data)
+		new_freedge_dataset = parse_freedge_data_file(new_csv_data)
 		# Insert the data into the new temporary tables
 		for freedge_data in new_freedge_dataset:
 			fid = self.new_freedge(conn, freedge_data[0], True)
@@ -499,7 +500,7 @@ def load_internal_database(db_path):
 	Parameters: db_path -> a string indicating the path of the database to be loaded.
 
 	Returns:
-		freedgeDB -> Instance of freedge_tracker_database object.
+		freedgeDB -> Instance of database object.
 	"""
 	try:
 		sqlite3.connect(DATABASE_PATH_INFO)
@@ -518,7 +519,7 @@ def new_database_from_csv(db_path, csv_file_path):
 		csv_file_path -> Path of the input csv file.
 
 	Returns:
-		freedgeDB - New freedge_tracker_database class isntance.
+		freedgeDB - New database class isntance.
 	"""
 
 	# This defines the structure of the addresses table
@@ -548,7 +549,7 @@ def new_database_from_csv(db_path, csv_file_path):
 			preferred_contact_method varchar(10)
 		);"""
 	
-	# Create the new freedge_tracker_database class object
+	# Create the new database class object
 	freedgeDB = FreedgeDatabase(db_path)
 	# create a database connection
 	conn = freedgeDB.open_connection()
@@ -569,7 +570,7 @@ def new_database_from_csv(db_path, csv_file_path):
 		ConnectionError("Error: Could not create the database connection.")
 	
 	# Now that the (empty) tables have been created, parse data from the csv file
-	freedge_dataset = FD.parse_freedge_data_file(csv_file_path)
+	freedge_dataset = parse_freedge_data_file(csv_file_path)
 	# Insert all the parsed data into the database tables
 	for freedge_data in freedge_dataset:
 		# Add the individual freedge to the SQL table
@@ -581,5 +582,5 @@ def new_database_from_csv(db_path, csv_file_path):
 	conn.commit()
 	# Close the connection
 	conn.close()
-	# Return the freedge_tracker_database class instance
+	# Return the database class instance
 	return freedgeDB

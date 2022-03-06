@@ -31,7 +31,7 @@ date         editor     changes
 """
 
 import internal_data.database_constants  # used to access constants for fridge object
-import freedge_tracker_database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
 import notification_system as NS                      # for prototype only, used for popup display of notification
  
 

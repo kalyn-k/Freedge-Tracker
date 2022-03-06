@@ -10,8 +10,8 @@ Authors:        Madison Werries
 Last Edited:    3-5-2022
 Last Edit By:   Madison Werries
 """
-from freedge_tracker_database import *
-from admin_interface import *
+from database import *
+from admin_interface.administrator_interface import *
 
 def main():
 	# Create a new Administrator Interface
