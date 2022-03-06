@@ -33,23 +33,21 @@ import FreedgeDatabase as FD                         # used to access the databa
 import NotificationSystem as NS                      # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
-    '''
+    """
     This class is the parent class for all notification systems. The class is designed using modularity
     so every class that inherits NotificationMgmt can add additional methods specific for the notification
     system. The class has the attributes to signal a popup notification.
-    '''
+    """
 
     def __init__(self, root):
-        '''
-        Purpose: TODO
-
-        Parameters: TODO
-
-        Calls:
-            Called by: TODO
+        """
+        Purpose:
+            Creates a new instance of the NotificationMgmt class, setting the root tkinter display
+        Parameters:
+            root: TK, the tkinter root for the GUI display, passed in from the main driver.
 
         Returns: None, initializes NotififacationMgmt class
-        '''
+        """
         self.root = root
         
     def get_fridge_info_message(self):

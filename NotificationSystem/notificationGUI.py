@@ -2,7 +2,7 @@
 ===============================================================================
 Title:	Notification GUI
 ===============================================================================
-Description:	TODO: check--> The NotificationGUI is a prototype popup display of what a notification 
+Description:	The NotificationGUI is a prototype popup display of what a notification
                 from Freedge will look like. Because of money constraints, we were unable
                 to purchase a Twilio Subscription to send real notifications. When signaled
                 in NotificationMgmt, the notificationGUI will pop up with a message asking
@@ -31,11 +31,16 @@ from FreedgeDatabase.freedge_data_entry import *   # used to access fridge objec
 
 class PopUp:
     """
-    # TODO is this okay?     <---- add description about the fact that this is for the prototype only.
-    This class creates a pop-up window upon each class instantiation to send a notification
-    to freedge caretakers. The class determines whether or not a freedge is still active
-    as a result of the pop-up window options. This class is for the prototype only and serves to 
-    demonstrate how a notification will be sent out, recieved, and interpreted by the system.
+    This class serves as a stand-in for prototype of the Freedge Tracker System,
+    and the notifications it may send to freedge caretakers. In the real
+    implementation, this would be replaced by real SMS and email messages,
+    controlled by the files notificationMgmtSMS.py and notificationMgmtEmail.py.
+    
+    This class creates a pop-up window upon each class instantiation to send a
+    notification to freedge caretakers. The class determines whether or not a
+    freedge is still active  as a result of the pop-up window options.
+    Again, this class is for the prototype only and serves to demonstrate how
+    a notification may be sent out, recieved, and interpreted by the system.
     """
     def __init__(self, root, freedge: Freedge):
         """
