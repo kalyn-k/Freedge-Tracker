@@ -10,7 +10,7 @@ Authors:        Madison Werries
 Last Edited:    3-5-2022
 Last Edit By:   Madison Werries
 """
-from freedge_database import *
+from freedge_tracker_database import *
 from admin_interface import *
 
 def main():

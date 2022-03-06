@@ -29,7 +29,7 @@ date         editor     changes
 3-04-22     erk         updated documentation to make more consistent
 """
 import internal_data.database_constants  # used to access constants for fridge object
-import freedge_database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import freedge_tracker_database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
 import notification_system as NS                      # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
