@@ -20,7 +20,7 @@ SECOND_UPDATE_THRESHOLD = 365
 # Paths to the internal database file
 #==============================================================================
 # The path for the location of the internal database file
-DATABASE_PATH_INFO = r"InternalData/fdb_path.txt"
+DATABASE_PATH_INFO = r"internal_data/fdb_path.txt"
 
 #=============================================================================
 # CSV File Column Labels/Headers

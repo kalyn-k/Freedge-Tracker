@@ -11,7 +11,7 @@ Last Edit By:   Madison Werries
 
 """
 from tkinter.ttk import *
-from AdminInterface.administrator_interface import *
+from admin_interface.administrator_interface import *
 def build_style():
 	"""
 	Builds the tkinter style for the Administrator Interface GUI.
