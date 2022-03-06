@@ -44,17 +44,22 @@ DATABASE_PATH_INFO = r"InternalData/fdb_path.txt"
 #==============================================================================
 PROJECT_NAME_KEY = "Project"
 NETWORK_NAME_KEY = "Network"
+
 STREET_ADDRESS_KEY = "Street address"
 CITY_KEY = "City"
 STATE_PROVINCE_KEY = "State / Province"
 ZIP_CODE_KEY = "Zip Code"
 COUNTRY_KEY = "Country"
+
 DATE_INSTALLED_KEY = "Date Installed"
+
 CONTACT_NAME_KEY = "Contact Name"
 PHONE_NUMBER_KEY = "Phone Number"
 EMAIL_ADDRESS_KEY = 'Email Address'
+
 PERMISSION_TO_CONTACT_KEY = "Permission to Contact"
 PREFERRED_METHOD_KEY = "Preferred Contact Method"
+
 ACTIVE_STATUS_KEY = "Active?"
 
 #==============================================================================

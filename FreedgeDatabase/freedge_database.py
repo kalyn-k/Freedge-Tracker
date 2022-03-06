@@ -12,7 +12,7 @@ Description:    Creates and manages a new SQLite database. This database is load
 				SQL databases.
 
 Authors:        Madison Werries, Ginni Gallagher
-Last Edited:    3-5-2022
+Last Edited:    3-6-2022
 Last Edit By:   Madison Werries
 """
 from os.path import exists
@@ -27,7 +27,6 @@ Helpful links used in setting up database connection and database table:
 
 https://www.sqlitetutorial.net/sqlite-python/creating-database/
 https://www.sqlitetutorial.net/sqlite-python/create-tables/
-
 """
 
 class FreedgeDatabase:
@@ -63,7 +62,7 @@ class FreedgeDatabase:
 			conn = sqlite3.connect(self.db_location)
 			return conn
 		except Error as e:
-			print(e)
+			Error(e, "Failed to connect to the database at: ", self.db_location)
 		return conn
 	
 	def create_table(self, conn, create_table_sql):
@@ -79,8 +78,8 @@ class FreedgeDatabase:
 			c = conn.cursor()
 			c.execute(create_table_sql)
 		except Error as e:
-			print(e)
-	
+			Error(e, "Failed to connect to the database at: ", self.db_location)
+
 	def new_address(self, conn, address_data, temp=False):
 		"""
 		Inserts a new address into the SQLite database's 'addresses' table.

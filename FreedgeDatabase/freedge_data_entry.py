@@ -23,16 +23,39 @@ class Status(Enum):
 	""" 
 	An Enum class to encapsulate the current known status of a freedge. 
 
-	Attributes
-	-----------
-	Active -> a string to indicate the status is active
-	SuspectedInactive -> a string to indicate the status is believed to be inactive
-	ConfirmedInactive -> a string to indicate the status has been confrimed by the
-						freedge caretaker as being inactive
+	Defined Enum Constants (keys):
+	-----------------------------
+	Active:
+		Status.Active indicates that the status of a given freedge is known to
+		be active. This means the freedge's status has been updated within the
+		last {FIRST_UPDATE_THRESHOLD} days.
+			  
+	SuspectedInactive:
+		Status.SuspectedActive indicates that the status of the freedge is
+		LIKELY to be inactive. This happens when the freedge's status has not
+		been updated within the last {FIRST_UPDATE_THRESHOLD} days, and the
+		user has neither confirmed nor denied that their freedge is inactive.
+		
+	ConfirmedInactive:
+		Status.ConfirmedInactive indicates that the status of the freedge is known
+		to be inactive. This means that the freedge caretaker at some point
+		notified the system that their freedge is inactive.
+		
+	Unknown:
+		 Status.Unknown indicates that the status of the freedge is not
+		 known at this time. It differs from 'SuspectedInactive' in that a
+		 freedge's status cannot reasonably be defined as 'SuspectedInactive' if
+		 a caretaker has not given consent to receive notifications.
+		 
+		 When creating a new database from a CSV file, this is the default
+		 Status assigned when both the {ACTIVE_STATUS_KEY?} column and the
+		 {PERMISSION_TO_CONTACT_KEY} column have been left blank.
 	"""
-	Active = "active"
-	SuspectedInactive = "suspected inactive"
-	ConfirmedInactive = "confirmed inactive"
+	# The caretaker's status is known
+	Active = "ACTIVE"
+	Unknown = "UNKNOWN"
+	SuspectedInactive = "SUSPECTED INACTIVE"
+	ConfirmedInactive = "CONFIRMED INACTIVE"
 
 class ContactMethod(Enum):
 	""" 
@@ -40,8 +63,8 @@ class ContactMethod(Enum):
 	determined by what mode of contact was indicated by the user on the inputted
 	csv file.
 
-	Attributes
-	----------- 
+	Defined Enum Constants (keys):
+	-----------------------------
 	SMS -> a constant (defined as a string in freedge_constants.py) indicating
 			the freedge caretaker prefers text notifications
 	Email -> a constant (defined as a string in freedge_constants.py) indicating
@@ -293,18 +316,42 @@ class FreedgeAddress:
 		
 	def ShortString(self):
 		""" 
-		Returns a string of the freedge's address in the form '{city}, {state/province}' 
+		Returns a string of the freedge's address in a concise display format.
 		
 		Parameters: None
-
 		Returns: ret -> a string
+		
+		The formats returned by the parser are based on which fields exist,
+		and may be of any of the following forms listed below:
+			(1) '{city}, {state/province}, {country}'
+			(2) '{city}, {state/province}'
+			(3) '{city}, {country}'
+			(4) '{country}'
+			(5) '{city}
+			(6) 'NOT GIVEN'
 		"""
-		ret = self.city
-		if (len(self.state_province) == 0):
-			ret += ", " + self.country
+		has_city = (len(self.city.strip())) != 0
+		has_state = (len(self.state_province.strip())) != 0
+		has_country = (len(self.country.strip())) != 0
+		
+		# Format (1): '{city}, {state/province}, {country}'
+		if (has_city and has_state and has_country):
+			return self.city + ", " + self.state_province + ", " + self.country
+		# Format (2): '{city}, {state/province}'
+		elif (has_city and has_state and not has_country):
+			return self.city + ", " + self.state_province
+		# Format (3): '{city}, {country}'
+		elif (has_country and has_city and not has_state):
+			return self.city + ", " + self.country
+		# Format (4): '{country}'
+		elif (has_country and not has_city and not has_state):
+			return self.country
+		# Format (5): '{city}'
+		elif (has_city and not has_state and not has_country):
+			return self.city
+		# Format (6): 'NOT GIVEN'
 		else:
-			ret += ", " + self.state_province
-		return ret
+			return "NOT GIVEN"
 		
 	def ToString(self):
 		""" 
