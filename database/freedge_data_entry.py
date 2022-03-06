@@ -9,7 +9,7 @@ Description:	Holds Freedge class and Freedge Address class constructors.
 		the freedge (active or inactive) and the preferred method
 		of contact for reaching the freedge caretaker (SMS or email).
 
-		Freedge objects are added and stored in the database_manager.
+		Freedge objects are added and stored in the database.
 
 Authors: 	Madison Werries, Ginni Gallagher
 Last Edited: 	3-3-2022
@@ -52,11 +52,11 @@ class ContactMethod(Enum):
 	
 class Freedge:
 	""" 
-	A class containing information about a particular freedge in the database_manager.
+	A class containing information about a particular freedge in the database.
 	
 	Attributes
 	-----------
-	freedge_id -> a string of the id assigned to the freedge for use in database_manager
+	freedge_id -> a string of the id assigned to the freedge for use in database
 	project_name -> a string of the name of the specific freedge
 	network_name -> a string of the name of the organizer of the freedge
 	caretaker_name -> a string of the name of the freedge caretaker

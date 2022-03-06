@@ -2,10 +2,10 @@
 ===============================================================================
 Title:	notificationMgmt.py
 ===============================================================================
-Description:	Obtains which freedges in the database_manager are considered out of date and collects their associated
+Description:	Obtains which freedges in the database are considered out of date and collects their associated
                 data (caretaker name, project name, and time since last update) to be used when crafting a
                 notification message by the notification GUI. Also uses the user response from the GUI to then
-                update the status of the Freedge in the database_manager.
+                update the status of the Freedge in the database.
 
 Authors: 		Ellie Kobak, Liza Richards, Madison Werries
 Creation Date:  February 17, 2022
@@ -30,7 +30,7 @@ date         editor     changes
 """
 import internal_data.database_constants  # used to access constants for fridge object
 from notification_system import notificationGUI
-from database_manager.freedge_database import load_internal_database
+from database.freedge_database import load_internal_database
 
 class NotificationMgmt():
     '''
@@ -58,7 +58,7 @@ class NotificationMgmt():
             This function obtains which freedges are out of date (have not had a status update in 90 days),
             collects the freedge's caretaker, name, and time since last update to be used to craft a message for the 
             notification GUI. The function also update the freedge object's status based on user response, and then 
-            further update the freedge database_manager.
+            further update the freedge database.
 
         Parameters: None
        
@@ -70,7 +70,7 @@ class NotificationMgmt():
         '''
         
         # call to the other classes in order to use their methods
-        # freedge database_manager class initialization
+        # freedge database class initialization
         fdb = load_internal_database(internal_data.database_constants.DATABASE_PATH_INFO)
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
@@ -91,11 +91,11 @@ class NotificationMgmt():
         Purpose:  TODO double check if still right TODO
             Calls the notification interface class which will return a boolean value based on whether or not the
             Freedge is active from user input.
-            Based on this boolean value, updates the freedge object status and then updates the freedge database_manager status
+            Based on this boolean value, updates the freedge object status and then updates the freedge database status
             for the specific fridge object.
 
         Parameters: 
-            fdb -> fridge database_manager object
+            fdb -> fridge database object
             freedge -> freedge object
 
         Calls: notificationGUI.py in order to notify user of fridge activity
@@ -117,7 +117,7 @@ class NotificationMgmt():
         else:
             freedge.update_status(response)     # updates activity status of freedge object
             freedge.reset_last_update()         # resets the freedge objects time since last update
-            fdb.update_freedge(freedge)         # updates the freedge database_manager with the freedge object
+            fdb.update_freedge(freedge)         # updates the freedge database with the freedge object
         return
 
 

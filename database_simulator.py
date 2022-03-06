@@ -1,13 +1,13 @@
 """
 ===============================================================================
-Title:	Simulator for database_manager for the Freedge Tracker System
+Title:	Simulator for database for the Freedge Tracker System
 ===============================================================================
 Description:	TODO
 Authors: 		TODO
 Last Edited: 	2-22-2022
 Last Edit By:	Madison Werries
 """
-from database_manager.freedge_database import new_database_from_csv
+from database.freedge_database import new_database_from_csv
 from datetime import date
 def main():
 	tdb = new_database_from_csv(r"test_data/fdb_needs_updating.db", "./test_data/freeedge_data_tiny.csv")

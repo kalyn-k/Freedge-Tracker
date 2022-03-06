@@ -1,2 +1,2 @@
-This is a text file which contains the file path to the last database_manager(.db file) that was opened.
+This is a text file which contains the file path to the last database(.db file) that was opened.
 C:/Users/meera/Documents/GitHub/422-Freedge/test_data/boop.db

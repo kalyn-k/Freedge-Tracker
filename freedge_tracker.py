@@ -10,7 +10,7 @@ Authors:        Madison Werries
 Last Edited:    3-5-2022
 Last Edit By:   Madison Werries
 """
-from database_manager import *
+from database import *
 from admin_interface.administrator_interface import *
 
 def main():
@@ -19,7 +19,7 @@ def main():
 	# Build the Administrator Interface's GUI
 	MainInterface.CreateDisplay()
 	
-	# Check whether or not an internal database_manager already exists. This
+	# Check whether or not an internal database already exists. This
 	# information is stored using the file: "internal_data/fdb_path.txt"
 	try:
 		# Check that the file "internal_data/fdb_path.txt" exists
@@ -29,7 +29,7 @@ def main():
 		path_location = open(DATABASE_PATH_INFO, "w+")
 		# Write a header briefly describing the file
 		path_location.write("This is a text file which contains the file path"
-							" to the last database_manager (.db file) that was opened.")
+							" to the last database (.db file) that was opened.")
 		# Write a blank line to be filled with the file path later
 		path_location.write("")
 	
@@ -47,16 +47,16 @@ def main():
 	# Ensure that the dialogue boxes will be shown
 	MainInterface.root.update()
 	
-	# If an internal database_manager file was found...
+	# If an internal database file was found...
 	if (db_file_found):
 		# Prompt the user for whether they want to use the (.db) file found
-		title = "An existing database_manager was found at: " + located_file_path + \
-				".\n\nWould you like to proceed with that database_manager?"
+		title = "An existing database was found at: " + located_file_path + \
+				".\n\nWould you like to proceed with that database?"
 		proceed_response = messagebox.askyesno("Database Found", title)
 		# If they gave a response (ie, didn't just hit 'X')...
 		if (proceed_response is not None):
 			if proceed_response:
-				# Otherwise, load the internal database_manager file that was found
+				# Otherwise, load the internal database file that was found
 				MainInterface.fdb_path = located_file_path
 				MainInterface.LoadDatabase(located_file_path)
 	MainInterface.UpdateFullDisplay()

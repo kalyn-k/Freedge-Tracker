@@ -2,7 +2,7 @@
 ===============================================================================
 Title:  Freedge Database for the Freedge Tracker System
 ===============================================================================
-Description:    Creates and manages a new SQLite database_manager. This database_manager is loaded
+Description:    Creates and manages a new SQLite database. This database is loaded
                 with data read in from an input csv file. This information contains data
                 collected by Freedge Administrators via Google Forms regarding location of 
                 freedge, name of project, freedge contact information, and more.
@@ -19,12 +19,12 @@ from os.path import exists
 import sqlite3
 from sqlite3 import Error
 from internal_data.database_constants import *
-from database_manager.freedge_data_entry import *
-from database_manager.caretaker_info_parser import parse_freedge_data_file
+from database.freedge_data_entry import *
+from database.caretaker_info_parser import parse_freedge_data_file
 from datetime import date
 
 """
-Helpful links used in setting up database_manager connection and database_manager table:
+Helpful links used in setting up database connection and database table:
 
 https://www.sqlitetutorial.net/sqlite-python/creating-database/
 https://www.sqlitetutorial.net/sqlite-python/create-tables/
@@ -33,15 +33,15 @@ https://www.sqlitetutorial.net/sqlite-python/create-tables/
 
 class FreedgeDatabase:
 	"""
-	Holds functionality to create an SQLite database_manager connection,
+	Holds functionality to create an SQLite database connection, 
 	which returns a Connection object that can be used to perform 
-	database_manager operations. These operations help create the database_manager,
-	update objects within the database_manager, and return database_manager objects
+	database operations. These operations help create the database,
+	update objects within the database, and return database objects
 	in readable terms for use by other system components.
 	"""
 	def __init__(self, db_location):
 		"""
-		Initializes the location of the SQLite database_manager used by the
+		Initializes the location of the SQLite database used by the
 		system.
 
 		Parameters: db_location -> string defining location of file.
@@ -52,12 +52,12 @@ class FreedgeDatabase:
 		
 	def open_connection(self):
 		""" 
-		Open and return a database_manager connection defined by db_location.
+		Open and return a database connection defined by db_location.
 
 		Parameters: None
 
 		Returns: 
-			A Connection object -> used to perform database_manager operations.
+			A Connection object -> used to perform database operations. 
 		"""
 		conn = None
 		try:
@@ -70,9 +70,9 @@ class FreedgeDatabase:
 	def create_table(self, conn, create_table_sql):
 		""" 
 		Creates a table from the create_table_sql statement.
-		A table is an object that contains the data in the database_manager.
+		A table is an object that contains the data in the database.
 
-		Parameters: conn -> An open Connection object linked to the database_manager.
+		Parameters: conn -> An open Connection object linked to the database.
 
 		Returns: None
 		"""
@@ -88,11 +88,11 @@ class FreedgeDatabase:
 		Description: (???)
 
 		Parameters:
-			conn -> An open Connection object linked to the database_manager.
+			conn -> An open Connection object linked to the database.
 			address_data -> A string containing data of specific freedge.
 			temp -> A boolean used to determine if address already exists. Default is False. (???)
 
-		Returns: The ID of the last row in the database_manager (???)
+		Returns: The ID of the last row in the database (???)
 		"""
 		if (temp):
 			sql = '''INSERT INTO new_addresses(
@@ -112,14 +112,14 @@ class FreedgeDatabase:
 	def new_freedge(self, conn, freedge_data, temp=False):
 		"""
 		TODO
-		Inserts a new freedge into the database_manager. (??? Add more?)
+		Inserts a new freedge into the database. (??? Add more?)
 	
 		Parameters:
-			conn -> An open Connection object linked to the database_manager.
+			conn -> An open Connection object linked to the database. 
 			freedge_data -> (???)
 			temp -> A boolean used to determine if freedge data already exists. Default is False. (???)
 
-		Returns: The ID of the last row in the database_manager. (???)
+		Returns: The ID of the last row in the database. (???)
 		"""
 		if (temp):
 			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
@@ -197,19 +197,19 @@ class FreedgeDatabase:
 	
 	def get_freedges(self):
 		""" 
-		Grabs a full list of Freedge Class objects from database_manager.
+		Grabs a full list of Freedge Class objects from database. 
 		
 		Parameters: None
 
 		Returns: A full list of freedges. (???)
 		"""
-		# Connect to the database_manager
+		# Connect to the database
 		conn = self.open_connection()
 		# Verify that the connection was successful
 		if conn is None:
-			ConnectionError("Error: Could not connect to the database_manager.")
+			ConnectionError("Error: Could not connect to the database.")
 		
-		# Query the database_manager, retrieving all the freedges and their addresses
+		# Query the database, retrieving all the freedges and their addresses
 		cur = conn.cursor()
 		cur.execute("SELECT * FROM freedges JOIN addresses USING(freedge_id)")
 		# Get the results of the SQL query
@@ -239,7 +239,7 @@ class FreedgeDatabase:
 	
 	def update_freedge(self, f):
 		""" 
-		Update the database_manager data for a specific Freedge object.
+		Update the database data for a specific Freedge object. 
 		
 		Parametrs: f -> a Freedge object; the freedge to be updated
 
@@ -248,7 +248,7 @@ class FreedgeDatabase:
 		conn = self.open_connection()
 		# Verify that the connection was successful
 		if conn is None:
-			ConnectionError("Error: Could not connect to the database_manager.")
+			ConnectionError("Error: Could not connect to the database.")
 		cur = conn.cursor()
 		
 		# Update the corresponding entry in the freedges table
@@ -315,7 +315,7 @@ class FreedgeDatabase:
 		# Open the connection and verify that it was made successfully
 		conn = self.open_connection()
 		if conn is None:
-			ConnectionError("Failure to connect to the original database_manager.")
+			ConnectionError("Failure to connect to the original database.")
 		cur = conn.cursor()
 
 		# Define the structure of the new (temporary) addresses table
@@ -360,7 +360,7 @@ class FreedgeDatabase:
 			self.new_address(conn, address_data, True)
 		
 		# =====================================================================
-		# Get the freedges that would be ADDED to the database_manager
+		# Get the freedges that would be ADDED to the database
 		# =====================================================================
 		sql = '''SELECT new.freedge_id, new.project_name, new.network_name, new.contact_name,
 		 				new.date_installed, new.active_status, new.last_status_update,
@@ -381,7 +381,7 @@ class FreedgeDatabase:
 		rows_to_add = cur.fetchall()
 		
 		# =====================================================================
-		# Get the freedges that would be REMOVED from the database_manager
+		# Get the freedges that would be REMOVED from the database
 		# =====================================================================
 		sql = '''SELECT old.freedge_id, old.project_name, old.network_name, old.contact_name,
 		 				old.date_installed, old.active_status, old.last_status_update,
@@ -402,7 +402,7 @@ class FreedgeDatabase:
 		rows_to_remove = cur.fetchall()
 		
 		# =====================================================================
-		# Get the freedges that would be CHANGED within the database_manager
+		# Get the freedges that would be CHANGED within the database
 		# =====================================================================
 		sql = '''SELECT old.freedge_id, old.project_name, old.network_name, old.contact_name,
 		 				old.date_installed, old.active_status, old.last_status_update,
@@ -485,41 +485,41 @@ class FreedgeDatabase:
 
 def exists_internal_database(db_path):
 	""" 
-	Returns whether or not there exists a database_manager at the given path.
+	Returns whether or not there exists a database at the given path. 
 	
 	Parameters: db_path -> a string defining the path to be tested.
 	
-	Returns: exists(db_path) -> a bool True or False if database_manager exists
+	Returns: exists(db_path) -> a bool True or False if database exists
 	"""
 	return(exists(db_path))
 
 def load_internal_database(db_path):
 	""" 
-	Loads and returns the database_manager at the given path.
+	Loads and returns the database at the given path. 
 	
-	Parameters: db_path -> a string indicating the path of the database_manager to be loaded.
+	Parameters: db_path -> a string indicating the path of the database to be loaded.
 
 	Returns:
-		freedgeDB -> Instance of database_manager object.
+		freedgeDB -> Instance of database object.
 	"""
 	try:
 		sqlite3.connect(DATABASE_PATH_INFO)
 	except Error as e:
-		ConnectionError(e, " Unable to find or connect to database_manager at the given path.")
+		ConnectionError(e, " Unable to find or connect to database at the given path.")
 		return None
 	freedgeDB = FreedgeDatabase(db_path)
 	return freedgeDB
 	
 def new_database_from_csv(db_path, csv_file_path):
 	""" 
-	Creates and returns a new internal database_manager from a csv file.
+	Creates and returns a new internal database from a csv file. 
 	
 	Parameters:
-		db_path -> Path of database_manager to be created.
+		db_path -> Path of database to be created.
 		csv_file_path -> Path of the input csv file.
 
 	Returns:
-		freedgeDB - New database_manager class isntance.
+		freedgeDB - New database class isntance.
 	"""
 
 	# This defines the structure of the addresses table
@@ -549,9 +549,9 @@ def new_database_from_csv(db_path, csv_file_path):
 			preferred_contact_method varchar(10)
 		);"""
 	
-	# Create the new database_manager class object
+	# Create the new database class object
 	freedgeDB = FreedgeDatabase(db_path)
-	# create a database_manager connection
+	# create a database connection
 	conn = freedgeDB.open_connection()
 
 	# If the connection was successful, create the tables
@@ -567,11 +567,11 @@ def new_database_from_csv(db_path, csv_file_path):
 		cur.execute(sql)
 		freedgeDB.create_table(conn, sql_freedges_table)
 	else:
-		ConnectionError("Error: Could not create the database_manager connection.")
+		ConnectionError("Error: Could not create the database connection.")
 	
 	# Now that the (empty) tables have been created, parse data from the csv file
 	freedge_dataset = parse_freedge_data_file(csv_file_path)
-	# Insert all the parsed data into the database_manager tables
+	# Insert all the parsed data into the database tables
 	for freedge_data in freedge_dataset:
 		# Add the individual freedge to the SQL table
 		fid = freedgeDB.new_freedge(conn, freedge_data[0])
@@ -582,5 +582,5 @@ def new_database_from_csv(db_path, csv_file_path):
 	conn.commit()
 	# Close the connection
 	conn.close()
-	# Return the database_manager class instance
+	# Return the database class instance
 	return freedgeDB

@@ -5,7 +5,7 @@ Title:	Caretaker Info Parser for the Freedge Tracker System
 Description:	Read in data from a csv file, input by the user. Parser
 		collects data from file rows to determine general data and
 		address associated with each freedge. This data is used to populate
-		the freedge database_manager from the csv file.
+		the freedge database from the csv file. 
 
 		Parser works under the assumption that file has been pre-validated
 		by a Freedge Administrator and follows a consistent format.
@@ -17,8 +17,8 @@ Last Edit By:	Ginni Gallagher
 Edit Log
 date		editor		changes
 2-22-22		mw		initial doc
-2-22-22		mw		created preliminary structure for database_manager
-2-23-22		mw		transfered database_manager into new file
+2-22-22		mw		created preliminary structure for database
+2-23-22		mw		transfered database into new file
 3-1-22		gg		documentation
 """
 
@@ -145,13 +145,13 @@ def parse_freedge_data_file(filename):
 
 	Calls:
 		Called by:
-			database_manager.compare_databases -> loads a new csv file and compares to
-			state of current database_manager
-			database_manager.new_database_from_csv() -> loads data from csv file into
-			database_manager
+			database.compare_databases -> loads a new csv file and compares to
+			state of current database
+			database.new_database_from_csv() -> loads data from csv file into
+			database
 
 	Returns: freedge_database_entries -> a list of lists of strings containing all general and 
-			address data for each freedge database_manager entry
+			address data for each freedge database entry
 	
 	"""
 	freedge_database_entries = []
