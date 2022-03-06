@@ -30,7 +30,7 @@ date         editor     changes
 3-04-22      erk        updated documentation and code to match updated NotificationMgmt Class
 """
 import internal_data.database_constants  # used to access constants for fridge object
-import database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import database_manager as FD                         # used to access the database_manager which contains each Freedge object and all the information on each fridge
 import notification_system as NS                      # for prototype only, used for popup display of notification
 
 
@@ -63,7 +63,7 @@ class email_mgmt(NS.NotificationMgmt):
         This function obtains which freedges are out of date (have not had a status update in 90 days),
         collects the freedge's caretaker, name, and time since last update to be used to craft a message to be 
         emailed. The function also update the freedge object's status based on user response, and then further 
-        update the freedge database.
+        update the freedge database_manager.
 
         Parameters: None
         Calls:
@@ -74,7 +74,7 @@ class email_mgmt(NS.NotificationMgmt):
 
         '''
         # call to the other classes in order to use their methods
-        fdb = FD.load_internal_database(internal_data.database_constants.DATABASE_PATH_INFO)  # freedge database class initialization
+        fdb = FD.load_internal_database(internal_data.database_constants.DATABASE_PATH_INFO)  # freedge database_manager class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -94,11 +94,11 @@ class email_mgmt(NS.NotificationMgmt):
             TO BE IMPLEMENTED IF USING EMAIL NOTIFICATIONS
             Calls the notification interface class which will return a boolean value based on whether or not the
             Freedge is active from user input.
-            Based on this boolean value, updates the freedge object status and then updates the freedge database status
+            Based on this boolean value, updates the freedge object status and then updates the freedge database_manager status
             for the specific fridge object.
 
         Parameters: 
-            fdb -> fridge database object
+            fdb -> fridge database_manager object
             freedge -> freedge object
 
         Calls: notificationGUI.py in order to notify user of fridge activity

@@ -18,8 +18,8 @@ Resources/help in using tkinter found at:
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 from admin_interface.tkinter_style import *
-from database.freedge_database import *
-from database.freedge_data_entry import *
+from database_manager.freedge_database import *
+from database_manager.freedge_data_entry import *
 from notification_system.notificationMgmt import *
 import sys
 
@@ -31,27 +31,27 @@ class AdministratorInterface:
     Attributes
     ===========================================================================
     fdb_path: str
-        The full path to open the internal database file
+        The full path to open the internal database_manager file
         
     fdb: FreedgeDatabase
-        This is instance of the database class which is currently open
-        in the system, if any. The abbreviation stands for "Freedge database."
+        This is instance of the database_manager class which is currently open
+        in the system, if any. The abbreviation stands for "Freedge database_manager."
         
     root: Tk
         The root of the GUI display, created by calling Tk().
     
     notebook: Notebook
         The tkinter Notebook responsible for displaying the table of freedge
-        database information. It contains two tabs: the main_tab, which shows
+        database_manager information. It contains two tabs: the main_tab, which shows
         the list of all the freedges, and the ood_tab, which shows the list of
         freedges with out of date information.
 
     main_tab
-       The GUI for displaying the table list of all freedges in the database.
+       The GUI for displaying the table list of all freedges in the database_manager.
        A child of self.notebook.
        
     ood_tab
-        The GUI for showing the table list of all freedges in the database
+        The GUI for showing the table list of all freedges in the database_manager
         which are considered to be "out-of-date".
         A child of self.notebook
     
@@ -68,8 +68,8 @@ class AdministratorInterface:
     
     prompt_label
         A tkinter Label which shows text instructions prompting the user for
-        action. This is shown when no database has been loaded yet, and is
-        destroyed after a database has been loaded into the system.
+        action. This is shown when no database_manager has been loaded yet, and is
+        destroyed after a database_manager has been loaded into the system.
     
     Methods
     ===========================================================================
@@ -78,37 +78,37 @@ class AdministratorInterface:
         Requires no arguments.
     
     CreateDatabase()
-        Creates a new internal freedge database. Both the csv file to load and
+        Creates a new internal freedge database_manager. Both the csv file to load and
         the location/name of the new db file to save to are chosen by the user
         via popup prompts. Calls SelectCSVFile(), SelectDBSave(), and
         OpenDatabase().
     
     LoadDatabase(db_file_path)
-        Opens the database at the given path, loading the database into the
+        Opens the database_manager at the given path, loading the database_manager into the
         system and updating the internal file which stores the most recently
         accessed databse file. Called by SelecteDatabaseToLoad() and the
         main driver module, freedge_tracker.py.
     
     SelectCSV()
         Prompts the user to choose a csv file to load during the creation of a
-        new database. Returns the chosen path if one is selected successfully,
+        new database_manager. Returns the chosen path if one is selected successfully,
         or None otherwise. Called by CreateDatabase().
         
     SelectDBSave()
         Prompts the user to choose the name and location of the db file to
-        save their newly created database to. Returns the chosen path if one
+        save their newly created database_manager to. Returns the chosen path if one
         is selected successfully, or None otherwise. Called by CreateDatabase().
     
     SelectAndOpenDB()
-        Prompts the user to choose a preexisting SQL database file (.db) to
+        Prompts the user to choose a preexisting SQL database_manager file (.db) to
         load into the system, updating the display with the information in
         the chosen db file. Calls LoadDatabase() and UpdateFullDisplay().
         Called by pressing the tkinter button labeled 'Load Database'.
     
     UpdateDatabase()
-        Updates the currently loaded database file (db) with information from
+        Updates the currently loaded database_manager file (db) with information from
         a new csv file that the user selects. Informaton about freedges which
-        will be added to, removed from, and modified within the database is
+        will be added to, removed from, and modified within the database_manager is
         displayed to the user, allowing them to confirm or cancel the update.
     
     GetSelected()
@@ -137,9 +137,9 @@ class AdministratorInterface:
         be messaged, allowing them to confirm or cancel the mass-send.
     
     UpdateFullDisplay()
-        Updates the GUI display to reflect the currently loaded database
+        Updates the GUI display to reflect the currently loaded database_manager
         information. This is called on system startup, anytime a notification
-        reply is received from a caretaker, as well as any time a new database
+        reply is received from a caretaker, as well as any time a new database_manager
         is created/loaded.
         
     UpdateTableDisplay(table, freedges: [Freedge])
@@ -167,8 +167,8 @@ class AdministratorInterface:
         """
         Initializes a new instance of the admin_interface class.
         """
-        self.fdb_path = None        # The file path to the internal database
-        self.fdb = None             # The database object
+        self.fdb_path = None        # The file path to the internal database_manager
+        self.fdb = None             # The database_manager object
         self.root = None            # The root of the GUI display
         self.main_tab = None        # Tab display showing all freedges
         self.ood_tab = None         # Tab for showing out-of-date freedges
@@ -176,7 +176,7 @@ class AdministratorInterface:
         self.info_box = None        # GUI for info about a particular freedge
         self.info_label = None      # Currently displayed freedge info
         self.prompt_label = None    # Text to prompt user for action (used
-                                    # when no database has been loaded yet)
+                                    # when no database_manager has been loaded yet)
         self.ib_width = 30          # Fixed width for info_box display
     
     # =========================================================================
@@ -185,26 +185,26 @@ class AdministratorInterface:
     
     def CreateDatabase(self):
         """
-        Creates a new internal freedge database, updating the GUI if necessary.
+        Creates a new internal freedge database_manager, updating the GUI if necessary.
         
         Returns: None
         """
-        # Prompt the user to select the csv file to use to create the database
+        # Prompt the user to select the csv file to use to create the database_manager
         csv_file_path = self.SelectCSV()
         if csv_file_path is None:           # Verify the user's response
             return
-        # Prompt the user to select the name/location to store the database at
+        # Prompt the user to select the name/location to store the database_manager at
         db_file_path = self.SelectDBSave()
         if db_file_path is None:            # Verify the user's response
             return
-        # If the above steps were successful, load the database into the system
+        # If the above steps were successful, load the database_manager into the system
         self.LoadDatabase(db_file_path)
-        # Update the display to reflect the newly loaded database information
+        # Update the display to reflect the newly loaded database_manager information
         self.UpdateFullDisplay()
 
     def LoadDatabase(self, db_file_path: str):
         """
-        Loads the database at the given path into the system.
+        Loads the database_manager at the given path into the system.
         
         Parameters:
             db_file_path:   The str path of the .db file to open
@@ -213,18 +213,18 @@ class AdministratorInterface:
         """
         # Verify that the path correctly specifies the location of a db file
         if not exists_internal_database(db_file_path):
-            FileNotFoundError("Could not locate the database at: ", db_file_path)
+            FileNotFoundError("Could not locate the database_manager at: ", db_file_path)
         
-        # Load the database file as an instance of the database class
+        # Load the database_manager file as an instance of the database_manager class
         self.fdb = load_internal_database(db_file_path)
-        # Update the interface's current database path for future use
+        # Update the interface's current database_manager path for future use
         self.fdb_path = db_file_path
-        # Save/update the path of the most recently accessed database using the
+        # Save/update the path of the most recently accessed database_manager using the
         # file whose path is specified at DATABASE_PATH_INFO
         saved_fdb_path = open(DATABASE_PATH_INFO, "w+")
         # Write the header for the internal path file
         saved_fdb_path.write("This is a text file which contains the file path to"
-                             " the last database(.db file) that was opened.\n")
+                             " the last database_manager(.db file) that was opened.\n")
         # Write the actual file location, and close the file
         saved_fdb_path.write(self.fdb_path)
         saved_fdb_path.close()
@@ -238,7 +238,7 @@ class AdministratorInterface:
         """
         # Define the info to show the user before showing the file-select
         prompt = "Please select the csv file containing the data you would" \
-                 " like to use to create a new freedge database."
+                 " like to use to create a new freedge database_manager."
         
         # Before showing the file-select window, notify the user of the purpose
         # of the task (ie, why they're selecting a file)
@@ -261,7 +261,7 @@ class AdministratorInterface:
     def SelectDBSave(self):
         """
         Prompts the user to choose the name and location of the db file to
-        save their newly created database to.
+        save their newly created database_manager to.
         
         Returns: The path as a str to the csv file the user selected, or None
                  if no path was selected.
@@ -269,12 +269,12 @@ class AdministratorInterface:
         # Before showing the file-select window, notify the user of the purpose
         # of the task (ie, why they're selecting a file)
         prompt = "Please provide the name/location of where you would like" \
-            " to save the internal database file."
-        messagebox.showinfo("Save internal database", prompt)
+            " to save the internal database_manager file."
+        messagebox.showinfo("Save internal database_manager", prompt)
         
         # Get the path of db file from the user using a tkinter filedialog box
         db_file_path = filedialog.asksaveasfilename(
-            title="Select location to store the internal database file",
+            title="Select location to store the internal database_manager file",
             filetypes=[('SQL db files', '.db')], defaultextension=".db")
         # If they provided a filename correctly, return it.
         if (db_file_path != "" and db_file_path is not None):
@@ -284,7 +284,7 @@ class AdministratorInterface:
     
     def SelectAndOpenDB(self):
         """
-        Prompts the user to choose a preexisting SQL database file (.db) to
+        Prompts the user to choose a preexisting SQL database_manager file (.db) to
         load into the system, updating the display with the information in
         the chosen db file.
         
@@ -293,10 +293,10 @@ class AdministratorInterface:
         file_types = [('db files', '.db')]
         prompt = "Please select the .db file to load into the system."
         # Briefly describe the task to the user before showing the file-select
-        messagebox.showinfo("Select internal database location", prompt)
+        messagebox.showinfo("Select internal database_manager location", prompt)
         # Ask the user to select a db file to load into the system
         db_file_path = filedialog.askopenfilename(
-            title="Please select the internal database file.",
+            title="Please select the internal database_manager file.",
             filetypes=file_types, defaultextension=".db")
         # If they provided a filename correctly, return it. Otherwise, return None.
         if (db_file_path != ""):
@@ -306,18 +306,18 @@ class AdministratorInterface:
 
     def UpdateDatabase(self):
         """
-        Updates the currently loaded database file (db) with information from
+        Updates the currently loaded database_manager file (db) with information from
         a new csv file that the user selects.
         
         Returns: None
         """
-        # Get path of CSV file to load in in order to update the database
+        # Get path of CSV file to load in in order to update the database_manager
         file_path = filedialog.askopenfilename()
         (to_add, to_remove, to_modify) = self.fdb.compare_databases(file_path)
         if (len(to_add) == 0 and len(to_remove) == 0 and len(to_modify) == 0):
-            message = "Loading the selected csv file will not change any data in the database."
+            message = "Loading the selected csv file will not change any data in the database_manager."
         else:
-            message = "If you load the selected csv file into the database, the following changes will be made:\n\n"
+            message = "If you load the selected csv file into the database_manager, the following changes will be made:\n\n"
       
         if (len(to_add) > 0):
             message += "(" + str(len(to_add)) + ") entries will be ADDED.\n"
@@ -337,7 +337,7 @@ class AdministratorInterface:
             # for change in changes:
             # message += change
         messagebox.askokcancel("Proceed?", message+" Proceed?")
-        # Get path of database
+        # Get path of database_manager
         self.fdb = new_database_from_csv(self.fdb_path, file_path)
         # Update the menu window
         self.UpdateFullDisplay()
@@ -353,7 +353,7 @@ class AdministratorInterface:
         Returns: A Freedge object corresponding to the user's currently
                  selected entry in the table, or None if nothing is selected.
         """
-        # If the database has not been loaded yet, return None
+        # If the database_manager has not been loaded yet, return None
         if self.fdb is None:
             return None
         # Get the tkinter Notebook containing the data table display
@@ -372,7 +372,7 @@ class AdministratorInterface:
             return None
         # Otherwise, get the fields in the table as a list
         fields = list(table.item(table.selection(), 'values'))
-        # Get a list of all the freedges in the currently loaded database
+        # Get a list of all the freedges in the currently loaded database_manager
         freedges = self.fdb.get_freedges()
         # Use the retrieved table fields to lookup the freedge by ID (field 0)
         selected = freedges[int(fields[0]) - 1]
@@ -452,7 +452,7 @@ class AdministratorInterface:
         
         Returns: None
         """
-        # Verify that a database has been loaded before proceeding
+        # Verify that a database_manager has been loaded before proceeding
         if (self.fdb is None):
             return
         # Get the Freedge entry currently selected in the table
@@ -470,10 +470,10 @@ class AdministratorInterface:
         
         Returns: None
         """
-        # Verify that a database has been loaded before continuing
+        # Verify that a database_manager has been loaded before continuing
         if (self.fdb is None):
             return
-        # Retrieve the list of out of date freedges according to the database
+        # Retrieve the list of out of date freedges according to the database_manager
         ood_list = self.fdb.get_out_of_date()
         # Create a list of freedges which can be notified based on whether they
         # have given permission to be notified, and are not confirmed to have
@@ -524,16 +524,16 @@ class AdministratorInterface:
 
     def UpdateFullDisplay(self):
         """
-        Updates the GUI display to reflect the currently loaded database
+        Updates the GUI display to reflect the currently loaded database_manager
         information.
         
         Returns: None
         """
-        # If no database has been loaded into the system yet, show the user
+        # If no database_manager has been loaded into the system yet, show the user
         # instructions on the next steps they could take.
-        prompt = "No database loaded.\n\n Click 'Create Database' to create " \
-            "a new freedge database from a csv file.\n\nClick 'Load " \
-            "Database' to load in an existing database from a .db file."
+        prompt = "No database_manager loaded.\n\n Click 'Create Database' to create " \
+            "a new freedge database_manager from a csv file.\n\nClick 'Load " \
+            "Database' to load in an existing database_manager from a .db file."
         if (self.fdb is None):
             none_found = Label(self.notebook, text=prompt, anchor='center',
                                foreground="#e74c3c", background="#d4dadd",
@@ -544,7 +544,7 @@ class AdministratorInterface:
         # Otherwise, get rid of the instruction prompt label if it exists
         elif self.fdb is not None and self.prompt_label is not None:
             self.prompt_label.destroy()
-        # Get the list of freedges in the currently loaded database
+        # Get the list of freedges in the currently loaded database_manager
         freedges = self.fdb.get_freedges()
         # Get the list of freedges whose statuses are considered out-of-date
         out_of_date = self.fdb.get_out_of_date()
@@ -692,9 +692,9 @@ class AdministratorInterface:
         # =====================================================================
         block1 = Frame(root, height=150, width=150, background="#34495e")
         block1.place(x=30, y=100)
-        # Button to Create new database (db)
+        # Button to Create new database_manager (db)
         self.AddButton(block1, "Create Database", self.CreateDatabase, 10, 10)
-        # Button to load a database
+        # Button to load a database_manager
         self.AddButton(block1, "Load Database", self.SelectAndOpenDB, 10, 60)
 
         block2 = Frame(root, height=220, width=150, background="#34495e")

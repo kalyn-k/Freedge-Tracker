@@ -8,7 +8,7 @@ Description:	TODO: check--> The NotificationGUI is a prototype popup display of 
                 in NotificationMgmt, the notificationGUI will pop up with a message asking
                 a caretaker if their fridge is still active. The Caretaker (or in this case,
                 the user demonstrating the prototype) will select "YES" or "NO" and then 
-                send the reply back to the main system in order to update the database of 
+                send the reply back to the main system in order to update the database_manager of
                 current active fridges.
 
 Authors: 		Kalyn Koyanagi, Ellie Kobak, Madison Werries
@@ -27,7 +27,7 @@ date         editor     changes
 """
 
 from tkinter import *                               # used to 
-from database.freedge_data_entry import *   # used to access fridge object for data information
+from database_manager.freedge_data_entry import *   # used to access fridge object for data information
 
 class PopUp:
     """
@@ -123,7 +123,7 @@ class PopUp:
         sent to the user.
         Parameters: None
 
-        Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
+        Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database_manager
         Returns: boolean value
         """
         return self.response_value              # return which button the user selected
