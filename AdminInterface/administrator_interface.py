@@ -197,7 +197,9 @@ class AdministratorInterface:
         db_file_path = self.SelectDBSave()
         if db_file_path is None:            # Verify the user's response
             return
-        # If the above steps were successful, load the database into the system
+        # If the above steps were successful, create a new database
+        new_database_from_csv(db_file_path, csv_file_path)
+        # Load the newly created database into the system
         self.LoadDatabase(db_file_path)
         # Update the display to reflect the newly loaded database information
         self.UpdateFullDisplay()
