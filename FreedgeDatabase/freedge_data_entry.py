@@ -12,8 +12,8 @@ Description:	Holds Freedge class and Freedge Address class constructors.
 		Freedge objects are added and stored in the FreedgeDatabase.
 
 Authors: 	Madison Werries, Ginni Gallagher
-Last Edited: 	3-3-2022
-Last Edit By:	Ginni Gallagher
+Last Edited: 	3-6-2022
+Last Edit By:	Madison Werries
 """
 from enum import Enum
 from datetime import date 
@@ -85,8 +85,7 @@ class Freedge:
 	caretaker_name -> a string of the name of the freedge caretaker
 	fridge_location -> a string of the location of the freedge
 	date_installed -> a string of the date the freedge was installed
-	permission_to_notify -> a string indicating the freedge caretaker gave permission to receive
-							notifications
+	permission_to_notify -> a string indicating the freedge caretaker gave permission to receive notifications
 	preferred_contact_method -> a string indicating the freedge caretaker's preferred method of contact
 	phone_number -> a string of the caretaker's phone number
 	email_address -> a string of the caretaker's email address
@@ -125,13 +124,22 @@ class Freedge:
 		self.network_name = nname
 		self.caretaker_name = cname
 		self.fridge_location = loc
-		self.date_installed = installed_date
+		if (installed_date == "-"):
+			self.date_installed = None
+		else:
+			self.date_installed = installed_date
 		self.permission_to_notify = permission
 		self.preferred_contact_method = c_method
 		self.phone_number = phone
 		self.email_address = email
 		self.freedge_status = Status.Active
-		self.last_status_update = last_update
+		if (last_update == "-"):
+			self.last_status_update = None
+		else:
+			self.last_status_update = last_update
+		
+		#if (last_update.isoformat() != "0000-00-00"):
+		
 	
 	def can_notify(self):
 		""" 
@@ -169,8 +177,17 @@ class Freedge:
 		
 		Parameters: None
 
-		Returns: diff -> an int representing days since last update was received on a freedge
+		Returns:
+			diff -> an int representing days since the freedge's last status
+					update. If the freedge_status is Unknown (likely because
+					the freedge was just created from a CSV where the status of
+					the freedge has never been updated before and the caretaker
+					has not given contact permission, return None.
 		"""
+		if (self.freedge_status == Status.Unknown):
+			return None
+		if (self.last_status_update is None):
+			return None
 		prev = self.last_status_update
 		today = date.today()
 		diff = (today-prev).days
@@ -296,9 +313,15 @@ class FreedgeAddress:
 
 	Methods
 	-------
-	ShortString(): Returns the freedge's city and state
-
-	ToString(): Returns the freedge's full address
+	ShortString()
+		Returns the freedge's city and state
+		
+	ToString()
+		Returns the freedge's full address on a single line
+		
+	ToDisplayString()
+		Returns the freedge's full address, formatted to display
+		oneattribute per line
 	"""
 	def __init__(self, loc):
 		""" 
@@ -355,7 +378,7 @@ class FreedgeAddress:
 		
 	def ToString(self):
 		""" 
-		Returns a full string of the freedge's address. 
+		Returns a full single-line string of the freedge's address.
 		
 		Parameters: None
 

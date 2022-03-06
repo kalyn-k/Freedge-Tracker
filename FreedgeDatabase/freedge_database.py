@@ -21,6 +21,7 @@ from sqlite3 import Error
 from InternalData.freedge_constants import *
 from datetime import date
 import FreedgeDatabase as FD
+from FreedgeDatabase.freedge_data_entry import Status
 
 """
 Helpful links used in setting up database connection and database table:
@@ -116,7 +117,7 @@ class FreedgeDatabase:
 		Inserts a new freedge into the SQLite database's 'freedges' table.
 	
 		Parameters:
-			conn -> An open Connection object linked to the database. 
+			conn -> An open Connection object linked to the database.
 			freedge_data -> An array containing the address data of specific
 							freedge. These values will be fed into the
 							SQLite INSERT statement.
@@ -130,13 +131,15 @@ class FreedgeDatabase:
 		if (temp):
 			sql = '''INSERT INTO new_freedges(project_name, network_name, date_installed,
 						contact_name, active_status, phone_number, email_address,
-						permission_to_contact, preferred_contact_method)
-						VALUES(?,?,?,?,?,?,?,?,?)'''
+						permission_to_contact, preferred_contact_method,
+						last_status_update)
+						VALUES(?,?,?,?,?,?,?,?,?,?)'''
 		else:
 			sql = '''INSERT INTO freedges(project_name, network_name, date_installed,
 						contact_name, active_status, phone_number, email_address,
-						permission_to_contact, preferred_contact_method)
-						VALUES(?,?,?,?,?,?,?,?,?)'''
+						permission_to_contact, preferred_contact_method,
+						last_status_update)
+						VALUES(?,?,?,?,?,?,?,?,?,?)'''
 		cur = conn.cursor()
 		cur.execute(sql, freedge_data)
 		conn.commit()
@@ -152,28 +155,33 @@ class FreedgeDatabase:
 		"""
 		# Convert yes/no form responses into the proper Status
 		# 		(`Status` class found in freedge_data_entry.py)
-		status_string = row[5].upper().strip()
-		if (status_string == "YES"):
-			status = FD.Status.Active
-		elif (status_string == FD.Status.Active.value.upper()):
-			status = FD.Status.Active
-		elif (status_string == "NO"):
-			status = FD.Status.ConfirmedInactive
-		elif (status_string == FD.Status.ConfirmedInactive.value.upper()):
-			status = FD.Status.ConfirmedInactive
+		active_str = Status.Active.value.upper()
+		sus_inact_str = Status.SuspectedInactive.value.upper()
+		conf_inact_str = Status.ConfirmedInactive.value.upper()
+		unknown_str = Status.Unknown.value.upper()
+		
+		status_str = row[5].upper().strip()
+		# Read in the status of the user from the given row value, accepting
+		# a few potential formats
+		if (status_str == "YES" or status_str == active_str):
+			status = Status.Active
+		elif (status_str == "NO" or status_str == conf_inact_str):
+			status = Status.ConfirmedInactive
+		elif (status_str == sus_inact_str):
+			status = Status.SuspectedInactive
 		else:
-			status = FD.Status.SuspectedInactive
+			status = Status.Unknown
+		
 		# Parse yes/no form responses into booleans
 		permission = (row[9].upper().strip() == "YES")
 		try:
 			installed_date = date.fromisoformat(row[6])
 		except:
-			installed_date = '0000-00-00'
-			
+			installed_date = '-'
 		try:
 			last_update = date.fromisoformat(row[4])
 		except:
-			last_update = '0000-00-00'
+			last_update = '-'
 			
 		# Create a new instance of a FreedgeAddress
 		address = FD.FreedgeAddress([row[11], row[12], row[13], row[14], row[15]])
@@ -238,8 +246,9 @@ class FreedgeDatabase:
 		needs_updating = []
 		for freedge in freedges:
 			t = freedge.time_since_last_update()
-			if (t > FIRST_UPDATE_THRESHOLD):
-				needs_updating.append(freedge)
+			if (t is not None):
+				if (t > FIRST_UPDATE_THRESHOLD):
+					needs_updating.append(freedge)
 		return needs_updating
 	
 	def update_freedge(self, f):
@@ -551,8 +560,8 @@ def new_database_from_csv(db_path: str, csv_file_path: str):
 			network_name varchar(255),
 			contact_name varchar(255),
 			date_installed date,
-			active_status varchar(50) DEFAULT 'active',
-			last_status_update date DEFAULT (DATE('now')),
+			active_status varchar(50) DEFAULT 'Unknown',
+			last_status_update date DEFAULT NULL,
 			phone_number varchar(50),
 			email_address varchar(50),
 			permission_to_contact int,
@@ -584,7 +593,10 @@ def new_database_from_csv(db_path: str, csv_file_path: str):
 	# Insert all the parsed data into the database tables
 	for freedge_data in freedge_dataset:
 		# Add the individual freedge to the SQL table
-		fid = freedgeDB.new_freedge(conn, freedge_data[0])
+		# So long as there is SOME kind of response to their preferred contact method,
+		# set the most recent update to today.
+		data_fields = freedge_data[0]
+		fid = freedgeDB.new_freedge(conn, data_fields)
 		address_data = [str(fid)] + freedge_data[1]
 		freedgeDB.new_address(conn, address_data)
 	

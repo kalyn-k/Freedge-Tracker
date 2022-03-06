@@ -11,7 +11,7 @@ Description:	Read in data from a csv file, input by the user. Parser
 		by a Freedge Administrator and follows a consistent format.
 				
 Authors: 	Madison Werries, Ginni Gallagher
-Last Edited: 	3-2-2022
+Last Edited: 	3-6-2022
 Last Edit By:	Ginni Gallagher
 
 Edit Log
@@ -20,9 +20,12 @@ date		editor		changes
 2-22-22		mw		created preliminary structure for database
 2-23-22		mw		transfered database into new file
 3-1-22		gg		documentation
+3-6-22		mw		fixed error with how last_status_update is initialized
 """
 
 import csv
+from datetime import date
+from FreedgeDatabase.freedge_data_entry import Status
 from InternalData.freedge_constants import *
 
 def remove_whitespace(field_name):
@@ -37,7 +40,8 @@ def remove_whitespace(field_name):
 
 def _get_headers():
 	"""
-	Sets headers list using constants defined in freedge_constants.py
+	Retrieves the list of column headers needed to parse the freedge data.
+	(The header strings are defined by the constants in freedge_constants.py)
 
 	Parameters: None
 
@@ -122,19 +126,54 @@ def _parse_row(entry_data):
 
 	Calls: Called by parse_freedge_data_file(filename) to organize genearl freedge data
 	
-	Returns: parsed -> a list of strings containing the parsed freedge data fields
+	Returns: parsed -> a list of values containing the parsed freedge data fields
 	"""
 	parsed = []
 	headers = _get_headers()
 
 	# converts fields of datatype None to a string if needed
 	# add all data to the list to be returned
-	for header in headers:
+	status_index = -1
+	for i in range(len(headers)):
+		header = headers[i]
+		if (header == ACTIVE_STATUS_KEY):
+			status_index = i
 		field = entry_data[header]
 		if field is None:
 			parsed.append("")
 		else:
 			parsed.append(entry_data[header])
+	
+	status_str = parsed[status_index].strip().upper()
+	status_given = len(status_str) != 0
+	permission_str = entry_data[PERMISSION_TO_CONTACT_KEY].strip()
+	permission_resp_given = len(permission_str) != 0
+	
+	# If the csv file was filled out to include a status for the freedge
+	if (status_given):
+		# If there is a status in the csv file, then the most recent status
+		# updated happened just now during the creation of the new database
+		last_update = date.today().isoformat()  # Set last update to today
+		if (status_str == 'YES'):
+			parsed[status_index] = Status.Active.value
+		elif (status_str == 'NO'):
+			parsed[status_index] = Status.ConfirmedInactive.value
+		else:
+			parsed[status_index] = Status.Unknown.value
+	else:
+		# If no status was provided, check if the caretaker gave a response for
+		# whether or not they agree to be contacted/notified via SMS or text
+		if (permission_resp_given):
+			# If they responded to that part of the form, assume their
+			# freedge is active for the time being
+			parsed[status_index] = Status.Active.value
+			# Set the last update to today, since we are adding a new entry to
+			# the database and we're updating the status of the new entry
+			last_update = date.today().isoformat()
+		else:
+			last_update = "NULL"
+	# Append the last_update value to the list of parsed fields
+	parsed.append(last_update)
 	return parsed
 
 def parse_freedge_data_file(filename):
