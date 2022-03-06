@@ -42,63 +42,77 @@ class PopUp:
     Again, this class is for the prototype only and serves to demonstrate how
     a notification may be sent out, recieved, and interpreted by the system.
     """
-    def __init__(self, root, freedge: Freedge):
+    def __init__(self, root: Tk, freedge: Freedge):
         """
-        TODO every variable in this function needs a comment explaining what it does!! TODO
-        
-        TODO:
-        Purpose:
+        Initializes a new PopUp class with 'root' as the tkinter root of the
+        display, filling in the popup window with information contained in
+        the passed-in Freedge variable.
 
         Parameters:
             freedge: Freedge
-        Called by: notify_and_update() in notificationMgmt.py to signal notification
+        Called by: notify_and_update() in notificationMgmt.py to run the
+                   display of the prototype notification system
         Returns: None, stores class information
         """
-        self.root = root                                                # TODO
-        self.response_received = BooleanVar()                           # TODO
-        self.response_value = None                                      # TODO
+        # The tkinter root of the display (type: Tk)
+        self.root: Tk = root
+        # Whether or not the user has responded to the popup window yet
+        self.response_received = BooleanVar()
+        # The value of the user's response, either True, False, or None
+        self.response_value = None
+        # Create the popup window using a 'TopLevel' tkinter widget so that
+        # it sits on top of the main application properly
+        self.pop_up_win = Toplevel(self.root)
         
-        self.pop_up_win = Toplevel(self.root)                           # TODO
-        self.pop_up_win.geometry("600x400")                             # TODO
-        self.pop_up_win.resizable(False, False)                         # TODO
-        self.pop_up_win.attributes("-topmost", True)                    # TODO
-        self.pop_up_win.protocol("WM_DELETE_WINDOW", self.on_close)     # TODO
-        self.pop_up_win.title("Simulated Status Check")                 # TODO change this?
-        var = IntVar()                                                  # TODO
+        self.pop_up_win.geometry("600x400")                             # Set size of the popup window
+        self.pop_up_win.resizable(False, False)                         # Don't let the user resize the window
+        self.pop_up_win.attributes("-topmost", True)                    # Set the pop to be the topmost window
+        self.pop_up_win.protocol("WM_DELETE_WINDOW", self.on_close)     # Delete the window object when it is closed
+        self.pop_up_win.title("Simulated Status Check")                 # Set the title of the popup
+        var = IntVar()                                                  # The value received from the clickable bubbles
 
-        ct_name = freedge.caretaker_name                                # TODO
-        proj_name = freedge.project_name                                # TODO
-        prev_update = freedge.last_status_update                        # TODO
+        ct_name = freedge.caretaker_name                                # Get the freedge caretaker's name to display
+        proj_name = freedge.project_name                                # Get the freedge project name for the display
+        prev_update = freedge.last_status_update                        # Get the last status update of the freedge
         
         # Create a Header for the menu
-        note = "This is a simulated text/email message for the Freedge Tracker System.\n"       # TODO
-        header1 = Label(self.pop_up_win, width=200, text=note, fg="red", font=("TkDefaultFont", 10), wraplength=500) # Sets size of Header1
-        header1.pack(padx=10, pady=15)  # TODO
-        # Message to be displayed to caretaker
+        note = "This is a simulated text/email message for the Freedge Tracker System.\n"
+        # Define the style of the header for the menu
+        header1 = Label(self.pop_up_win, width=200, text=note, fg="red",
+                        font=("TkDefaultFont", 10), wraplength=500)
+        # Set the location of the header in relation to the other objects (tkinter 'pack')
+        header1.pack(padx=10, pady=15)
+        # Create the formatted message to be displayed to caretaker
         self.message = f'Hi {ct_name}!\n' \
                        f'This is a message from the folks at freedge.org.\n\n' \
                        f'According to our systems, the status of your community fridge, "{proj_name}" in ' \
                        f'{freedge.fridge_location.ShortString()}, was last updated on: {prev_update}.\n\n' \
                        f' To keep our Freedge communities up-to-date, we would like to check in about the' \
-                       f' status of this fridge. Please select one of the status options below, and click' \
-                       f' "Send Reply" to confirm.\n\n\n'
+                       f' status of this fridge. Is this freede still active? Please select one of the status' \
+                       f' options below, and click "Send Reply" to confirm.\n\n\n'
         
-        # Adds message for the notification
+        # Add a label to the popup window with the formatted message for the caretaker's notification
         header = Label(self.pop_up_win, width=200, text=self.message, fg="black",
                        font=("TkDefaultFont", 11), wraplength=500, justify=LEFT)
-        header.pack(padx=10)        # TODO
+        # Set the location of the header in relation to the other objects (tkinter 'pack')
+        header.pack(padx=10)
+        # Retrieve the response value by creating radiobuttons on the popup window
+        # Create the 'not active' radio button to simulate an SMS/email response of 'NO'
+        not_active = Radiobutton(self.pop_up_win, text="NO, No longer active", variable=var, value=1,
+                                 command=self.false_button)
+        # Create the 'still active' radio button to simulate an SMS/email response of 'YES'
+        active = Radiobutton(self.pop_up_win, text="YES, Still active", variable=var, value=2, command=self.true_button)
+        # Create the button for the user to send their reply to the system
+        send_reply = Button(self.pop_up_win, text="Send Reply", command=self.exit_)
         
-        not_active = Radiobutton(self.pop_up_win, text="No longer active", variable=var, value=1,
-                                 command=self.false_button)  # TODO
-        active = Radiobutton(self.pop_up_win, text="Still active", variable=var, value=2, command=self.true_button) # TODO
-        send_reply = Button(self.pop_up_win, text="Send Reply", command=self.exit_) # TODO
-        not_active.pack()   # TODO
-        active.pack()       # TODO
-        send_reply.pack()   # TODO
+        # Set the location of the buttons in relation to the other objects
+        # (this is accomplished using tkinter's 'pack' function)
+        not_active.pack()
+        active.pack()
+        send_reply.pack()
 
     def false_button(self):
         """
-        TODO:
         Purpose: Method to set the value of the status to false. Is called when
         the user selects the corresponding "No longer active" option button.
 
@@ -106,7 +120,8 @@ class PopUp:
         Called by: get_status()
         Returns: False -> boolean value
         """
-        self.response_value = Status.ConfirmedInactive     # set the user selected button to ConfirmedInactive
+        # set the user selected button to ConfirmedInactive
+        self.response_value = Status.ConfirmedInactive
 
     def true_button(self):
         """
@@ -119,11 +134,11 @@ class PopUp:
         Called by: get_status()
         Returns: True -> boolean value
         """
-        self.response_value = Status.Active     # set the user selected button to Active
+        # set the user selected button to Active
+        self.response_value = Status.Active
 
     def get_response(self):
         """
-        TODO
         Purpose: Method to return the status of a notification
         sent to the user.
         Parameters: None
@@ -131,31 +146,37 @@ class PopUp:
         Called by: notify_and_update() in notificationMgmt.py to update fridge activity in database
         Returns: boolean value
         """
-        return self.response_value              # return which button the user selected
+        # return which button the user selected
+        return self.response_value
     
     def on_close(self):
         """ 
-        Purpose: If the user simply closes the window, record it as a non-response. This is akin to someone ignoring
-        a message for an extended period of time.
+        Purpose: If the user simply closes the window, record it as a
+        non-response. This is akin to someone ignoring an SMS or email
+        message for an extended period of time.
 
-        Parameter: None
-        Called by: None
         Returns: None
         """
-        self.response_value = None          # Initializes a response value
-        self.response_received.set(True)    # Indicates response has been recorded
-        self.pop_up_win.destroy()           # Closes popup window
+        # Sets the value of the response to 'None', as the user simply force-
+        # closed the popup window rather than sending a reply
+        self.response_value = None
+        # A response has been recorded and the wait_variable has changed
+        self.response_received.set(True)
+        # Destroy the pop-up window object, removing it from the display
+        self.pop_up_win.destroy()
 
     def exit_(self):
         """
-        Purpose: Method to exit and end the program. Is called
-        when user clicks corresponding exit
-        button on the menu window.
-
-        Parameter: None
-        Called by: None
+        Purpose: Method to exit and end the program.
+        
+        Is called  when user clicks corresponding exit button on the
+        popup notification window.
+        
         Returns: None
         """
-        self.response_value = self.get_response()   # Initializes a response value
-        self.response_received.set(True)            # Indicates the response has been received successfully
-        self.pop_up_win.destroy()                   # close the pop-up window
+        # Retrieve the currently selected bubble as the user closes the window
+        self.response_value = self.get_response()
+        # Indicates the response has now been received
+        self.response_received.set(True)
+        # Destroy the pop-up window object, removing it from the display
+        self.pop_up_win.destroy()

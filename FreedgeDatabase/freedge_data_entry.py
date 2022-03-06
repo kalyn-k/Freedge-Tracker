@@ -17,7 +17,7 @@ Last Edit By:	Ginni Gallagher
 """
 from enum import Enum
 from datetime import date 
-from InternalData import database_constants as dbc
+from InternalData import freedge_constants as dbc
 
 class Status(Enum):
 	""" 
@@ -42,9 +42,9 @@ class ContactMethod(Enum):
 
 	Attributes
 	----------- 
-	SMS -> a constant (defined as a string in database_constants.py) indicating
+	SMS -> a constant (defined as a string in freedge_constants.py) indicating
 			the freedge caretaker prefers text notifications
-	Email -> a constant (defined as a string in database_constants.py) indicating
+	Email -> a constant (defined as a string in freedge_constants.py) indicating
 			the freedge caretaker prefers email notifications
 	"""
 	SMS = dbc.SMS_METHOD_STRING

@@ -23,7 +23,7 @@ date		editor		changes
 """
 
 import csv
-from InternalData.database_constants import *
+from InternalData.freedge_constants import *
 
 def remove_whitespace(field_name):
 	""" 
@@ -37,7 +37,7 @@ def remove_whitespace(field_name):
 
 def _get_headers():
 	"""
-	Sets headers list using constants defined in database_constants.py
+	Sets headers list using constants defined in freedge_constants.py
 
 	Parameters: None
 
@@ -61,7 +61,7 @@ def _get_headers():
 def _get_address_format():
 	"""
 	Sets the format of addresses required of the csv file
-	using constants defined in database_constants.py
+	using constants defined in freedge_constants.py
 
 	Parameters: None
 

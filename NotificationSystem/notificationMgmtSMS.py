@@ -30,16 +30,16 @@ date         editor     changes
 3-04-22      erk        updated documentation and code to match updated NotificationMgmt Class
 """
 
-import InternalData.database_constants  # used to access constants for fridge object
+import InternalData.freedge_constants  # used to access constants for fridge object
 import FreedgeDatabase as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
 import NotificationSystem as NS                      # for prototype only, used for popup display of notification
  
 
 class sms_mgmt(NS.NotificationMgmt):
-    '''
+    """
     This class enables SMS notifications from freedge organizers to the fridge caretakers.
     The classhas the attributes to send SMS using the Twilio SMS API
-    '''
+    """
 
     def __init__(self, root):
         """
@@ -53,16 +53,15 @@ class sms_mgmt(NS.NotificationMgmt):
                 info for each fridge.
         Returns: None, stores sender and reciever information in class initiation.
         """
-        self.root = root # TODO
+        self.root = root # The root of the Tkinter display
         # self.sender =  UPDATE with Twilio account information
         # self.reciever = UPDAtE with freedge_data_entry
- 
 
     def get_fridge_info_message(self):
-        '''
+        """
         This function obtains which freedges are out of date (have not had a status update in 90 days),
-        collects the freedge's caretaker, name, and time since last update to be used to craft a message to be 
-        emailed. The function also update the freedge object's status based on user response, and then further 
+        collects the freedge's caretaker, name, and time since last update to be used to craft a message to be
+        emailed. The function also update the freedge object's status based on user response, and then further
         update the freedge database.
 
         Parameters: None
@@ -71,10 +70,9 @@ class sms_mgmt(NS.NotificationMgmt):
                      notify_and_update() to send SMS
            
         Returns: None
-
-        '''
-        # call to the other classes in order to use their methods
-        fdb = FD.load_internal_database(InternalData.database_constants.DATABASE_PATH_INFO)  # freedge database class initialization
+        """
+        # freedge database class initialization
+        fdb = FD.load_internal_database(InternalData.freedge_constants.DATABASE_PATH_INFO)
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -89,15 +87,15 @@ class sms_mgmt(NS.NotificationMgmt):
         return
 
     def notify_and_update(self, fdb, freedge):
-        '''
-       Purpose: 
+        """
+       Purpose:
             TO BE IMPLEMENTED IF USING SMS NOTIFICATIONS
             Calls the notification interface class which will return a boolean value based on whether or not the
             Freedge is active from user input.
             Based on this boolean value, updates the freedge object status and then updates the freedge database status
             for the specific fridge object.
 
-        Parameters: 
+        Parameters:
             fdb -> fridge database object
             freedge -> freedge object
 
@@ -108,6 +106,6 @@ class sms_mgmt(NS.NotificationMgmt):
 
         Returns: None
         
-        '''
+        """
         pass
-        
+

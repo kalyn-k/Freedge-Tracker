@@ -132,7 +132,7 @@ class AdministratorInterface:
     NotifyOutOfDate()
         Sends a notification to each of the caretakers who have not been
         contacted in the amount of time defined by FIRST_UPDATE_THRESHOLD in
-        the constants file (InternalData/database_constants.py). The system
+        the constants file (InternalData/freedge_constants.py). The system
         first prompts the user with information about the freedges which will
         be messaged, allowing them to confirm or cancel the mass-send.
     
@@ -468,7 +468,7 @@ class AdministratorInterface:
         """
         Sends a notification to each of the caretakers who have not been
         contacted in the amount of time defined by FIRST_UPDATE_THRESHOLD in
-        the constants file (InternalData/database_constants.py).
+        the constants file (InternalData/freedge_constants.py).
         
         Returns: None
         """

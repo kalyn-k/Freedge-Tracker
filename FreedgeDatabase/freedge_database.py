@@ -18,7 +18,7 @@ Last Edit By:   Madison Werries
 from os.path import exists
 import sqlite3
 from sqlite3 import Error
-from InternalData.database_constants import *
+from InternalData.freedge_constants import *
 from datetime import date
 import FreedgeDatabase as FD
 
