@@ -29,8 +29,8 @@ date         editor     changes
 3-04-22     erk         updated documentation to make more consistent
 """
 import internal_data.database_constants  # used to access constants for fridge object
-from notification_system import notificationGUI
-from database.freedge_database import load_internal_database
+import freedge_tracker_database as FD                         # used to access the database which contains each Freedge object and all the information on each fridge
+import notification_system as NS                      # for prototype only, used for popup display of notification
 
 class NotificationMgmt():
     '''
@@ -63,15 +63,14 @@ class NotificationMgmt():
         Parameters: None
        
         Calls:
-            called by: admin_interface.py when system has not been notified of activity in 90 days, or if
+            called by: admin_interface.py when system has not been notified of activity in 90 days, or if 
                     user presses the notify button
                     notify_and_update() to send notification
         Returns: None
         '''
         
         # call to the other classes in order to use their methods
-        # freedge database class initialization
-        fdb = load_internal_database(internal_data.database_constants.DATABASE_PATH_INFO)
+        fdb = FD.load_internal_database(internal_data.database_constants.DATABASE_PATH_INFO)  # freedge database class initialization
 
         fridge_list = fdb.get_out_of_date()  # variable to obtain the list of freedge objects that are out of date
 
@@ -106,7 +105,7 @@ class NotificationMgmt():
         Returns: None
         '''
         # calls notification GUI pop up function to send message
-        popup = notificationGUI.PopUp(self.root, freedge)        # signals notification popup
+        popup = NS.notificationGUI.PopUp(self.root, freedge)        # signals notification popup 
         popup.pop_up_win.wait_variable(popup.response_received)     # TODO
         response = popup.get_response()                             # variable with value of the response
         

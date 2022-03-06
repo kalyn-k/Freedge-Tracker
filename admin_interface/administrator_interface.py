@@ -15,12 +15,12 @@ Resources/help in using tkinter found at:
     (1) The method for how to create tabbed windows was derived from:
         (https://www.geeksforgeeks.org/creating-tabbed-widget-with-python-tkinter/)
 """
+from tkinter.ttk import *
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
+import notification_system as NS
+from freedge_tracker_database import *
 from admin_interface.tkinter_style import *
-from database.freedge_database import *
-from database.freedge_data_entry import *
-from notification_system.notificationMgmt import *
 import sys
 
 class AdministratorInterface:
@@ -34,7 +34,7 @@ class AdministratorInterface:
         The full path to open the internal database file
         
     fdb: FreedgeDatabase
-        This is instance of the database class which is currently open
+        This is instance of the freedge_tracker_database class which is currently open
         in the system, if any. The abbreviation stands for "Freedge database."
         
     root: Tk
@@ -168,7 +168,7 @@ class AdministratorInterface:
         Initializes a new instance of the admin_interface class.
         """
         self.fdb_path = None        # The file path to the internal database
-        self.fdb = None             # The database object
+        self.fdb = None             # The freedge_tracker_database object
         self.root = None            # The root of the GUI display
         self.main_tab = None        # Tab display showing all freedges
         self.ood_tab = None         # Tab for showing out-of-date freedges
@@ -215,7 +215,7 @@ class AdministratorInterface:
         if not exists_internal_database(db_file_path):
             FileNotFoundError("Could not locate the database at: ", db_file_path)
         
-        # Load the database file as an instance of the database class
+        # Load the database file as an instance of the freedge_tracker_database class
         self.fdb = load_internal_database(db_file_path)
         # Update the interface's current database path for future use
         self.fdb_path = db_file_path
@@ -436,7 +436,7 @@ class AdministratorInterface:
         response = messagebox.askokcancel("Confirm Notification", message)
         if response:        # If the messagebox's reply value was 'True'
             # Create a new instance of the NoficationMgmt class
-            notifier = NotificationMgmt(self.root)
+            notifier = NS.NotificationMgmt(self.root)
             # Use the new notifier to notify the freedge caretaker
             notifier.notify_and_update(self.fdb, freedge)
         # Update the display to reflect their response
@@ -513,7 +513,7 @@ class AdministratorInterface:
         response = messagebox.askokcancel("Verify Message", prompt)
         if response:
             for freedge in to_notify:
-                notifier = NotificationMgmt(self.root)
+                notifier = NS.NotificationMgmt(self.root)
                 notifier.notify_and_update(self.fdb, freedge)
         # Update the display to reflect any changes based on the responses
         self.UpdateFullDisplay()
