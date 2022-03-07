@@ -3,17 +3,34 @@
 Title:	Main Driver for the Freedge Tracker System
 ===============================================================================
 Description:	This is the main driver for the Freedge Tracker System. Its
-				primary interactions are with the AdminInterface module
-				to start the program.
+		primary interactions are with the AdminInterface module
+		to start the program.
                 
 Authors:        Madison Werries
 Last Edited:    3-5-2022
 Last Edit By:   Madison Werries
+
+Edit Log
+date         editor     changes
+3-05-22      mgw        created first working version
+3-06-22      erk        documentation
+
 """
-from FreedgeDatabase import *
-from AdminInterface import *
+from FreedgeDatabase import * 	  # used to access Freedge information to help start system
+from AdminInterface import * 	  # used to start the GUI of system
 
 def main():
+	'''
+	This function is the driver for the entire Freedge Tracker system. 
+	
+	Parameters: None
+	
+	Calls: 
+	    Called by: User input from typing 'python3 freedge_tracker.py + enter'
+	    Calls: AdminInterface to run the program
+	
+	Returns: None, but runs entire system
+	'''
 	# Create a new Administrator Interface
 	MainInterface = AdministratorInterface()
 	# Build the Administrator Interface's GUI
