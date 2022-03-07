@@ -1,4 +1,4 @@
-# 422-Grocery-Helper
+# 422-Freedge-Tracker
 
 Authors: Ellie Kobak, Kayln Koyanagi, Liza Richards, Madison Werries, Ginni Gallagher
  
