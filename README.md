@@ -42,7 +42,7 @@ Directory Structure:
 4. “NotificationSystem” includes all of the files that work together to send the user notifications. 
 5. “Test_data” is a folder that contains all of the test csv files that can be uploaded into the system. It also
    includes one database file that contains out of date fridges for testing. 
-6. “Documentation” is a file containing the system requirements, system standards
+6. “Documentation” is a file containing the project plan, SRS, SDS, user documentation, programmer documentation, installation instructions, and README pdfs. 
 7. The “Freedge-Tracker.zip” is a zip file containing all the files necessary to run the system on your local 
    machine with the instructions above.
 8. The “freedge_tracker.py” file is the main driver for the system. This file will be run in the terminal to start
