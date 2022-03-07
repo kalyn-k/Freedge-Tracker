@@ -36,8 +36,6 @@ DATABASE_PATH_INFO = r"InternalData/fdb_path.txt"
 # safely changed, always ensure that any CSV column names which are to be
 # loaded into the system are also updated to match these constants EXACTLY.
 
-# The default column names can be found in Programmer_Documentation.pdf
-
 # !!! IMPORTANT: DO NOT DELETE ANY OF THE HEADERS !!!
 #==============================================================================
 PROJECT_NAME_KEY = "Project"
