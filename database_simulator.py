@@ -4,8 +4,8 @@ Title:	Simulator for FreedgeDatabase for the Freedge Tracker System
 ===============================================================================
 Description:	This script is for testing purposes only.
 
-				The database simulator is used to create an imaginary database
-				which includes freedges whose statuses are out-of-date (i.e.
+				The database simulator is used to create an database of fabricated
+				data that includes freedges whose statuses are out-of-date (i.e.
 				their last status update was longer than the number of days
 				specified at FIRST_UPDATE_THRESHOLD in the constants file,
 				freedge_constants.py.)
@@ -41,7 +41,7 @@ Last Edit By:	Ginni Gallagher
 """
 from FreedgeDatabase import new_database_from_csv, freedge_data_entry
 from InternalData import freedge_constants
-from datetime import date
+from datetime import date, timedelta
 import random
 
 def main():
@@ -53,29 +53,25 @@ def main():
 	tdb = new_database_from_csv(r"test_data/fdb_needs_updating.db", "./test_data/freeedge_data.csv")
 	# Retrieve the database as a list of Freedge objects
 	freedges = tdb.get_freedges()
-	
-	# Define a list of years to be used when setting last_status_update values of the freedges
-	years = [2017, 2018, 2019, 2020, 2021]
 
 	# Get current date to use in determining the activity status of an out-of-date freedge
-	curr_date = date.today()
+	current_date = date.today()
 	
-	# Update the dates of the freedges to a randomly selected past date (creating out-of-date freedges)
-	# Every nth freedge's date will not be updated (to ensure some freedges in dataset are up-to-date)
-	n = random.randint(2, 10)
+	# Update every nth freedge's date to be out-of-date
+	n = random.randint(4, 10)
 	for i in range(len(freedges)):
 
-		# Randomly generate date and update freedge data
-		if (i % n != 0):
-			year = random.choice(years)
-			month = random.randint(1, 12)
-			day = random.randint(1,28)
-			out_of_date = date(year, month, day)
+		# Update the nth freedge's date
+		if (i % n == 0):
+			# Randomly generate days since last update (up to two years from current date) 
+			days_since_update = timedelta(random.randint(1, 730))
+			out_of_date = current_date - days_since_update
 
 			freedges[i].last_status_update = out_of_date
 
-			# if freedge date is past {FIRST_UPDATE_THRESHOLD} days old, update activity status to "SuspectedInactive"
-			days_since_update = curr_date - out_of_date
+			# if freedge date is past {FIRST_UPDATE_THRESHOLD} days since last update, 
+			# update activity status to "SuspectedInactive"
+			days_since_update = current_date - out_of_date
 			if (days_since_update.days > freedge_constants.FIRST_UPDATE_THRESHOLD):
 				freedges[i].freedge_status = freedge_data_entry.Status.SuspectedInactive
 
