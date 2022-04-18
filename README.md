@@ -1,6 +1,6 @@
 # 422-Freedge-Tracker
 
-Authors: Ellie Kobak, Kayln Koyanagi, Liza Richards, Madison Werries, Ginni Gallagher
+Authors: Ellie Kobak, Kalyn Koyanagi, Liza Richards, Madison Werries, Ginni Gallagher
  
 Date created: 03/06/2022
 
